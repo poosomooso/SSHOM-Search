@@ -2,6 +2,9 @@ package util;
 
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
+import de.fosd.typechef.featureexpr.SingleFeatureExpr;
+import scala.collection.mutable.HashSet;
+import scala.collection.mutable.Set;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,14 +43,23 @@ public class SSHOMExprFactory {
     }
   }
 
+  /**
+   *
+   * @param tests Map of {"testName" : /expression for when test is killed/}
+   * @param mutants Array of [m1, m2, ... ]
+   * @param numMutants
+   * @return
+   */
   public static FeatureExpr getSSHOMExpr(Map<String, FeatureExpr> tests,
-      FeatureExpr[] mutants, FeatureExpr[] mutantConfigurations,
-      int numMutants) {
+      SingleFeatureExpr[] mutants, int numMutants) {
+
+    // check that at least one test fails
     FeatureExpr gt0 = FeatureExprFactory.False();
     for (FeatureExpr t : tests.values()) {
       gt0 = gt0.or(t);
     }
 
+    // for each test, if it fails for the hom, then it must fail for each fom
     FeatureExpr lte1 = FeatureExprFactory.True();
     for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
       String testName = testEntry.getKey();
@@ -55,13 +67,13 @@ public class SSHOMExprFactory {
       FeatureExpr implication = FeatureExprFactory.True();
       for (int i = 0; i < numMutants; i++) {
 
-        FomTestKey currKey = new FomTestKey(mutants[i].toString(), testName);
+        FomTestKey currKey = new FomTestKey(mutants[i].feature(), testName);
 
         FeatureExpr fomIsSat;
         if (lambda.containsKey(currKey)) {
           fomIsSat = lambda.get(currKey);
         } else {
-          fomIsSat = fomKillsTest(mutantConfigurations[i], testExpr);
+          fomIsSat = fomKillsTest(mutants[i].feature(), testExpr);
           lambda.put(currKey, fomIsSat);
         }
 
@@ -74,27 +86,25 @@ public class SSHOMExprFactory {
   }
 
   public static FeatureExpr getStrictSSHOMExpr(Map<String, FeatureExpr> tests,
-      FeatureExpr[] mutants, FeatureExpr[] mutantConfigurations,
-      int numMutants) {
+      SingleFeatureExpr[] mutants, int numMutants) {
 
-    FeatureExpr finalExpr = getSSHOMExpr(tests, mutants, mutantConfigurations,
-        numMutants);
+    FeatureExpr finalExpr = getSSHOMExpr(tests, mutants, numMutants);
     FeatureExpr lt1 = FeatureExprFactory.False();
 
-    System.out.println("lt1 " + System.currentTimeMillis());
-
+    // exists a test that fails all foms but does not fail corresponding hom
     for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
       String testName = testEntry.getKey();
       FeatureExpr testExpr = testEntry.getValue();
       FeatureExpr killsMutant = FeatureExprFactory.True();
+
       for (int i = 0; i < numMutants; i++) {
-        FomTestKey currKey = new FomTestKey(mutants[i].toString(), testName);
+        FomTestKey currKey = new FomTestKey(mutants[i].feature(), testName);
 
         FeatureExpr fomIsSat;
         if (lambda.containsKey(currKey)) {
           fomIsSat = lambda.get(currKey);
         } else {
-          fomIsSat = fomKillsTest(mutantConfigurations[i], testExpr);
+          fomIsSat = fomKillsTest(mutants[i].feature(), testExpr);
           lambda.put(currKey, fomIsSat);
         }
         killsMutant = killsMutant.and(fomIsSat.orNot(mutants[i]));
@@ -106,11 +116,13 @@ public class SSHOMExprFactory {
     return finalExpr;
   }
 
-  private static FeatureExpr fomKillsTest(FeatureExpr mConfig,
+  private static FeatureExpr fomKillsTest(String m,
       FeatureExpr test) {
-    return test.and(mConfig).isSatisfiable() ?
-        FeatureExprFactory.True() :
-        FeatureExprFactory.False();
+    Set<String> fom = new HashSet<>();
+    fom.add(m);
+    return test.evaluate(fom.toSet()) ?
+            FeatureExprFactory.True() :
+            FeatureExprFactory.False();
   }
 
 }

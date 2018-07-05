@@ -8,6 +8,7 @@ import scala.Option;
 import scala.Tuple2;
 import scala.collection.JavaConversions;
 import scala.collection.immutable.List;
+import scala.collection.mutable.*;
 import scala.util.matching.Regex;
 import util.SSHOMExprFactory;
 import util.SetArithmetic;
@@ -16,6 +17,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,10 +31,10 @@ public class Main {
   private final static int     GET_2OMS     = 1;
   private final static int     SSHOM        = 2;
   private final static int     SSHOM_STRICT = 3;
-  private static       int     mode         = SSHOM;
+  private static       int     mode         = SSHOM_STRICT;
   private static       boolean SAT          = true;
   private final static int     NUM_MUTANTS  = 26;
-  private static       String  fname        = "data/branch-testdata.txt";
+  private static       String  fname        = "data/exhaustive-testdata.txt";
 
   private static FeatureModel featureModel;
 
@@ -79,19 +84,16 @@ public class Main {
   public static void sshomSolver(String fname) {
     Map<String, FeatureExpr> tests = readFile(fname);
 
-    FeatureExpr[] mutants = getEachMutant();
-    FeatureExpr[] mutantConfigurations = genFOMs(mutants);
+    SingleFeatureExpr[] mutants = getEachMutant();
+    FeatureExpr[] fomExprs = genFOMs(mutants);
 
     FeatureExpr finalExpr = SSHOMExprFactory
-        .getSSHOMExpr(tests, mutants, mutantConfigurations, NUM_MUTANTS);
+        .getSSHOMExpr(tests, mutants, NUM_MUTANTS);
 
     //exclude foms
-    for (FeatureExpr m : mutantConfigurations) {
+    for (FeatureExpr m : fomExprs) {
       finalExpr = finalExpr.andNot(m);
     }
-
-//    SATFeatureModel fm = (SATFeatureModel) SATFeatureModel.create(finalExpr);
-//    fm.writeToDimacsFile(new File("SSHOM_notstrict.dimacs"));
 
     printAssignments(mutants, finalExpr);
   }
@@ -100,19 +102,16 @@ public class Main {
   public static void strictSSHOMSolver(String fname) {
     Map<String, FeatureExpr> tests = readFile(fname);
 
-    FeatureExpr[] mutants = getEachMutant();
-    FeatureExpr[] mutantConfigurations = genFOMs(mutants);
+    SingleFeatureExpr[] mutants = getEachMutant();
+    FeatureExpr[] fomExprs = genFOMs(mutants);
 
     FeatureExpr finalExpr = SSHOMExprFactory
-        .getStrictSSHOMExpr(tests, mutants, mutantConfigurations, NUM_MUTANTS);
+        .getStrictSSHOMExpr(tests, mutants, NUM_MUTANTS);
 
     //exclude foms
-    for (FeatureExpr m : mutantConfigurations) {
+    for (FeatureExpr m : fomExprs) {
       finalExpr = finalExpr.andNot(m);
     }
-
-    SATFeatureModel fm = (SATFeatureModel) SATFeatureModel.create(finalExpr);
-    fm.writeToDimacsFile(new File("SSHOM_strict.dimacs"));
 
     printAssignments(mutants, finalExpr);
   }
@@ -268,6 +267,16 @@ public class Main {
     return sb;
   }
 
+  // [ m1, m2, m3 ... ]
+  private static SingleFeatureExpr[] getEachMutant() {
+    SingleFeatureExpr[] mutants = new SingleFeatureExpr[NUM_MUTANTS];
+    for (int i = 0; i < NUM_MUTANTS; i++) {
+      SingleFeatureExpr mutant = FeatureExprFactory.createDefinedExternal("m" + i);
+      mutants[i] = mutant;
+    }
+    return mutants;
+  }
+
   private static FeatureExpr getMutantExpr(Predicate<Integer> mutantEnabled, int numMutants, FeatureExpr[] mutants) {
     FeatureExpr mutantConfig = FeatureExprFactory.True();
     for (int i = 0; i < numMutants; i++) {
@@ -297,16 +306,6 @@ public class Main {
       System.exit(-1);
     }
     return tests;
-  }
-
-  // [ m1, m2, m3 ... ]
-  private static FeatureExpr[] getEachMutant() {
-    FeatureExpr[] mutants = new FeatureExpr[NUM_MUTANTS];
-    for (int i = 0; i < NUM_MUTANTS; i++) {
-      FeatureExpr mutant = FeatureExprFactory.createDefinedExternal("m" + i);
-      mutants[i] = mutant;
-    }
-    return mutants;
   }
 
   private static FeatureExpr[] genFOMs(FeatureExpr[] individualMutants) {
