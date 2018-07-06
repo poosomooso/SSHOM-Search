@@ -3,6 +3,7 @@ package util;
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
+import scala.Tuple2;
 import scala.collection.mutable.HashSet;
 import scala.collection.mutable.Set;
 
@@ -10,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SSHOMExprFactory {
-  private static Map<FomTestKey, FeatureExpr> lambda = new HashMap<>();
+  private static Map<FomTestKey, Boolean> lambda = new HashMap<>();
 
   private static class FomTestKey {
     private String mutant;
@@ -69,15 +70,18 @@ public class SSHOMExprFactory {
 
         FomTestKey currKey = new FomTestKey(mutants[i].feature(), testName);
 
-        FeatureExpr fomIsSat;
+        boolean fomKillsTest;
         if (lambda.containsKey(currKey)) {
-          fomIsSat = lambda.get(currKey);
+          fomKillsTest = lambda.get(currKey);
         } else {
-          fomIsSat = fomKillsTest(mutants[i].feature(), testExpr);
-          lambda.put(currKey, fomIsSat);
+          fomKillsTest = fomKillsTest(mutants[i].feature(), testExpr);
+          lambda.put(currKey, fomKillsTest);
         }
 
-        implication = implication.and(fomIsSat.orNot(mutants[i]));
+        if (!fomKillsTest) {
+          implication = implication.and(mutants[i].not());
+        }
+
       }
       lte1 = lte1.and(testExpr.implies(implication));
     }
@@ -100,14 +104,16 @@ public class SSHOMExprFactory {
       for (int i = 0; i < numMutants; i++) {
         FomTestKey currKey = new FomTestKey(mutants[i].feature(), testName);
 
-        FeatureExpr fomIsSat;
+        boolean fomKillsTest;
         if (lambda.containsKey(currKey)) {
-          fomIsSat = lambda.get(currKey);
+          fomKillsTest = lambda.get(currKey);
         } else {
-          fomIsSat = fomKillsTest(mutants[i].feature(), testExpr);
-          lambda.put(currKey, fomIsSat);
+          fomKillsTest = fomKillsTest(mutants[i].feature(), testExpr);
+          lambda.put(currKey, fomKillsTest);
         }
-        killsMutant = killsMutant.and(fomIsSat.orNot(mutants[i]));
+        if (!fomKillsTest) {
+          killsMutant = killsMutant.and(mutants[i].not());
+        }
       }
       lt1 = lt1.or(killsMutant.andNot(testExpr));
     }
@@ -116,13 +122,32 @@ public class SSHOMExprFactory {
     return finalExpr;
   }
 
-  private static FeatureExpr fomKillsTest(String m,
+  /**
+   * Currently unused; was meant to abstract the tests as variables
+   * (caused out of memory errors; probably buggy)
+   * @param tests
+   * @return
+   */
+  private static Tuple2<Map<String, FeatureExpr>, FeatureExpr> testExprToVars(
+      Map<String, FeatureExpr> tests) {
+    Map<String, FeatureExpr> testVars = new HashMap<>();
+    FeatureExpr equivClause = FeatureExprFactory.True();
+    for (Map.Entry<String, FeatureExpr> e : tests.entrySet()) {
+      String name = e.getKey();
+      FeatureExpr expr = e.getValue();
+      SingleFeatureExpr var = FeatureExprFactory.createDefinedExternal(name);
+      FeatureExpr equiv = var.equiv(expr);
+      equivClause = equivClause.and(equiv);
+      testVars.put(name, var);
+    }
+    return new Tuple2<>(testVars, equivClause);
+  }
+
+  private static boolean fomKillsTest(String m,
       FeatureExpr test) {
     Set<String> fom = new HashSet<>();
     fom.add(m);
-    return test.evaluate(fom.toSet()) ?
-            FeatureExprFactory.True() :
-            FeatureExprFactory.False();
+    return test.evaluate(fom.toSet());
   }
 
 }
