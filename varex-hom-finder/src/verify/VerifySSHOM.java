@@ -5,6 +5,7 @@ import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
+import util.SetArithmetic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -73,18 +74,13 @@ public class VerifySSHOM {
   }
 
   private boolean isStronglySubsuming(SSHOMListener listener) {
-    Set<Description> overlap = new HashSet<>(listener.getFomTests().get(0));
-    for (Set<Description> fom : listener.getFomTests()) {
-      overlap.retainAll(fom);
-    }
+    Set<Description> overlap = SetArithmetic.getIntersection(listener.getFomTests());
     return overlap.containsAll(listener.getHomTests());
   }
 
   private boolean isStrictStronglySubsuming(SSHOMListener listener) {
-    Set<Description> overlap = new HashSet<>(listener.getFomTests().get(0));
-    for (Set<Description> fom : listener.getFomTests()) {
-      overlap.retainAll(fom);
-    }
+    Set<Description> overlap = SetArithmetic
+        .getIntersection(listener.getFomTests());
     if(!overlap.containsAll(listener.getHomTests())) return false;
     overlap.removeAll(listener.getHomTests());
     return !overlap.isEmpty();
