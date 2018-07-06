@@ -8,7 +8,6 @@ import scala.Option;
 import scala.Tuple2;
 import scala.collection.JavaConversions;
 import scala.collection.immutable.List;
-import scala.collection.mutable.*;
 import scala.util.matching.Regex;
 import util.SSHOMExprFactory;
 import util.SetArithmetic;
@@ -31,10 +30,10 @@ public class Main {
   private final static int     GET_2OMS     = 1;
   private final static int     SSHOM        = 2;
   private final static int     SSHOM_STRICT = 3;
-  private static       int     mode         = SSHOM_STRICT;
+  private static       int     mode         = SSHOM;
   private static       boolean SAT          = true;
   private final static int     NUM_MUTANTS  = 26;
-  private static       String  fname        = "data/exhaustive-testdata.txt";
+  private static       String  fname        = "data/testdata.txt";
 
   private static FeatureModel featureModel;
 
@@ -77,7 +76,7 @@ public class Main {
           + "/home/serena/MiscCS/intellij/lib/junit-4.12.jar";
 
       JPF.main(new String[] { "+search.class=.search.RandomSearch", paths,
-          "testRunner.RunTestsForVarex" });
+          "testRunner.RunTestsTriangleGenerated" });
     }
   }
 
