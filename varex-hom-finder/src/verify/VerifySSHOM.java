@@ -51,75 +51,11 @@ public class VerifySSHOM {
           sshomListener.signalFOMEnd();
         }
         System.out.println(Arrays.toString(mutants));
-        System.out.print(sshomListener.isStronglySubsuming() ? "Is strongly subsuming" : "Is NOT strongly subsuming");
-        System.out.println(sshomListener.isStrictStronglySubsuming() ? " -- Strict" : "");
+        System.out.print(isStronglySubsuming(sshomListener) ? "Is strongly subsuming" : "Is NOT strongly subsuming");
+        System.out.println(isStrictStronglySubsuming(sshomListener) ? " -- Strict" : "");
       }
-    } catch (FileNotFoundException e) {
+    } catch (FileNotFoundException | IllegalAccessException | NoSuchFieldException e) {
       e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    } catch (NoSuchFieldException e) {
-      e.printStackTrace();
-    }
-  }
-
-
-  private class SSHOMListener extends RunListener {
-    Set<Description> homTests;
-    List<Set<Description>> fomTests = new LinkedList<>();
-    Set<Description> currentTests;
-
-    public void signalHOMBegin() {
-      currentTests = new HashSet<>();
-    }
-
-    public void signalHOMEnd() {
-      homTests = currentTests;
-      currentTests = null;
-    }
-
-    public void signalFOMBegin() {
-      currentTests = new HashSet<>();
-    }
-
-    public void signalFOMEnd() {
-      fomTests.add(currentTests);
-      currentTests = null;
-    }
-
-    public boolean isStronglySubsuming() {
-      Set<Description> overlap = new HashSet<>(fomTests.get(0));
-      for (Set<Description> fom : fomTests) {
-        overlap.retainAll(fom);
-      }
-      return overlap.containsAll(homTests);
-    }
-
-    public boolean isStrictStronglySubsuming() {
-      Set<Description> overlap = new HashSet<>(fomTests.get(0));
-      for (Set<Description> fom : fomTests) {
-        overlap.retainAll(fom);
-      }
-      if(!overlap.containsAll(homTests)) return false;
-      overlap.removeAll(homTests);
-      return !overlap.isEmpty();
-    }
-
-    @Override
-    public void testFailure(Failure failure) throws Exception {
-      super.testFailure(failure);
-      currentTests.add(failure.getDescription());
-    }
-
-    @Override
-    public void testAssumptionFailure(Failure failure) {
-      super.testAssumptionFailure(failure);
-      currentTests.add(failure.getDescription());
-    }
-
-    @Override
-    public void testIgnored(Description description) throws Exception {
-      super.testIgnored(description);
     }
   }
 
@@ -136,4 +72,21 @@ public class VerifySSHOM {
     }
   }
 
+  private boolean isStronglySubsuming(SSHOMListener listener) {
+    Set<Description> overlap = new HashSet<>(listener.getFomTests().get(0));
+    for (Set<Description> fom : listener.getFomTests()) {
+      overlap.retainAll(fom);
+    }
+    return overlap.containsAll(listener.getHomTests());
+  }
+
+  private boolean isStrictStronglySubsuming(SSHOMListener listener) {
+    Set<Description> overlap = new HashSet<>(listener.getFomTests().get(0));
+    for (Set<Description> fom : listener.getFomTests()) {
+      overlap.retainAll(fom);
+    }
+    if(!overlap.containsAll(listener.getHomTests())) return false;
+    overlap.removeAll(listener.getHomTests());
+    return !overlap.isEmpty();
+  }
 }
