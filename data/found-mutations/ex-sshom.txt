@@ -1,0 +1,23 @@
+m1 m2
+m0 m2
+m0 m1
+m14 m13
+m10 m11
+m15 m14
+m15 m13
+m15 m14 m13
+m9 m1 m2
+m0 m9 m2
+m0 m9 m1
+m25 m23
+m22 m20
+m19 m17
+m18 m4
+m19 m4
+m19 m18 m4
+m1 m2 m7
+m9 m7
+m0 m9 m7
+m0 m9 m1 m7
+m9 m1 m2 m7
+m0 m9 m2 m7

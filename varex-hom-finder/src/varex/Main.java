@@ -33,7 +33,7 @@ public class Main {
   private static       int     mode         = SSHOM;
   private static       boolean SAT          = true;
   private final static int     NUM_MUTANTS  = 26;
-  private static       String  fname        = "data/evo-testdata.txt";
+  private static       String  fname        = "data/exhaustive-testdata.txt";
 
   private static FeatureModel featureModel;
 
