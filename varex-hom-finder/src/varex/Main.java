@@ -31,7 +31,7 @@ public class Main {
   private final static int     SSHOM        = 2;
   private final static int     SSHOM_STRICT = 3;
   private static       int     mode         = SSHOM;
-  private static       boolean SAT          = true;
+  private static       boolean SAT          = false;
   private final static int     NUM_MUTANTS  = 26;
   private static       String  fname        = "data/exhaustive-testdata.txt";
 

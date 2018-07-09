@@ -43,6 +43,15 @@ public class SetArithmetic {
     return newSet;
   }
 
+  public static <T> Set<T> getUnion(Collection<Set<T>> allSets) {
+    Set<T> newSet = new HashSet<>();
+    for (Set<T> s : allSets) {
+      newSet.addAll(s);
+    }
+
+    return newSet;
+  }
+
   public static <T> Set<T> getUnion(Set<T> a, Set<T> b) {
     Set<T> newSet;
     if (a.size() > b.size()) {
@@ -55,6 +64,7 @@ public class SetArithmetic {
     return newSet;
   }
 
+  @SafeVarargs
   public static <T> Set<T> getDifference(Set<T> a, Set<T>... subtrahends) {
     Set<T> result = new HashSet<>(a);
     for (Set<T> s : subtrahends) {
@@ -71,6 +81,7 @@ public class SetArithmetic {
     return a.size() + b.size() - getIntersectionSize(a, b);
   }
 
+  @SafeVarargs
   public static <T> int getDifferenceSize(Set<T> a, Set<T>... subtrahends) {
     Set<Object> allSubtrahends = new HashSet<>();
     for (Set<T> s : subtrahends) {
