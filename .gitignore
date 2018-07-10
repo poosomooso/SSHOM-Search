@@ -56,3 +56,4 @@ report/
 *.jar
 .evosuite/
 python/.ipynb_checkpoints
+**/evosuite-report/
