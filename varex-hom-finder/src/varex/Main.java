@@ -33,7 +33,7 @@ public class Main {
   private static       int     mode         = SSHOM;
   private static       boolean SAT          = false;
   private final static int     NUM_MUTANTS  = 26;
-  private static       String  fname        = "data/exhaustive-testdata.txt";
+  private static       String  fname        = "data/esbetter-testdata.txt";
 
   private static FeatureModel featureModel;
 
@@ -41,7 +41,7 @@ public class Main {
     if (SAT) {
       FeatureExprFactory.setDefault(FeatureExprFactory.sat());
       featureModel = SATFeatureModel.create(FeatureExprFactory.True());
-    } else {
+    } else {git reset 
       FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
       featureModel = BDDFeatureModel.create(FeatureExprFactory.True());
     }
@@ -76,7 +76,7 @@ public class Main {
           + "/home/serena/MiscCS/intellij/lib/junit-4.12.jar";
 
       JPF.main(new String[] { "+search.class=.search.RandomSearch", paths,
-          "testRunner.RunTestsTriangleGenerated" });
+          "testRunner.RunTestsTriangleEnhanced" });
     }
   }
 
@@ -293,7 +293,7 @@ public class Main {
     try (Scanner in = new Scanner(new File(fname))) {
       while (in.hasNextLine()) {
         String l = in.nextLine();
-        if (l.startsWith("{test")) {
+        if (l.startsWith("{")) {
           String[] split = l.split(" : ");
           FeatureExpr testFeatureExpr = new FeatureExprParser(FeatureExprFactory.dflt(),
               new Regex("[A-Za-z0-9_]*", null), Option.empty()).parse(split[1]);
