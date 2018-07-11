@@ -23,7 +23,7 @@ public class VerifySSHOM {
     try (Scanner in = new Scanner(new File(fname))) {
       while (in.hasNextLine()) {
         mutants = in.nextLine().split(" ");
-        SSHOMListener sshomListener = runner.runJunitOnHOM(mutants);
+        SSHOMListener sshomListener = runner.runJunitOnHOMAndFOMs(mutants);
 
         System.out.println(Arrays.toString(mutants));
         System.out.print(CheckStronglySubsuming.isStronglySubsuming(sshomListener) ? "Is strongly subsuming" : "NOT STRONGLY SUBSUMING ****");

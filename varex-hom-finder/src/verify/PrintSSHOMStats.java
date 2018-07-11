@@ -77,7 +77,7 @@ public class PrintSSHOMStats {
       throws NoSuchFieldException, IllegalAccessException {
     SSHOMRunner r = new SSHOMRunner(Triangle.class,
         testTriangleExhaustive.class);
-    SSHOMListener l = r.runJunitOnHOM(new String[] { "m7", "m9" });
+    SSHOMListener l = r.runJunitOnHOMAndFOMs(new String[] { "m7", "m9" });
 
     Set<Description> overlap = SetArithmetic
         .getIntersection(l.getFomTests());
@@ -93,7 +93,7 @@ public class PrintSSHOMStats {
       throws NoSuchFieldException, IllegalAccessException {
     SSHOMRunner r = new SSHOMRunner(Triangle.class,
         Triangle_ESTest_linecoverage.class);
-    SSHOMListener evo = r.runJunitOnHOM(mutant);
+    SSHOMListener evo = r.runJunitOnHOMAndFOMs(mutant);
 
     Set<Description> allFomTests = SetArithmetic.getUnion(evo.getFomTests());
     Set<Description> overlapFomTests = SetArithmetic.getIntersection(evo.getFomTests());

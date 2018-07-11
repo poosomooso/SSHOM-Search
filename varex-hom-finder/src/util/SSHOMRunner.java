@@ -6,6 +6,7 @@ import org.junit.runner.JUnitCore;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Set;
 
 public class SSHOMRunner {
@@ -22,6 +23,22 @@ public class SSHOMRunner {
     this.testClasses = Arrays.copyOf(testClasses, testClasses.length);
   }
 
+  public SSHOMListener runJunitOnHOMAndFOMs(String... mutants)
+      throws IllegalAccessException, NoSuchFieldException {
+    JUnitCore jUnitCore = new JUnitCore();
+    SSHOMListener sshomListener = runJunitOnHOM(mutants);
+
+    //foms
+    for (String s : mutants) {
+      targetClasses.resetMutants();
+      targetClasses.setMutant(s);
+      sshomListener.signalFOMBegin();
+      jUnitCore.run(testClasses);
+      sshomListener.signalFOMEnd();
+    }
+    return sshomListener;
+  }
+
   public SSHOMListener runJunitOnHOM(String... mutants)
       throws IllegalAccessException, NoSuchFieldException {
     JUnitCore jUnitCore = new JUnitCore();
@@ -36,18 +53,11 @@ public class SSHOMRunner {
     jUnitCore.run(testClasses);
     sshomListener.signalHOMEnd();
 
-    //foms
-    for (String s : mutants) {
-      targetClasses.resetMutants();
-      targetClasses.setMutant(s);
-      sshomListener.signalFOMBegin();
-      jUnitCore.run(testClasses);
-      sshomListener.signalFOMEnd();
-    }
     return sshomListener;
   }
 
-  public String[] getMutants() {
-    return targetClasses.getMutants().toArray(new String[0]);
+
+  public Collection<String> getMutants() {
+    return targetClasses.getMutants();
   }
 }

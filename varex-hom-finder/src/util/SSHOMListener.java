@@ -11,6 +11,7 @@ public class SSHOMListener extends RunListener {
   Set<Description> homTests;
   List<Set<Description>> fomTests = new LinkedList<>();
   Set<Description> currentTests;
+  int numTests = 0;
 
   public void signalHOMBegin() {
     currentTests = new HashSet<>();
