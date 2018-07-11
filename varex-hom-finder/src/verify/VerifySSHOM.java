@@ -1,5 +1,6 @@
 package verify;
 
+import util.CheckStronglySubsuming;
 import util.SSHOMListener;
 import util.SSHOMRunner;
 
@@ -25,8 +26,8 @@ public class VerifySSHOM {
         SSHOMListener sshomListener = runner.runJunitOnHOM(mutants);
 
         System.out.println(Arrays.toString(mutants));
-        System.out.print(SSHOMRunner.isStronglySubsuming(sshomListener) ? "Is strongly subsuming" : "NOT STRONGLY SUBSUMING ****");
-        System.out.println(SSHOMRunner.isStrictStronglySubsuming(sshomListener) ? " -- Strict" : "");
+        System.out.print(CheckStronglySubsuming.isStronglySubsuming(sshomListener) ? "Is strongly subsuming" : "NOT STRONGLY SUBSUMING ****");
+        System.out.println(CheckStronglySubsuming.isStrictStronglySubsuming(sshomListener) ? " -- Strict" : "");
       }
     } catch (FileNotFoundException | IllegalAccessException | NoSuchFieldException e) {
       e.printStackTrace();
