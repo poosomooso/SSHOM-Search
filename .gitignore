@@ -51,6 +51,9 @@ fabric.properties
 # Editor-based Rest Client
 .idea/httpRequests
 
+# files that are too large
+data/automutants/exhaustive-testdata.txt
+
 # New ones
 report/
 *.jar

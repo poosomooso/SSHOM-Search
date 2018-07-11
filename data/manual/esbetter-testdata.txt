@@ -3,7 +3,7 @@
 
 
 ====================================================== system under test
-testRunner.RunTestsTriangleEnhanced.main()
+testRunner.RunTestsTriangleImproved.main()
 
 ====================================================== search started: 7/9/18 6:55 PM
 ====================================================== Random Search

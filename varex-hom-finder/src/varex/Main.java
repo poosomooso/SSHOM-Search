@@ -33,7 +33,7 @@ public class Main {
   private static       int     mode         = SSHOM_STRICT;
   private static       boolean SAT          = false;
   private final static int     NUM_MUTANTS  = 33;
-  private static       String  fname        = "data/automutants/esbetter-testdata.txt";
+  private static       String  fname        = "data/automutants/testdata.txt";
 
   private static FeatureModel featureModel;
 
@@ -66,6 +66,8 @@ public class Main {
   }
 
   public static void runFeature(String fname) throws FileNotFoundException {
+    PrintStream orig = System.out;
+    long t0 = System.currentTimeMillis();
     try (PrintStream p = new PrintStream(fname)) {
       System.setOut(p);
 
@@ -76,11 +78,14 @@ public class Main {
           + "/home/serena/MiscCS/intellij/lib/junit-4.12.jar";
 
       JPF.main(new String[] { "+search.class=.search.RandomSearch", paths,
-          "testRunner.RunTestsTriangleExhaustive" });
+          "testRunner.RunTestsTriangleImproved" });
     }
+    System.setOut(orig);
+    System.out.printf("%,d ms\n", System.currentTimeMillis() - t0);
   }
 
   public static void sshomSolver(String fname) {
+    long t0 = System.currentTimeMillis();
     Map<String, FeatureExpr> tests = readFile(fname);
 
     SingleFeatureExpr[] mutants = getEachMutant();
@@ -95,10 +100,13 @@ public class Main {
     }
 
     printAssignments(mutants, finalExpr);
+
+    System.out.printf("%,d ms\n", System.currentTimeMillis() - t0);
   }
 
 
   public static void strictSSHOMSolver(String fname) {
+    long t0 = System.currentTimeMillis();
     Map<String, FeatureExpr> tests = readFile(fname);
 
     SingleFeatureExpr[] mutants = getEachMutant();
@@ -113,6 +121,7 @@ public class Main {
     }
 
     printAssignments(mutants, finalExpr);
+    System.out.printf("%,d ms\n", System.currentTimeMillis() - t0);
   }
 
   public static void allSecondOrder(String fname) {
