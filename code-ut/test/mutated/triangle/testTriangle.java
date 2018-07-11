@@ -1,6 +1,5 @@
 package mutated.triangle;
 
-import mutated.triangleFirstVersion.Triangle;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;

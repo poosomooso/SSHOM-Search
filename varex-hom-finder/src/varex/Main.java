@@ -30,10 +30,10 @@ public class Main {
   private final static int     GET_2OMS     = 1;
   private final static int     SSHOM        = 2;
   private final static int     SSHOM_STRICT = 3;
-  private static       int     mode         = SSHOM;
+  private static       int     mode         = SSHOM_STRICT;
   private static       boolean SAT          = false;
-  private final static int     NUM_MUTANTS  = 26;
-  private static       String  fname        = "data/esbetter-testdata.txt";
+  private final static int     NUM_MUTANTS  = 33;
+  private static       String  fname        = "data/automutants/esbetter-testdata.txt";
 
   private static FeatureModel featureModel;
 
@@ -41,7 +41,7 @@ public class Main {
     if (SAT) {
       FeatureExprFactory.setDefault(FeatureExprFactory.sat());
       featureModel = SATFeatureModel.create(FeatureExprFactory.True());
-    } else {git reset 
+    } else {
       FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
       featureModel = BDDFeatureModel.create(FeatureExprFactory.True());
     }
@@ -76,7 +76,7 @@ public class Main {
           + "/home/serena/MiscCS/intellij/lib/junit-4.12.jar";
 
       JPF.main(new String[] { "+search.class=.search.RandomSearch", paths,
-          "testRunner.RunTestsTriangleEnhanced" });
+          "testRunner.RunTestsTriangleExhaustive" });
     }
   }
 
