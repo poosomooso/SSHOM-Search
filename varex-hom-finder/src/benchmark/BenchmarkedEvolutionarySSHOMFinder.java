@@ -40,7 +40,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         int populationSize = 10000;
         double percentDiscarded = 1.0 / 3.0; // TODO: properties file
 
-        int numIters = 10;
+        int numIters = 50;
 
         //generate some homs based on foms
         MutationContainer[] homPopulation = genHOMs(2, populationSize);
@@ -203,9 +203,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
 
             MutationContainer container = new MutationContainer(newHOM,
                 this.testRunner, this.fomFitness);
-//            if (container.hasValidFitness() || i > numHOMs/2) {
-//                homs[i++] = container;
-//            }
+
             homs[i++] = container;
         }
         return homs;

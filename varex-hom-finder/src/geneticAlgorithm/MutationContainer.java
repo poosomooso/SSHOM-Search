@@ -98,8 +98,8 @@ public class MutationContainer implements Comparable<MutationContainer>{
         double homNumNonoverlappingKilled = SetArithmetic.getDifferenceSize(this.killedTests, fomKilledTests);
 
         if (homNumNonoverlappingKilled > 0) {
-            double overlapRatio = homNumNonoverlappingKilled / Math
-                .max(homNumOverlappingKilled, 1);
+            double overlapRatio = homNumNonoverlappingKilled / homNumOverlappingKilled;
+                //Math.max(homNumOverlappingKilled, 1);
             return 1.0 + overlapRatio;
         } else {
             return homNumOverlappingKilled / fomNumKilled;

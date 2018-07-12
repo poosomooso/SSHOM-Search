@@ -8,8 +8,8 @@ public class RunBenchmarks {
       throws NoSuchFieldException, IllegalAccessException {
     Class[] classes = { Triangle.class };
     Class[] testClasses = { Triangle_ESTest_improved.class };
-    runNaive(classes, testClasses);
-//    runEvolutionary(classes, testClasses);
+//    runNaive(classes, testClasses);
+    runEvolutionary(classes, testClasses);
   }
 
   private static void runNaive(Class[] targets, Class[] tests)
