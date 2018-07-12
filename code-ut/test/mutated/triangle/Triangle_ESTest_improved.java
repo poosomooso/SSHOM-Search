@@ -154,35 +154,35 @@ public class Triangle_ESTest_improved {
   }
 
   @Test(timeout = 4000)
-  public void customTest0()  throws Throwable  {
+  public void testCustom0()  throws Throwable  {
     Triangle triangle0 = new Triangle();
     int int0 = triangle0.triangle(0, 2, 0);
     assertEquals(0, int0);
   }
 
   @Test(timeout = 4000)
-  public void customTest1()  throws Throwable  {
+  public void testCustom1()  throws Throwable  {
     Triangle triangle0 = new Triangle();
     int int0 = triangle0.triangle(2, 0, 2);
     assertEquals(0, int0);
   }
 
   @Test(timeout = 4000)
-  public void customTest2()  throws Throwable  {
+  public void testCustom2()  throws Throwable  {
     Triangle triangle0 = new Triangle();
     int int0 = triangle0.triangle(0, 0, 0);
     assertEquals(0, int0);
   }
 
   @Test(timeout = 4000)
-  public void customTest3()  throws Throwable  {
+  public void testCustom3()  throws Throwable  {
     Triangle triangle0 = new Triangle();
     int int0 = triangle0.triangle(0, 2, 2);
     assertEquals(0, int0);
   }
 
   @Test(timeout = 4000)
-  public void customTest4()  throws Throwable  {
+  public void testCustom4()  throws Throwable  {
     Triangle triangle0 = new Triangle();
     int int0 = triangle0.triangle(0, 0, -2);
     assertEquals(0, int0);
