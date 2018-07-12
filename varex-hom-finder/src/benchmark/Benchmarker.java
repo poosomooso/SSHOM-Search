@@ -9,7 +9,7 @@ public class Benchmarker {
 
   public void timestamp(String descriptor) {
     System.out
-        .printf("%10d|%s\n", System.currentTimeMillis() - startTime, descriptor);
+        .printf("TIME %10d|%s\n", System.currentTimeMillis() - startTime, descriptor);
   }
 
 }

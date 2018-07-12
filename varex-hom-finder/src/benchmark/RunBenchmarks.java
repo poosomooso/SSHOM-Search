@@ -9,9 +9,21 @@ public class RunBenchmarks {
 
   public static void main(String[] args)
       throws NoSuchFieldException, IllegalAccessException {
-//    runNaive(classes, testClasses);
-//    runEvolutionary(classes, testClasses);
-    runVarex(classes, testClasses);
+    if (args.length < 1) {
+      System.err.println("A mode must be specified. One of : naive, ga, or varex");
+      System.exit(0);
+    }
+    String whichProgram = args[0];
+    if (whichProgram.equalsIgnoreCase("naive")) {
+      runNaive(classes, testClasses);
+    } else if (whichProgram.equalsIgnoreCase("ga")) {
+      runEvolutionary(classes, testClasses);
+    } else if (whichProgram.equalsIgnoreCase("varex")) {
+      runVarex(classes, testClasses);
+    } else {
+      System.err.println("A mode must be specified. One of : naive, ga, or varex");
+      System.exit(0);
+    }
   }
 
   private static void runNaive(Class[] targets, Class[] tests)
