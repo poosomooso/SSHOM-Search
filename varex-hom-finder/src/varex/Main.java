@@ -1,9 +1,12 @@
 package varex;
 
+import cmu.conditional.Conditional;
 import de.fosd.typechef.featureexpr.*;
+import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.BDDFeatureModel;
 import de.fosd.typechef.featureexpr.sat.SATFeatureModel;
 import gov.nasa.jpf.JPF;
+import gov.nasa.jpf.vm.JPF_gov_nasa_jpf_ConsoleOutputStream;
 import scala.Option;
 import scala.Tuple2;
 import scala.collection.JavaConversions;
@@ -30,7 +33,7 @@ public class Main {
   private final static int     GET_2OMS     = 1;
   private final static int     SSHOM        = 2;
   private final static int     SSHOM_STRICT = 3;
-  private static       int     mode         = SSHOM_STRICT;
+  private static       int     mode         = SSHOM;
   private static       boolean SAT          = false;
   private final static int     NUM_MUTANTS  = 33;
   private static       String  fname        = "data/automutants/testdata.txt";
@@ -56,6 +59,7 @@ public class Main {
       allSecondOrder(fname);
       break;
     case SSHOM:
+      runFeature(fname);
       sshomSolver(fname);
       break;
 
@@ -66,27 +70,23 @@ public class Main {
   }
 
   public static void runFeature(String fname) throws FileNotFoundException {
-    PrintStream orig = System.out;
     long t0 = System.currentTimeMillis();
-    try (PrintStream p = new PrintStream(fname)) {
-      System.setOut(p);
 
-      String paths = "+classpath="
-          + "/home/serena/reuse/hom-generator/out/production/code-ut,"
-          + "/home/serena/reuse/hom-generator/out/test/code-ut,"
-          + "/home/serena/reuse/hom-generator/out/production/varex-hom-finder,"
-          + "/home/serena/MiscCS/intellij/lib/junit-4.12.jar";
+    String paths = "+classpath="
+        + "/home/serena/reuse/hom-generator/out/production/code-ut,"
+        + "/home/serena/reuse/hom-generator/out/test/code-ut,"
+        + "/home/serena/reuse/hom-generator/out/production/varex-hom-finder,"
+        + "/home/serena/MiscCS/intellij/lib/junit-4.12.jar";
 
-      JPF.main(new String[] { "+search.class=.search.RandomSearch", paths,
-          "testRunner.RunTestsTriangleImproved" });
-    }
-    System.setOut(orig);
+    JPF.main(new String[] { "+search.class=.search.RandomSearch", paths,
+        "testRunner.RunTestsTriangleImproved" });
+
     System.out.printf("%,d ms\n", System.currentTimeMillis() - t0);
   }
 
   public static void sshomSolver(String fname) {
     long t0 = System.currentTimeMillis();
-    Map<String, FeatureExpr> tests = readFile(fname);
+    Map<String, FeatureExpr> tests = JPF_gov_nasa_jpf_ConsoleOutputStream.testExpressions;
 
     SingleFeatureExpr[] mutants = getEachMutant();
     FeatureExpr[] fomExprs = genFOMs(mutants);
@@ -279,7 +279,7 @@ public class Main {
   private static SingleFeatureExpr[] getEachMutant() {
     SingleFeatureExpr[] mutants = new SingleFeatureExpr[NUM_MUTANTS];
     for (int i = 0; i < NUM_MUTANTS; i++) {
-      SingleFeatureExpr mutant = FeatureExprFactory.createDefinedExternal("m" + i);
+      SingleFeatureExpr mutant = Conditional.createFeature("m" + i);
       mutants[i] = mutant;
     }
     return mutants;

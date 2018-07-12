@@ -27,6 +27,7 @@ public class SSHOMRunner {
       throws IllegalAccessException, NoSuchFieldException {
     JUnitCore jUnitCore = new JUnitCore();
     SSHOMListener sshomListener = runJunitOnHOM(mutants);
+    jUnitCore.addListener(sshomListener);
 
     //foms
     for (String s : mutants) {
@@ -43,13 +44,13 @@ public class SSHOMRunner {
       throws IllegalAccessException, NoSuchFieldException {
     JUnitCore jUnitCore = new JUnitCore();
     SSHOMListener sshomListener = new SSHOMListener();
+    jUnitCore.addListener(sshomListener);
     // hom
     targetClasses.resetMutants();
     for (String s : mutants) {
       targetClasses.setMutant(s);
     }
     sshomListener.signalHOMBegin();
-    jUnitCore.addListener(sshomListener);
     jUnitCore.run(testClasses);
     sshomListener.signalHOMEnd();
 

@@ -5,6 +5,7 @@ import util.SSHOMListener;
 import util.SSHOMRunner;
 import util.SetArithmetic;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -18,14 +19,19 @@ public class MutationContainer implements Comparable<MutationContainer>{
         Map<String, MutationContainer> foms)
         throws NoSuchFieldException, IllegalAccessException {
         this.mutation = hom;
-        SSHOMListener sshomListener = runner.runJunitOnHOM(hom);
-        this.killedTests = sshomListener.getHomTests();
-        this.fitness = mutationFitness(foms);
+        if (runner != null) {
+            SSHOMListener sshomListener = runner.runJunitOnHOM(hom);
+            this.killedTests = sshomListener.getHomTests();
+            this.fitness = mutationFitness(foms);
+        } else {
+            this.fitness = 0.0;
+            this.killedTests = null;
+        }
     }
 
     public boolean containsMutation(String s) {
         for (String m : mutation) {
-            if (m.equals(s)) {
+            if (m != null && m.equals(s)) {
                 return true;
             }
         }
@@ -90,6 +96,7 @@ public class MutationContainer implements Comparable<MutationContainer>{
         double fomNumKilled = fomKilledTests.size();
         double homNumOverlappingKilled = SetArithmetic.getIntersectionSize(this.killedTests, fomKilledTests);
         double homNumNonoverlappingKilled = SetArithmetic.getDifferenceSize(this.killedTests, fomKilledTests);
+
         if (homNumNonoverlappingKilled > 0) {
             double overlapRatio = homNumNonoverlappingKilled / Math
                 .max(homNumOverlappingKilled, 1);
@@ -110,11 +117,11 @@ public class MutationContainer implements Comparable<MutationContainer>{
 
         return mutation == null ?
             that.mutation == null :
-            mutation.equals(that.mutation);
+            new HashSet<>(Arrays.asList(this.mutation)).equals(new HashSet<>(Arrays.asList(that.mutation)));
     }
 
     @Override
     public int hashCode() {
-        return mutation.hashCode();
+        return new HashSet<>(Arrays.asList(this.mutation)).hashCode();
     }
 }

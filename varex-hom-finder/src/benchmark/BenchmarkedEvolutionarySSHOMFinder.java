@@ -5,11 +5,10 @@ import geneticAlgorithm.RandomUtils;
 import util.SSHOMRunner;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class BenchmarkedEvolutionarySSHOMFinder {
     private static final int MIN_ORDER = 2;
-    private static final int MAX_ORDER = 10;
+    private static final int MAX_ORDER = 33; //max mutations
 
     private Set<MutationContainer> seenMutations = new HashSet<>();
     private Benchmarker benchmarker;
@@ -17,15 +16,16 @@ public class BenchmarkedEvolutionarySSHOMFinder {
     private SSHOMRunner                    testRunner;
     private Map<String, MutationContainer> fomFitness;
 
-    public BenchmarkedEvolutionarySSHOMFinder(Class[] targetClasses, Class[] testClasses) {
-        this.testRunner = new SSHOMRunner(targetClasses, testClasses);
-        this.allFOMs = testRunner.getMutants().toArray(new String[0]);
+    public BenchmarkedEvolutionarySSHOMFinder() {
         this.benchmarker = new Benchmarker();
     }
 
-    public void geneticAlgorithm()
+    public void geneticAlgorithm(Class[] targetClasses, Class[] testClasses)
         throws NoSuchFieldException, IllegalAccessException {
         benchmarker.start();
+
+        this.testRunner = new SSHOMRunner(targetClasses, testClasses);
+        this.allFOMs = testRunner.getMutants().toArray(new String[0]);
 
         // doing this because I can't get stream to work?
         this.fomFitness = new HashMap<>();
@@ -34,17 +34,30 @@ public class BenchmarkedEvolutionarySSHOMFinder {
                 new MutationContainer(new String[] { m }, testRunner, null));
         }
 
+        System.out.println("Generated FOMs");
+
         // actual algorithm
         int populationSize = 10000;
         double percentDiscarded = 1.0 / 3.0; // TODO: properties file
 
-        int numIters = 100;
+        int numIters = 10;
 
         //generate some homs based on foms
         MutationContainer[] homPopulation = genHOMs(2, populationSize);
 
+        System.out.println("Generated HOMs");
+
         for (int i = 0; i < numIters; i++) {
             Arrays.sort(homPopulation);
+
+            int j = 0;
+            while (j < homPopulation.length && homPopulation[j].getFitness() <= 1.0) {
+                if (!seenMutations.contains(homPopulation[j])) {
+                    benchmarker.timestamp(String.join(",", homPopulation[j].getMutation()));
+                }
+            }
+            seenMutations.addAll(Arrays.asList(homPopulation));
+
             int numDiscarded = Math.max(
                 arrLastIndexOf(homPopulation), (int) (populationSize * percentDiscarded));
             int numCrossovers = crossover(homPopulation, numDiscarded);
@@ -171,31 +184,29 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         return newFOMIndex;
     }
 
-    protected MutationContainer[] genHOMs(int maxOrder, int numHOMs) {
+    protected MutationContainer[] genHOMs(int maxOrder, int numHOMs)
+        throws NoSuchFieldException, IllegalAccessException {
         if (maxOrder <= 0) {
             throw new IllegalArgumentException(
                 "The max order of higher order mutations must be greater than 0.");
         }
         MutationContainer[] homs = new MutationContainer[numHOMs];
         int i = 0;
-        int numAttempts = 0;
         while (i < numHOMs) {
-            if (++numAttempts % 10 == 0) {
-                LOG.info("Currently there have been " + numAttempts + " attempts at generating HOMS, " + i + " HOMS generated");
-            }
-            int order = 2; //RandomUtils.randRange(MIN_ORDER, maxOrder+1);
-            String[] newHOM = new String[]();
+            int order = 3; //RandomUtils.randRange(MIN_ORDER, maxOrder+1);
+            String[] newHOM = new String[order];
 
             for (int j = 0; j < order; j++) {
-                int mutationIdx = generateRandomUnusedFOM(newHOM, allFOMs);
-                newHOM.addMutation(this.allFOMs.get(mutationIdx));
+                int mutationIdx = generateRandomUnusedFOM(new MutationContainer(newHOM, null, null), allFOMs);
+                newHOM[j] = this.allFOMs[mutationIdx];
             }
 
             MutationContainer container = new MutationContainer(newHOM,
                 this.testRunner, this.fomFitness);
-            if (container.hasValidFitness() || i > numHOMs/2) {
-                homs[i++] = container;
-            }
+//            if (container.hasValidFitness() || i > numHOMs/2) {
+//                homs[i++] = container;
+//            }
+            homs[i++] = container;
         }
         return homs;
     }
