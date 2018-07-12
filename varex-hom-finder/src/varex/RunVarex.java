@@ -2,33 +2,23 @@ package varex;
 
 import cmu.conditional.Conditional;
 import de.fosd.typechef.featureexpr.*;
-import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.BDDFeatureModel;
 import de.fosd.typechef.featureexpr.sat.SATFeatureModel;
 import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.vm.JPF_gov_nasa_jpf_ConsoleOutputStream;
 import scala.Option;
-import scala.Tuple2;
-import scala.collection.JavaConversions;
-import scala.collection.immutable.List;
 import scala.util.matching.Regex;
-import util.SSHOMExprFactory;
 import util.SetArithmetic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.util.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 
-public class Main {
+public class RunVarex {
   private final static int     RUN_FEATURE  = 0;
   private final static int     GET_2OMS     = 1;
   private final static int     SSHOM        = 2;
@@ -38,7 +28,7 @@ public class Main {
   private final static int     NUM_MUTANTS  = 33;
   private static       String  fname        = "data/automutants/testdata.txt";
 
-  private static FeatureModel featureModel;
+  static FeatureModel featureModel;
 
   static {
     if (SAT) {
@@ -89,7 +79,7 @@ public class Main {
     Map<String, FeatureExpr> tests = JPF_gov_nasa_jpf_ConsoleOutputStream.testExpressions;
 
     SingleFeatureExpr[] mutants = getEachMutant();
-    FeatureExpr[] fomExprs = genFOMs(mutants);
+    FeatureExpr[] fomExprs = SSHOMExprFactory.genFOMs(mutants, NUM_MUTANTS);
 
     FeatureExpr finalExpr = SSHOMExprFactory
         .getSSHOMExpr(tests, mutants, NUM_MUTANTS);
@@ -99,7 +89,7 @@ public class Main {
       finalExpr = finalExpr.andNot(m);
     }
 
-    printAssignments(mutants, finalExpr);
+    SSHOMExprFactory.printAssignments(mutants, finalExpr);
 
     System.out.printf("%,d ms\n", System.currentTimeMillis() - t0);
   }
@@ -110,7 +100,7 @@ public class Main {
     Map<String, FeatureExpr> tests = readFile(fname);
 
     SingleFeatureExpr[] mutants = getEachMutant();
-    FeatureExpr[] fomExprs = genFOMs(mutants);
+    FeatureExpr[] fomExprs = SSHOMExprFactory.genFOMs(mutants, NUM_MUTANTS);
 
     FeatureExpr finalExpr = SSHOMExprFactory
         .getStrictSSHOMExpr(tests, mutants, NUM_MUTANTS);
@@ -120,7 +110,7 @@ public class Main {
       finalExpr = finalExpr.andNot(m);
     }
 
-    printAssignments(mutants, finalExpr);
+    SSHOMExprFactory.printAssignments(mutants, finalExpr);
     System.out.printf("%,d ms\n", System.currentTimeMillis() - t0);
   }
 
@@ -130,7 +120,8 @@ public class Main {
     FeatureExpr[] mutants = getEachMutant();
 
     // [ m1&!m2&!m3... , !m1&m2&!m3... , ... ]
-    FeatureExpr[] mutantConfigurations = genFOMs(mutants);
+    FeatureExpr[] mutantConfigurations = SSHOMExprFactory.genFOMs(mutants,
+        NUM_MUTANTS);
 
     // [ {test1, test2, test4...}, {test2, test3, test4...}, ... ]
     Set<String>[] allFailedTestsFOM = new Set[NUM_MUTANTS];
@@ -151,7 +142,8 @@ public class Main {
     for (int i = 0; i < NUM_MUTANTS; i++) {
       for (int j = i+1; j < NUM_MUTANTS; j++) {
         final int fi = i, fj = j;
-        mutantConfigurations2OM[i][j] = getMutantExpr(x -> x == fi || x == fj, NUM_MUTANTS, mutants);
+        mutantConfigurations2OM[i][j] = SSHOMExprFactory
+            .getMutantExpr(x -> x == fi || x == fj, NUM_MUTANTS, mutants);
       }
     }
 
@@ -226,55 +218,6 @@ public class Main {
 
   // helper methods
 
-  private static void printAssignments(FeatureExpr[] mutants,
-      FeatureExpr finalExpr) {
-    Option<Tuple2<List<SingleFeatureExpr>, List<SingleFeatureExpr>>> satisfiableAssignment;
-    scala.collection.mutable.HashSet<FeatureExpr> interestingFeaturesMutable = new scala.collection.mutable.HashSet<>();
-    for (FeatureExpr m : mutants) {
-      interestingFeaturesMutable.add(m);
-    }
-    scala.collection.immutable.Set<SingleFeatureExpr> interestingFeatures = interestingFeaturesMutable
-        .toSet();
-
-    do {
-      satisfiableAssignment = finalExpr.getSatisfiableAssignment(
-          featureModel,
-          interestingFeatures, true);
-
-      if (satisfiableAssignment.nonEmpty()) {
-        System.out.println(parseAssignment(satisfiableAssignment.get()));
-
-        // exclude the new assignment
-        FeatureExpr thisExpr = FeatureExprFactory.True();
-        for (FeatureExpr e : JavaConversions.asJavaCollection(satisfiableAssignment.get()._1)) {
-          thisExpr = thisExpr.and(e);
-        }
-
-        for (FeatureExpr e : JavaConversions.asJavaCollection(satisfiableAssignment.get()._2)) {
-          thisExpr = thisExpr.andNot(e);
-        }
-        finalExpr = finalExpr.andNot(thisExpr);
-      }
-    } while(satisfiableAssignment.nonEmpty());
-  }
-
-  private static StringBuffer parseAssignment(
-      Tuple2<List<SingleFeatureExpr>, List<SingleFeatureExpr>> satisfiableAssignment) {
-    Pattern p = Pattern.compile("m[0-9]+");
-    Matcher matcher = p.matcher(satisfiableAssignment._1.toString());
-    StringBuffer sb = new StringBuffer();
-    while(matcher.find()) {
-      sb.append(matcher.group());
-      sb.append(" ");
-    }
-    if (sb.length() > 0) {
-      sb.deleteCharAt(sb.length() - 1);
-    } else {
-      sb.append("<empty assignment>");
-    }
-    return sb;
-  }
-
   // [ m1, m2, m3 ... ]
   private static SingleFeatureExpr[] getEachMutant() {
     SingleFeatureExpr[] mutants = new SingleFeatureExpr[NUM_MUTANTS];
@@ -283,18 +226,6 @@ public class Main {
       mutants[i] = mutant;
     }
     return mutants;
-  }
-
-  private static FeatureExpr getMutantExpr(Predicate<Integer> mutantEnabled, int numMutants, FeatureExpr[] mutants) {
-    FeatureExpr mutantConfig = FeatureExprFactory.True();
-    for (int i = 0; i < numMutants; i++) {
-      if (mutantEnabled.test(i)) {
-        mutantConfig = mutantConfig.and(mutants[i]);
-      } else {
-        mutantConfig = mutantConfig.andNot(mutants[i]);
-      }
-    }
-    return mutantConfig;
   }
 
   private static Map<String, FeatureExpr> readFile(String fname) {
@@ -314,15 +245,6 @@ public class Main {
       System.exit(-1);
     }
     return tests;
-  }
-
-  private static FeatureExpr[] genFOMs(FeatureExpr[] individualMutants) {
-    FeatureExpr[] mutantConfigurations = new FeatureExpr[NUM_MUTANTS];
-    IntStream
-        .range(0, NUM_MUTANTS)
-        .forEach(x ->
-            mutantConfigurations[x] = getMutantExpr(y -> y == x, NUM_MUTANTS, individualMutants));
-    return mutantConfigurations;
   }
 
 }

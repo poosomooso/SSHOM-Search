@@ -24,4 +24,24 @@ public class RunTests {
       }
     }
   }
+
+  public static void runTests(Class[] testClasses) {
+    for (Class c : testClasses) {
+      for (Method method : c.getMethods()) {
+        if (method.getAnnotation(Test.class) != null) {
+          try {
+            method.invoke(c.newInstance(), null);
+          } catch (IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+          } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof AssertionError) {
+              System.out.println(method.getName());
+            } else {
+              e.printStackTrace();
+            }
+          }
+        }
+      }
+    }
+  }
 }

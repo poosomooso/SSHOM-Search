@@ -1,22 +1,27 @@
-package util;
+package varex;
 
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
+import scala.Option;
 import scala.Tuple2;
+import scala.collection.JavaConversions;
+import scala.collection.immutable.List;
 import scala.collection.mutable.HashSet;
 import scala.collection.mutable.Set;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 public class SSHOMExprFactory {
   private static Map<FomTestKey, Boolean> lambda = new HashMap<>();
 
   private static class FomTestKey {
+
     private String mutant;
     private String test;
-
     public FomTestKey(String m, String t) {
       this.mutant = m;
       this.test = t;
@@ -42,8 +47,8 @@ public class SSHOMExprFactory {
       result = 31 * result + (test != null ? test.hashCode() : 0);
       return result;
     }
-  }
 
+  }
   /**
    *
    * @param tests Map of {"testName" : /expression for when test is killed/}
@@ -120,6 +125,53 @@ public class SSHOMExprFactory {
 
     finalExpr = finalExpr.and(lt1);
     return finalExpr;
+  }
+
+  public static void printAssignments(FeatureExpr[] mutants,
+      FeatureExpr finalExpr) {
+    SatisfiableAssignmentIterator iterator = new SatisfiableAssignmentIterator(
+        mutants, finalExpr);
+
+    while (iterator.hasNext()) {
+      System.out.println(parseAssignment(iterator.next()));
+    }
+  }
+
+  public static StringBuffer parseAssignment(
+      Tuple2<List<SingleFeatureExpr>, List<SingleFeatureExpr>> satisfiableAssignment) {
+    StringBuffer sb = new StringBuffer();
+    for (SingleFeatureExpr e : JavaConversions.asJavaIterable(satisfiableAssignment._1)) {
+      sb.append(e.feature().substring("CONFIG_".length()));
+      sb.append(",");
+    }
+    if (sb.length() > 0) {
+      sb.deleteCharAt(sb.length() - 1);
+    } else {
+      sb.append("<empty assignment>");
+    }
+    return sb;
+  }
+
+  public static FeatureExpr getMutantExpr(Predicate<Integer> mutantEnabled,
+      int numMutants, FeatureExpr[] mutants) {
+    FeatureExpr mutantConfig = FeatureExprFactory.True();
+    for (int i = 0; i < numMutants; i++) {
+      if (mutantEnabled.test(i)) {
+        mutantConfig = mutantConfig.and(mutants[i]);
+      } else {
+        mutantConfig = mutantConfig.andNot(mutants[i]);
+      }
+    }
+    return mutantConfig;
+  }
+
+  public static FeatureExpr[] genFOMs(FeatureExpr[] individualMutants, int numMutants) {
+    FeatureExpr[] mutantConfigurations = new FeatureExpr[numMutants];
+    IntStream
+        .range(0, numMutants)
+        .forEach(x ->
+            mutantConfigurations[x] = getMutantExpr(y -> y == x, numMutants, individualMutants));
+    return mutantConfigurations;
   }
 
   /**
