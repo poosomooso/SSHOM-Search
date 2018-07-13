@@ -2,7 +2,6 @@ package benchmark;
 
 import cmu.conditional.Conditional;
 import de.fosd.typechef.featureexpr.FeatureExpr;
-import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
 import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.vm.JPF_gov_nasa_jpf_ConsoleOutputStream;
@@ -19,9 +18,10 @@ public class BenchmarkedVarexSSHOMFinder {
 
   public static class TestRunner {
     public static void main(String[] args) {
-      RunTests.runTests(RunBenchmarks.testClasses);
+      RunTests.runTests(RunBenchmarks.TEST_CLASSES);
     }
   }
+
   public BenchmarkedVarexSSHOMFinder() {
     benchmarker = new Benchmarker();
   }
@@ -31,20 +31,27 @@ public class BenchmarkedVarexSSHOMFinder {
     benchmarker.start();
     runner = new SSHOMRunner(targetClasses, testClasses);
     String[] mutants = runner.getMutants().toArray(new String[0]);
+    String paths;
+    if (RunBenchmarks.RUNNING_LOCALLY) {
+      paths = "+classpath="
+          + "/home/serena/reuse/hom-generator/out/production/code-ut,"
+          + "/home/serena/reuse/hom-generator/out/test/code-ut,"
+          + "/home/serena/reuse/hom-generator/out/production/varex-hom-finder,"
+          + "/home/serena/MiscCS/intellij/lib/junit-4.12.jar";
+    } else {
 
-    String paths = "+classpath="
-        + "/home/serena/reuse/hom-generator/out/production/code-ut,"
-        + "/home/serena/reuse/hom-generator/out/test/code-ut,"
-        + "/home/serena/reuse/hom-generator/out/production/varex-hom-finder,"
-        + "/home/serena/MiscCS/intellij/lib/junit-4.12.jar";
+      paths = "+classpath=" + "/home/feature/serena/varex-hom-finder.jar,"
+          + "/home/feature/serena/junit-4.12.jar";
+    }
 
     JPF.main(new String[] { "+search.class=.search.RandomSearch", paths,
-         TestRunner.class.getName()});
+        TestRunner.class.getName() });
 
     Map<String, FeatureExpr> tests = JPF_gov_nasa_jpf_ConsoleOutputStream.testExpressions;
 
     SingleFeatureExpr[] mutantExprs = mutantNamesToFeatures(mutants);
-    FeatureExpr[] fomExprs = SSHOMExprFactory.genFOMs(mutantExprs, mutants.length);
+    FeatureExpr[] fomExprs = SSHOMExprFactory
+        .genFOMs(mutantExprs, mutants.length);
 
     FeatureExpr finalExpr = SSHOMExprFactory
         .getSSHOMExpr(tests, mutantExprs, mutantExprs.length);
@@ -57,7 +64,8 @@ public class BenchmarkedVarexSSHOMFinder {
     SatisfiableAssignmentIterator iterator = new SatisfiableAssignmentIterator(
         mutantExprs, finalExpr);
     while (iterator.hasNext()) {
-      benchmarker.timestamp(SSHOMExprFactory.parseAssignment(iterator.next()).toString());
+      benchmarker.timestamp(
+          SSHOMExprFactory.parseAssignment(iterator.next()).toString());
     }
   }
 

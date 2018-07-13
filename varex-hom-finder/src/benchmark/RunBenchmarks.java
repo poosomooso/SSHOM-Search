@@ -4,8 +4,9 @@ import mutated.triangle.Triangle;
 import mutated.triangle.Triangle_ESTest_improved;
 
 public class RunBenchmarks {
-  public static final Class[] classes = { Triangle.class };
-  public static final Class[] testClasses = { Triangle_ESTest_improved.class };
+  public static final boolean RUNNING_LOCALLY = false;
+  public static final Class[] TARGET_CLASSES = { Triangle.class };
+  public static final Class[] TEST_CLASSES   = { Triangle_ESTest_improved.class };
 
   public static void main(String[] args)
       throws NoSuchFieldException, IllegalAccessException {
@@ -15,11 +16,11 @@ public class RunBenchmarks {
     }
     String whichProgram = args[0];
     if (whichProgram.equalsIgnoreCase("naive")) {
-      runNaive(classes, testClasses);
+      runNaive(TARGET_CLASSES, TEST_CLASSES);
     } else if (whichProgram.equalsIgnoreCase("ga")) {
-      runEvolutionary(classes, testClasses);
+      runEvolutionary(TARGET_CLASSES, TEST_CLASSES);
     } else if (whichProgram.equalsIgnoreCase("varex")) {
-      runVarex(classes, testClasses);
+      runVarex(TARGET_CLASSES, TEST_CLASSES);
     } else {
       System.err.println("A mode must be specified. One of : naive, ga, or varex");
       System.exit(0);
