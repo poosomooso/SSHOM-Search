@@ -1,7 +1,6 @@
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pandas as pd
 
 import re
 
@@ -38,9 +37,6 @@ with open("data/benchmarks/varex.txt") as f:
             varex_times.append(time)
             varex_nums.append(count)
 print(varex_times, varex_nums)
-
-naive_df = pd.DataFrame({time_col:naive_times, num_col:naive_nums})
-varex_df = pd.DataFrame({time_col:varex_times, num_col:varex_nums})
 
 plt.plot(naive_times, naive_nums, '.-', label="Brute Force")
 plt.plot(varex_times, varex_nums, '.-', label="Varex")
