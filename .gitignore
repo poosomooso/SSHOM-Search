@@ -56,7 +56,7 @@ data/automutants/exhaustive-testdata.txt
 
 # New ones
 report/
-*.jar
+# *.jar
 .evosuite/
 python/.ipynb_checkpoints
 **/evosuite-report/
