@@ -1,5 +1,6 @@
 package mutated.triangle;
 
+import mutated.triangle.exhaustive.testTriangleExhaustive;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

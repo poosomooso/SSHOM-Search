@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 
 public class RunTests {
   public static void runTests(Class testClass) {
-
     runTestAnnotations(testClass);
   }
 
@@ -17,7 +16,6 @@ public class RunTests {
 
       if (c.getSuperclass().equals(TestCase.class)) {
         try {
-          System.out.println(c);
           ((Class<TestCase>)c).newInstance().run();
         } catch (AssertionError e) {
           System.out.println(c.getName());

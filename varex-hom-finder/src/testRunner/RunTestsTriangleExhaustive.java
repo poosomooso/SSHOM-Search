@@ -1,6 +1,6 @@
 package testRunner;
 
-import mutated.triangle.testTriangleExhaustive;
+import mutated.triangle.exhaustive.testTriangleExhaustive;
 
 public class RunTestsTriangleExhaustive {
   public static void main(String[] args) {

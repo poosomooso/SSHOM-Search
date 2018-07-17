@@ -32,12 +32,13 @@ public class BenchmarkedVarexSSHOMFinder {
     String[] mutants = runner.getMutants().toArray(new String[0]);
     String paths;
     if (RunBenchmarks.RUNNING_LOCALLY) {
+      String baseDir = "/home/serena/reuse/hom-generator/";
       paths = "+classpath="
-          + "/home/serena/reuse/hom-generator/out/production/code-ut,"
-          + "/home/serena/reuse/hom-generator/code-ut/jars/monopoli100.jar,"
-          + "/home/serena/reuse/hom-generator/lib/bcel-6.0.jar,"
-          + "/home/serena/reuse/hom-generator/out/test/code-ut,"
-          + "/home/serena/reuse/hom-generator/out/production/varex-hom-finder,"
+          + baseDir + "out/production/code-ut,"
+          + baseDir + "code-ut/jars/monopoli100.jar,"
+          + baseDir + "lib/bcel-6.0.jar,"
+          + baseDir + "out/test/code-ut,"
+          + baseDir + "out/production/varex-hom-finder,"
           + "/home/serena/MiscCS/intellij/lib/junit-4.12.jar";
     } else {
       paths =

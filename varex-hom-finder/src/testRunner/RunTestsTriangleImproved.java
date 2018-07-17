@@ -1,6 +1,6 @@
 package testRunner;
 
-import mutated.triangle.Triangle_ESTest_improved;
+import mutated.triangle.improved.Triangle_ESTest_improved;
 
 public class RunTestsTriangleImproved {
   public static void main(String[] args) {

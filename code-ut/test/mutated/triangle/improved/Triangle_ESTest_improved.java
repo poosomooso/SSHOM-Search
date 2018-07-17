@@ -1,5 +1,6 @@
-package mutated.triangle;
+package mutated.triangle.improved;
 
+import mutated.triangle.Triangle;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
