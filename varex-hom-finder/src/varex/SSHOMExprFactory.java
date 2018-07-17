@@ -174,26 +174,6 @@ public class SSHOMExprFactory {
     return mutantConfigurations;
   }
 
-  /**
-   * Currently unused; was meant to abstract the tests as variables
-   * (caused out of memory errors; probably buggy)
-   * @param tests
-   * @return
-   */
-  private static Tuple2<Map<String, FeatureExpr>, FeatureExpr> testExprToVars(
-      Map<String, FeatureExpr> tests) {
-    Map<String, FeatureExpr> testVars = new HashMap<>();
-    FeatureExpr equivClause = FeatureExprFactory.True();
-    for (Map.Entry<String, FeatureExpr> e : tests.entrySet()) {
-      String name = e.getKey();
-      FeatureExpr expr = e.getValue();
-      SingleFeatureExpr var = FeatureExprFactory.createDefinedExternal(name);
-      FeatureExpr equiv = var.equiv(expr);
-      equivClause = equivClause.and(equiv);
-      testVars.put(name, var);
-    }
-    return new Tuple2<>(testVars, equivClause);
-  }
 
   private static boolean fomKillsTest(String m,
       FeatureExpr test) {
