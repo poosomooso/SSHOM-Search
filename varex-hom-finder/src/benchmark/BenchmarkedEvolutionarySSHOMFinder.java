@@ -49,15 +49,16 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         System.out.println("Generated HOMs");
 
         for (int i = 0; i < numIters; i++) {
-            benchmarker.timestamp("gen " + i);
-            Arrays.sort(homPopulation, Collections.reverseOrder());
+            System.out.println("GENERATION " + i);
+            Arrays.sort(homPopulation);
 
-            int j = 0;
-            while (j < homPopulation.length && homPopulation[j].getFitness() <= 1.0) {
+            int j = homPopulation.length-1;
+            while (j >= 0 && homPopulation[j].getFitness() <= 1.0) {
                 if (!recordedSSHOMs.contains(homPopulation[j])) {
                     benchmarker.timestamp(String.join(",", homPopulation[j].getMutation()));
                     recordedSSHOMs.add(homPopulation[j]);
                 }
+                j--;
             }
             
             int numDiscarded = Math.max(
