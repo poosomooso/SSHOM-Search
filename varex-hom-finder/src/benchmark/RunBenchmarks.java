@@ -24,14 +24,14 @@ public class RunBenchmarks {
     Class[] targetClasses, testClasses;
 
     try {
-      targetClasses = getAllJavaFilesInDir(monopolyDir, monopolyPackage)
+      targetClasses = getAllJavaFilesInDir(triangleDir, trianglePackage)
           .toArray(new Class[0]);
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);
     }
 
     try {
-      testClasses = getAllJavaFilesInDir(monopolyTestDir, monopolyTestPackage)
+      testClasses = getAllJavaFilesInDir(triangleTestDir, triangleTestPackage)
           .toArray(new Class[0]);
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);

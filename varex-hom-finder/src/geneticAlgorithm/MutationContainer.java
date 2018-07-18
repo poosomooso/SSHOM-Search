@@ -14,11 +14,13 @@ public class MutationContainer implements Comparable<MutationContainer>{
     private final String[] mutation;
     private final double           fitness;
     private final Set<Description> killedTests;
+    private int hashCode = Integer.MAX_VALUE;
 
     public MutationContainer(String[] hom, SSHOMRunner runner,
         Map<String, MutationContainer> foms)
         throws NoSuchFieldException, IllegalAccessException {
         this.mutation = hom;
+        Arrays.sort(this.mutation);
         if (runner != null) {
             SSHOMListener sshomListener = runner.runJunitOnHOM(hom);
             this.killedTests = sshomListener.getHomTests();
@@ -29,14 +31,6 @@ public class MutationContainer implements Comparable<MutationContainer>{
         }
     }
 
-    public boolean containsMutation(String s) {
-        for (String m : mutation) {
-            if (m != null && m.equals(s)) {
-                return true;
-            }
-        }
-        return false;
-    }
     public String[] getMutation() {
         return mutation;
     }
@@ -64,7 +58,8 @@ public class MutationContainer implements Comparable<MutationContainer>{
         }
         double epsilon = 1e-10;
         if (Math.abs(fitness - o.fitness) < epsilon) {
-            return 0;
+            // optimize for the smaller one
+            return Integer.compare(o.mutation.length, mutation.length);
         }
         else if (Math.abs(fitness) < epsilon) {
             return -1;
@@ -115,13 +110,14 @@ public class MutationContainer implements Comparable<MutationContainer>{
 
         MutationContainer that = (MutationContainer) o;
 
-        return mutation == null ?
-            that.mutation == null :
-            new HashSet<>(Arrays.asList(this.mutation)).equals(new HashSet<>(Arrays.asList(that.mutation)));
+        return Arrays.equals(this.mutation, that.mutation);
     }
 
     @Override
     public int hashCode() {
-        return new HashSet<>(Arrays.asList(this.mutation)).hashCode();
+        if (hashCode == Integer.MAX_VALUE) {
+            hashCode = Arrays.hashCode(mutation);
+        }
+        return hashCode;
     }
 }
