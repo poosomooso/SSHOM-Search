@@ -1,37 +1,27 @@
 package benchmark;
 
-import java.io.File;
-import java.util.ArrayList;
+import java.io.InputStream;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Scanner;
 
 public class RunBenchmarks {
-  public static final boolean RUNNING_LOCALLY = true;
+  public static final boolean RUNNING_LOCALLY = false;
   public static final Class[] TARGET_CLASSES; // required to find all conditionals
   public static final Class[] TEST_CLASSES;
-
-  private static String monopolyDir = "/home/serena/reuse/mutated-monopoly/src/edu/uclm/esi/iso5/juegos/monopoly/dominio";
-  private static String monopolyPackage = "edu.uclm.esi.iso5.juegos.monopoly.dominio";
-  private static String monopolyTestDir = "/home/serena/reuse/mutated-monopoly/src/edu/uclm/esi/iso5/juegos/monopoly/dominio/tests";
-  private static String monopolyTestPackage = "edu.uclm.esi.iso5.juegos.monopoly.dominio.tests";
-
-  private static String triangleDir = "/home/serena/reuse/hom-generator/code-ut/src/mutated/triangle";
-  private static String trianglePackage = "mutated.triangle";
-  private static String triangleTestDir = "/home/serena/reuse/hom-generator/code-ut/test/mutated/triangle/improved";
-  private static String triangleTestPackage = "mutated.triangle.improved";
 
   static {
     Class[] targetClasses, testClasses;
 
     try {
-      targetClasses = getAllJavaFilesInDir(triangleDir, trianglePackage)
+      targetClasses = BenchmarkPrograms
+          .getAllJavaFilesInDir(BenchmarkPrograms.getSrcDir(), BenchmarkPrograms.getSrcPackage())
           .toArray(new Class[0]);
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);
     }
 
     try {
-      testClasses = getAllJavaFilesInDir(triangleTestDir, triangleTestPackage)
+      testClasses = BenchmarkPrograms.getAllJavaFilesInDir(BenchmarkPrograms.getTestDir(), BenchmarkPrograms.getTestPackage())
           .toArray(new Class[0]);
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);
@@ -82,38 +72,4 @@ public class RunBenchmarks {
     varexSSHOMFinder.varexSSHOMFinder(targets, tests);
   }
 
-  private static List<Class> getAllJavaFilesInDir(String dirStr,
-      String packageName) throws ClassNotFoundException {
-    File directory = new File(dirStr);
-    List<Class> allJavaFiles = new ArrayList<>();
-
-    for (File path : directory.listFiles()) {
-      if (path.isFile() && path.getName().endsWith(".java") && !path.getName()
-          .equals("package-info.java")) {
-        String className = path.getName()
-            .substring(0, path.getName().length() - ".java".length());
-        try {
-          if (packageName.length() > 0) {
-            allJavaFiles.add(Class.forName(packageName + "." + className));
-          } else {
-            allJavaFiles.add(Class.forName(className));
-          }
-        } catch (ClassNotFoundException e) {
-          System.out.println(e);
-          System.out.println(e.getMessage());
-        }
-      } else if (path.isDirectory()) {
-        if (packageName.length() > 0) {
-          allJavaFiles.addAll(
-              getAllJavaFilesInDir(dirStr + "/" + path.getName(),
-                  packageName + "." + path.getName()));
-        } else {
-          allJavaFiles.addAll(
-              getAllJavaFilesInDir(dirStr + "/" + path.getName(),
-                  path.getName()));
-        }
-      }
-    }
-    return allJavaFiles;
-  }
 }
