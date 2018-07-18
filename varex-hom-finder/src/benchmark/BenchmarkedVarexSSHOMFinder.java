@@ -49,7 +49,7 @@ public class BenchmarkedVarexSSHOMFinder {
 
     FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
 
-    JPF.main(new String[] { "+search.class=.search.RandomSearch", "+stack=StackHandler", paths,
+    JPF.main(new String[] { "+search.class=.search.RandomSearch", paths,
          TestRunner.class.getName()});
 
     Map<String, FeatureExpr> tests = JPF_gov_nasa_jpf_ConsoleOutputStream.testExpressions;

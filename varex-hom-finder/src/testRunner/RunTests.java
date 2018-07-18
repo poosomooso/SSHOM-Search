@@ -24,7 +24,7 @@ public class RunTests {
 
 //    if (!c.getSimpleName().equals("TestEjerciciosYo")) return;
     Set<String> badTests = new HashSet<>();
-//    badTests.add("testEjercicio2");
+    badTests.add("testEjercicio2");
     badTests.add("testEjercicio7");
     badTests.add("testEjercicio8");
     badTests.add("testEjercicio3");
