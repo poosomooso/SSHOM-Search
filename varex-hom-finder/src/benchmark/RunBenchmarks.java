@@ -5,30 +5,13 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class RunBenchmarks {
-  public static final boolean RUNNING_LOCALLY = false;
+  public static final boolean RUNNING_LOCALLY = true;
   public static final Class[] TARGET_CLASSES; // required to find all conditionals
   public static final Class[] TEST_CLASSES;
 
   static {
-    Class[] targetClasses, testClasses;
-
-    try {
-      targetClasses = BenchmarkPrograms
-          .getAllJavaFilesInDir(BenchmarkPrograms.getSrcDir(), BenchmarkPrograms.getSrcPackage())
-          .toArray(new Class[0]);
-    } catch (ClassNotFoundException e) {
-      throw new RuntimeException(e);
-    }
-
-    try {
-      testClasses = BenchmarkPrograms.getAllJavaFilesInDir(BenchmarkPrograms.getTestDir(), BenchmarkPrograms.getTestPackage())
-          .toArray(new Class[0]);
-    } catch (ClassNotFoundException e) {
-      throw new RuntimeException(e);
-    }
-
-    TARGET_CLASSES = targetClasses;
-    TEST_CLASSES = testClasses;
+    TARGET_CLASSES = BenchmarkPrograms.getSrcClasses();
+    TEST_CLASSES = BenchmarkPrograms.getTestClasses();
     System.out.println("TARGET CLASSES : " + Arrays.toString(TARGET_CLASSES));
     System.out.println("TEST CLASSES : " + Arrays.toString(TEST_CLASSES));
   }
