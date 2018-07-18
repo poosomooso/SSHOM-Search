@@ -5,43 +5,103 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.uclm.esi.iso5.juegos.monopoly.dominio.*;
+import edu.uclm.esi.iso5.juegos.monopoly.dominio.tarjetas.*;
+import edu.uclm.esi.iso5.juegos.monopoly.dominio.excepciones.*;
+import edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.*;
+import edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.grupos.*;
+
 public class RunBenchmarks {
   public static final boolean RUNNING_LOCALLY = true;
-  public static final Class[] TARGET_CLASSES; // required to find all conditionals
-  public static final Class[] TEST_CLASSES;
 
-  private static String monopolyDir = "/home/serena/reuse/mutated-monopoly/src/edu/uclm/esi/iso5/juegos/monopoly/dominio";
-  private static String monopolyPackage = "edu.uclm.esi.iso5.juegos.monopoly.dominio";
-  private static String monopolyTestDir = "/home/serena/reuse/mutated-monopoly/src/edu/uclm/esi/iso5/juegos/monopoly/dominio/tests";
+  public static final Class[] TARGET_CLASSES = new Class[] {
+      Salida.class,
+      Tablero.class,
+      Estacion.class,
+      Impuesto.class,
+      Barrio.class,
+      Dados.class,
+      CasillaConPrecio.class,
+      Suerte.class,
+      Calle.class,
+      Compania.class,
+      YaEstaHipotecadaException.class,
+      DemasiadasCasasException.class,
+      CapitalInsuficienteException.class,
+      EstaEdificadaException.class,
+      NoPoseeTodoElBarrioException.class,
+      DebeSaldarLaDeudaException.class,
+      DemasiadosJugadoresException.class,
+      PocosJugadoresException.class,
+      NoEstaEnLaCarcelException.class,
+      PartidaYaEmpezadaException.class,
+      BarrioConHipotecaException.class,
+      HayMenosCasasException.class,
+      NoEsElPropietarioException.class,
+      CasillaNoVendibleException.class,
+      NoTieneElTurnoException.class,
+      NoEsEdificableException.class,
+      NoTieneOpcionDeCompraException.class,
+      NoEstaHipotecadaException.class,
+      TVayaALaCarcel.class,
+      Cobrar.class,
+      Tarjeta.class,
+      QuedaLibreDeLaCarcel.class,
+      Pagar.class,
+      CajaDeComunidad.class,
+      Carcel.class,
+      Jugador.class,
+      Deuda.class,
+      Parking.class,
+      Casilla.class,
+      testMain.class,
+      ICtes.class,
+      VayaALaCarcel.class }; // required to find all conditionals
+  public static final Class[] TEST_CLASSES   = new Class[] {
+      TestsMatarCubiertos.class,
+      TableroTest.class,
+      TableroTestPartida1.class,
+      TestPartida3.class,
+      DadosTest.class,
+      TestEjerciciosYo.class,
+      TestEjerciciosMuchasTarjetas.class,
+      GrupoATests.class,
+      TableroTestPartida2.class,
+      TestsParaCubrirMutantes.class,
+      TestCubrirTodos.class };
+
+  private static String monopolyDir         = "/home/serena/reuse/mutated-monopoly/src/edu/uclm/esi/iso5/juegos/monopoly/dominio";
+  private static String monopolyPackage     = "edu.uclm.esi.iso5.juegos.monopoly.dominio";
+  private static String monopolyTestDir     = "/home/serena/reuse/mutated-monopoly/src/edu/uclm/esi/iso5/juegos/monopoly/dominio/tests";
   private static String monopolyTestPackage = "edu.uclm.esi.iso5.juegos.monopoly.dominio.tests";
 
-  private static String triangleDir = "/home/serena/reuse/hom-generator/code-ut/src/mutated/triangle";
-  private static String trianglePackage = "mutated.triangle";
-  private static String triangleTestDir = "/home/serena/reuse/hom-generator/code-ut/test/mutated/triangle/improved";
+  private static String triangleDir         = "/home/serena/reuse/hom-generator/code-ut/src/mutated/triangle";
+  private static String trianglePackage     = "mutated.triangle";
+  private static String triangleTestDir     = "/home/serena/reuse/hom-generator/code-ut/test/mutated/triangle/improved";
   private static String triangleTestPackage = "mutated.triangle.improved";
 
-  static {
-    Class[] targetClasses, testClasses;
-
-    try {
-      targetClasses = getAllJavaFilesInDir(monopolyDir, monopolyPackage)
-          .toArray(new Class[0]);
-    } catch (ClassNotFoundException e) {
-      throw new RuntimeException(e);
-    }
-
-    try {
-      testClasses = getAllJavaFilesInDir(monopolyTestDir, monopolyTestPackage)
-          .toArray(new Class[0]);
-    } catch (ClassNotFoundException e) {
-      throw new RuntimeException(e);
-    }
-
-    TARGET_CLASSES = targetClasses;
-    TEST_CLASSES = testClasses;
-    System.out.println("TARGET CLASSES : " + Arrays.toString(TARGET_CLASSES));
-    System.out.println("TEST CLASSES : " + Arrays.toString(TEST_CLASSES));
-  }
+  //  static {
+  //    Class[] targetClasses, testClasses;
+  //
+  //    try {
+  //      targetClasses = getAllJavaFilesInDir(monopolyDir, monopolyPackage)
+  //          .toArray(new Class[0]);
+  //    } catch (ClassNotFoundException e) {
+  //      throw new RuntimeException(e);
+  //    }
+  //
+  //    try {
+  //      testClasses = getAllJavaFilesInDir(monopolyTestDir, monopolyTestPackage)
+  //          .toArray(new Class[0]);
+  //    } catch (ClassNotFoundException e) {
+  //      throw new RuntimeException(e);
+  //    }
+  //
+  //    TARGET_CLASSES = targetClasses;
+  //    TEST_CLASSES = testClasses;
+  //    System.out.println("TARGET CLASSES : " + Arrays.toString(TARGET_CLASSES));
+  //    System.out.println("TEST CLASSES : " + Arrays.toString(TEST_CLASSES));
+  //  }
 
   public static void main(String[] args)
       throws NoSuchFieldException, IllegalAccessException {
