@@ -59,6 +59,7 @@ public class MutationContainer implements Comparable<MutationContainer>{
         double epsilon = 1e-10;
         if (Math.abs(fitness - o.fitness) < epsilon) {
             // optimize for the smaller one
+//            return 0;
             return Integer.compare(o.mutation.length, mutation.length);
         }
         else if (Math.abs(fitness) < epsilon) {
@@ -71,7 +72,7 @@ public class MutationContainer implements Comparable<MutationContainer>{
 
     @Override
     public String toString() {
-        return "MutationContainer [fitness=" + fitness + ", killedTests=" + killedTests.size() + ", hom=" + mutation + "]";
+        return "MutationContainer [fitness=" + fitness + ", killedTests=" + killedTests.size() + ", hom=" + Arrays.toString(mutation) + "]";
     }
 
     public double mutationFitness(Map<String, MutationContainer> foms) {

@@ -50,11 +50,10 @@ public class BenchmarkedEvolutionarySSHOMFinder {
 
         for (int i = 0; i < numIters; i++) {
             benchmarker.timestamp("gen " + i);
-            Arrays.sort(homPopulation);
+            Arrays.sort(homPopulation, Collections.reverseOrder());
 
             int j = 0;
             while (j < homPopulation.length && homPopulation[j].getFitness() <= 1.0) {
-                System.out.println(homPopulation[j]);
                 if (!recordedSSHOMs.contains(homPopulation[j])) {
                     benchmarker.timestamp(String.join(",", homPopulation[j].getMutation()));
                     recordedSSHOMs.add(homPopulation[j]);
