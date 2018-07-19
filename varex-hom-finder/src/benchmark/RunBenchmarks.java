@@ -11,7 +11,7 @@ import edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.*;
 import edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.grupos.*;
 
 public class RunBenchmarks {
-  public static final boolean RUNNING_LOCALLY = true;
+  public static final boolean RUNNING_LOCALLY = false;
 
   public static final Class[] TARGET_CLASSES;
   public static final Class[] TEST_CLASSES;
@@ -21,61 +21,6 @@ public class RunBenchmarks {
     System.out.println("TARGET CLASSES : " + Arrays.toString(TARGET_CLASSES));
     System.out.println("TEST CLASSES : " + Arrays.toString(TEST_CLASSES));
   }
-//  public static final Class[] TARGET_CLASSES = new Class[] {
-//      Salida.class,
-//      Tablero.class,
-//      Estacion.class,
-//      Impuesto.class,
-//      Barrio.class,
-//      Dados.class,
-//      CasillaConPrecio.class,
-//      Suerte.class,
-//      Calle.class,
-//      Compania.class,
-//      YaEstaHipotecadaException.class,
-//      DemasiadasCasasException.class,
-//      CapitalInsuficienteException.class,
-//      EstaEdificadaException.class,
-//      NoPoseeTodoElBarrioException.class,
-//      DebeSaldarLaDeudaException.class,
-//      DemasiadosJugadoresException.class,
-//      PocosJugadoresException.class,
-//      NoEstaEnLaCarcelException.class,
-//      PartidaYaEmpezadaException.class,
-//      BarrioConHipotecaException.class,
-//      HayMenosCasasException.class,
-//      NoEsElPropietarioException.class,
-//      CasillaNoVendibleException.class,
-//      NoTieneElTurnoException.class,
-//      NoEsEdificableException.class,
-//      NoTieneOpcionDeCompraException.class,
-//      NoEstaHipotecadaException.class,
-//      TVayaALaCarcel.class,
-//      Cobrar.class,
-//      Tarjeta.class,
-//      QuedaLibreDeLaCarcel.class,
-//      Pagar.class,
-//      CajaDeComunidad.class,
-//      Carcel.class,
-//      Jugador.class,
-//      Deuda.class,
-//      Parking.class,
-//      Casilla.class,
-//      testMain.class,
-//      ICtes.class,
-//      VayaALaCarcel.class }; // required to find all conditionals
-//  public static final Class[] TEST_CLASSES   = new Class[] {
-//      TestsMatarCubiertos.class,
-//      TableroTest.class,
-//      TableroTestPartida1.class,
-//      TestPartida3.class,
-//      DadosTest.class,
-//      TestEjerciciosYo.class,
-//      TestEjerciciosMuchasTarjetas.class,
-//      GrupoATests.class,
-//      TableroTestPartida2.class,
-//      TestsParaCubrirMutantes.class,
-//      TestCubrirTodos.class };
 
   public static void main(String[] args)
       throws NoSuchFieldException, IllegalAccessException {

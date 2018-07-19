@@ -7,7 +7,6 @@ import util.SSHOMRunner;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.*;
 
 public class VerifySSHOM {
@@ -41,6 +40,8 @@ public class VerifySSHOM {
         out.print(CheckStronglySubsuming.isStronglySubsuming(sshomListener) ? "Is strongly subsuming" : "NOT STRONGLY SUBSUMING ****");
         out.println(CheckStronglySubsuming.isStrictStronglySubsuming(sshomListener) ? " -- Strict" : "");
         out.println(sshomListener.getHomTests());
+        out.println(sshomListener.getFomTests());
+        out.println();
       }
     } catch (FileNotFoundException | IllegalAccessException | NoSuchFieldException e) {
       e.printStackTrace();
