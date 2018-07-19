@@ -2,6 +2,7 @@ package benchmark;
 
 import cmu.conditional.Conditional;
 import de.fosd.typechef.featureexpr.FeatureExpr;
+import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
 import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.vm.JPF_gov_nasa_jpf_ConsoleOutputStream;
@@ -45,6 +46,8 @@ public class BenchmarkedVarexSSHOMFinder {
           "+classpath=" + "/home/feature/serena/varex-hom-finder.jar,"
               + "/home/feature/serena/junit-4.12.jar";
     }
+
+    FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
 
     JPF.main(new String[] { "+search.class=.search.RandomSearch", paths,
          TestRunner.class.getName()});
