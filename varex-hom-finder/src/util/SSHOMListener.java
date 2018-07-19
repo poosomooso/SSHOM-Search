@@ -35,6 +35,7 @@ public class SSHOMListener extends RunListener {
   public void testFailure(Failure failure) throws Exception {
     super.testFailure(failure);
     failure.getException().printStackTrace();
+    System.err.println(failure.getDescription());
     currentTests.add(failure.getDescription());
   }
 
