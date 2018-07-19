@@ -1,0 +1,523 @@
+mJugador43 mJugador44
+mJugador40 mJugador38
+mJugador40 mJugador38 mJugador39
+mJugador35 mJugador33
+mJugador27 mJugador29
+mCasilla1 mJugador25
+mJugador6 mJugador5
+mJugador5 mJugador4
+mJugador17 mJugador18
+mJugador10 mJugador11
+mJugador9 mJugador11
+mJugador10 mJugador9
+mJugador10 mJugador9 mJugador11
+mJugador25 mCalle1
+mCasilla1 mCalle1
+mCasilla1 mJugador25 mCalle1
+mJugador25 mJugador3
+mCasilla1 mJugador3
+mCasilla1 mJugador25 mJugador3
+mJugador3 mCalle1
+mJugador25 mJugador3 mCalle1
+mCasilla1 mJugador3 mCalle1
+mCasilla1 mJugador25 mJugador3 mCalle1
+mJugador25 mJugador2
+mJugador3 mJugador2
+mJugador25 mJugador3 mJugador2
+mCasilla1 mJugador2
+mCasilla1 mJugador3 mJugador2
+mCasilla1 mJugador25 mJugador2
+mCasilla1 mJugador25 mJugador3 mJugador2
+mCalle1 mJugador2
+mJugador3 mCalle1 mJugador2
+mJugador25 mCalle1 mJugador2
+mJugador25 mJugador3 mCalle1 mJugador2
+mCasilla1 mCalle1 mJugador2
+mCasilla1 mJugador3 mCalle1 mJugador2
+mCasilla1 mJugador25 mCalle1 mJugador2
+mJugador3 mCasilla1 mCalle1 mJugador2 mJugador25
+mJugador0 mDados4
+mDados5 mJugador2
+mJugador25 mDados5
+mJugador25 mDados5 mJugador2
+mJugador3 mDados5
+mJugador25 mJugador3 mDados5
+mJugador3 mDados5 mJugador2
+mJugador25 mJugador3 mDados5 mJugador2
+mDados5 mCalle1
+mDados5 mCalle1 mJugador2
+mJugador25 mDados5 mCalle1
+mJugador25 mDados5 mCalle1 mJugador2
+mJugador3 mDados5 mCalle1
+mJugador25 mJugador3 mDados5 mCalle1
+mJugador3 mDados5 mCalle1 mJugador2
+mJugador3 mCalle1 mJugador2 mDados5 mJugador25
+mCasilla1 mDados5
+mCasilla1 mDados5 mJugador2
+mCasilla1 mJugador25 mDados5
+mCasilla1 mJugador25 mDados5 mJugador2
+mCasilla1 mJugador3 mDados5
+mCasilla1 mJugador25 mJugador3 mDados5
+mCasilla1 mJugador3 mDados5 mJugador2
+mJugador3 mCasilla1 mJugador2 mDados5 mJugador25
+mCasilla1 mDados5 mCalle1
+mCasilla1 mDados5 mCalle1 mJugador2
+mCasilla1 mJugador25 mDados5 mCalle1
+mCasilla1 mCalle1 mJugador2 mDados5 mJugador25
+mCasilla1 mJugador3 mDados5 mCalle1
+mJugador3 mCasilla1 mCalle1 mDados5 mJugador25
+mJugador3 mCasilla1 mCalle1 mJugador2 mDados5
+mJugador3 mCasilla1 mCalle1 mJugador2 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mJugador3
+mQuedaLibreDeLaCarcel0 mJugador25
+mQuedaLibreDeLaCarcel0 mJugador25 mJugador3
+mQuedaLibreDeLaCarcel0 mJugador2
+mQuedaLibreDeLaCarcel0 mJugador3 mJugador2
+mQuedaLibreDeLaCarcel0 mJugador25 mJugador2
+mQuedaLibreDeLaCarcel0 mJugador25 mJugador3 mJugador2
+mQuedaLibreDeLaCarcel0 mCalle1
+mQuedaLibreDeLaCarcel0 mJugador3 mCalle1
+mQuedaLibreDeLaCarcel0 mCalle1 mJugador2
+mQuedaLibreDeLaCarcel0 mJugador3 mCalle1 mJugador2
+mQuedaLibreDeLaCarcel0 mJugador25 mCalle1
+mQuedaLibreDeLaCarcel0 mJugador25 mJugador3 mCalle1
+mQuedaLibreDeLaCarcel0 mJugador25 mCalle1 mJugador2
+mJugador3 mQuedaLibreDeLaCarcel0 mCalle1 mJugador2 mJugador25
+mQuedaLibreDeLaCarcel0 mDados5
+mQuedaLibreDeLaCarcel0 mJugador3 mDados5
+mQuedaLibreDeLaCarcel0 mDados5 mJugador2
+mQuedaLibreDeLaCarcel0 mJugador3 mDados5 mJugador2
+mQuedaLibreDeLaCarcel0 mJugador25 mDados5
+mQuedaLibreDeLaCarcel0 mJugador25 mJugador3 mDados5
+mQuedaLibreDeLaCarcel0 mJugador25 mDados5 mJugador2
+mJugador3 mQuedaLibreDeLaCarcel0 mJugador2 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mDados5 mCalle1
+mQuedaLibreDeLaCarcel0 mJugador3 mDados5 mCalle1
+mQuedaLibreDeLaCarcel0 mDados5 mCalle1 mJugador2
+mJugador3 mQuedaLibreDeLaCarcel0 mCalle1 mJugador2 mDados5
+mQuedaLibreDeLaCarcel0 mJugador25 mDados5 mCalle1
+mJugador3 mQuedaLibreDeLaCarcel0 mCalle1 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mCalle1 mJugador2 mDados5 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCalle1 mJugador2 mDados5 mJugador25
+mCasilla1 mQuedaLibreDeLaCarcel0
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador3
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador25
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador25 mJugador3
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador2
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador3 mJugador2
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador25 mJugador2
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mJugador2 mJugador25
+mCompania0 mCompania1
+mCasilla1 mQuedaLibreDeLaCarcel0 mCalle1
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador3 mCalle1
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador25 mCalle1
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador25
+mCasilla1 mQuedaLibreDeLaCarcel0 mCalle1 mJugador2
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2
+mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2 mJugador25
+mCasilla1 mQuedaLibreDeLaCarcel0 mDados5
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador3 mDados5
+mCasilla1 mQuedaLibreDeLaCarcel0 mDados5 mJugador2
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mJugador2 mDados5
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador25 mDados5
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mCasilla1 mJugador2 mDados5 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mJugador2 mDados5 mJugador25
+mCasilla1 mQuedaLibreDeLaCarcel0 mDados5 mCalle1
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados5
+mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados5 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2 mDados5
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2 mDados5
+mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2 mDados5 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2 mDados5 mJugador25
+mDados3 mDados4
+mDados3 mJugador0
+mDados3 mJugador0 mDados4
+mEstacion2 mEstacion1
+mDados1 mCalle1
+mDados1 mDados5
+mDados1 mDados5 mCalle1
+mJugador25 mDados1
+mJugador25 mDados1 mCalle1
+mJugador25 mDados1 mDados5
+mJugador25 mDados1 mDados5 mCalle1
+mDados1 mJugador2
+mDados1 mJugador3
+mJugador25 mDados1 mJugador3
+mDados1 mJugador3 mCalle1
+mJugador25 mDados1 mJugador3 mCalle1
+mJugador25 mDados1 mJugador2
+mDados1 mJugador3 mJugador2
+mJugador25 mDados1 mJugador3 mJugador2
+mDados1 mCalle1 mJugador2
+mJugador25 mDados1 mCalle1 mJugador2
+mDados1 mJugador3 mCalle1 mJugador2
+mJugador3 mCalle1 mDados1 mJugador2 mJugador25
+mDados1 mDados5 mJugador2
+mDados1 mJugador3 mDados5
+mJugador25 mDados1 mJugador3 mDados5
+mDados1 mJugador3 mDados5 mCalle1
+mJugador3 mCalle1 mDados1 mDados5 mJugador25
+mJugador25 mDados1 mDados5 mJugador2
+mDados1 mJugador3 mDados5 mJugador2
+mJugador3 mDados1 mJugador2 mDados5 mJugador25
+mDados1 mDados5 mCalle1 mJugador2
+mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mCalle1 mDados1 mJugador2 mDados5
+mJugador3 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mDados1
+mQuedaLibreDeLaCarcel0 mJugador25 mDados1
+mQuedaLibreDeLaCarcel0 mDados1 mJugador2
+mQuedaLibreDeLaCarcel0 mJugador25 mDados1 mJugador2
+mQuedaLibreDeLaCarcel0 mDados1 mJugador3
+mQuedaLibreDeLaCarcel0 mJugador25 mDados1 mJugador3
+mQuedaLibreDeLaCarcel0 mDados1 mJugador3 mJugador2
+mJugador3 mQuedaLibreDeLaCarcel0 mDados1 mJugador2 mJugador25
+mQuedaLibreDeLaCarcel0 mDados1 mCalle1
+mQuedaLibreDeLaCarcel0 mJugador25 mDados1 mCalle1
+mQuedaLibreDeLaCarcel0 mDados1 mCalle1 mJugador2
+mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2 mJugador25
+mQuedaLibreDeLaCarcel0 mDados1 mJugador3 mCalle1
+mJugador3 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2
+mJugador3 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2 mJugador25
+mQuedaLibreDeLaCarcel0 mDados1 mDados5
+mQuedaLibreDeLaCarcel0 mJugador25 mDados1 mDados5
+mQuedaLibreDeLaCarcel0 mDados1 mDados5 mJugador2
+mQuedaLibreDeLaCarcel0 mDados1 mJugador2 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mDados1 mJugador3 mDados5
+mJugador3 mQuedaLibreDeLaCarcel0 mDados1 mDados5 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mDados1 mJugador2 mDados5
+mJugador3 mQuedaLibreDeLaCarcel0 mDados1 mJugador2 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mDados1 mDados5 mCalle1
+mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2 mDados5
+mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mDados5
+mJugador3 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mDados5 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2 mDados5
+mJugador3 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mCasilla1 mDados1
+mCasilla1 mDados1 mCalle1
+mCasilla1 mDados1 mDados5
+mCasilla1 mDados1 mDados5 mCalle1
+mCasilla1 mJugador25 mDados1
+mCasilla1 mJugador25 mDados1 mCalle1
+mCasilla1 mJugador25 mDados1 mDados5
+mCasilla1 mCalle1 mDados1 mDados5 mJugador25
+mCasilla1 mDados1 mJugador2
+mCasilla1 mDados1 mJugador3
+mCasilla1 mJugador25 mDados1 mJugador3
+mCasilla1 mDados1 mJugador3 mCalle1
+mJugador3 mCasilla1 mCalle1 mDados1 mJugador25
+mCasilla1 mJugador25 mDados1 mJugador2
+mCasilla1 mDados1 mJugador3 mJugador2
+mJugador3 mCasilla1 mDados1 mJugador2 mJugador25
+mCasilla1 mDados1 mCalle1 mJugador2
+mCasilla1 mCalle1 mDados1 mJugador2 mJugador25
+mJugador3 mCasilla1 mCalle1 mDados1 mJugador2
+mJugador3 mCasilla1 mCalle1 mDados1 mJugador2 mJugador25
+mCasilla1 mDados1 mJugador3 mDados5
+mCasilla1 mDados1 mDados5 mJugador2
+mCasilla1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mCasilla1 mDados1 mDados5 mJugador25
+mJugador3 mCasilla1 mDados1 mJugador2 mDados5
+mJugador3 mCasilla1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mCasilla1 mCalle1 mDados1 mDados5
+mCasilla1 mCalle1 mDados1 mJugador2 mDados5
+mJugador3 mCasilla1 mCalle1 mDados1 mJugador2 mDados5
+mJugador3 mCasilla1 mCalle1 mDados1 mDados5 mJugador25
+mCasilla1 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mCasilla1 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mCasilla1 mQuedaLibreDeLaCarcel0 mDados1
+mCasilla1 mQuedaLibreDeLaCarcel0 mDados1 mJugador3
+mCasilla1 mQuedaLibreDeLaCarcel0 mDados1 mJugador2
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador25 mDados1
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador25
+mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2 mJugador25
+mCasilla1 mQuedaLibreDeLaCarcel0 mDados1 mCalle1
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1
+mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2
+mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador25
+mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2 mJugador25
+mCasilla1 mQuedaLibreDeLaCarcel0 mDados1 mDados5
+mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2 mDados5
+mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mDados5
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mDados5 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2 mDados5
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mDados5
+mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2 mDados5
+mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mDados5
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mDados5 mJugador25
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2 mDados5
+mJugador3 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mDados5 mDados0
+mJugador25 mDados0
+mJugador25 mDados5 mDados0
+mJugador2 mDados0
+mJugador3 mDados0
+mJugador25 mJugador3 mDados0
+mJugador3 mDados5 mDados0
+mJugador25 mJugador3 mDados5 mDados0
+mJugador25 mJugador2 mDados0
+mJugador3 mJugador2 mDados0
+mJugador25 mJugador3 mJugador2 mDados0
+mDados5 mJugador2 mDados0
+mJugador25 mDados5 mJugador2 mDados0
+mJugador3 mDados5 mJugador2 mDados0
+mJugador3 mDados0 mJugador2 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mDados0
+mQuedaLibreDeLaCarcel0 mJugador25 mDados0
+mQuedaLibreDeLaCarcel0 mJugador2 mDados0
+mQuedaLibreDeLaCarcel0 mJugador25 mJugador2 mDados0
+mQuedaLibreDeLaCarcel0 mJugador3 mDados0
+mQuedaLibreDeLaCarcel0 mJugador25 mJugador3 mDados0
+mQuedaLibreDeLaCarcel0 mJugador3 mJugador2 mDados0
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mJugador2 mJugador25
+mQuedaLibreDeLaCarcel0 mDados5 mDados0
+mQuedaLibreDeLaCarcel0 mJugador25 mDados5 mDados0
+mQuedaLibreDeLaCarcel0 mDados5 mJugador2 mDados0
+mDados0 mQuedaLibreDeLaCarcel0 mJugador2 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mJugador3 mDados5 mDados0
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mJugador2 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mJugador2 mDados5 mJugador25
+mDados1 mDados0
+mJugador25 mDados1 mDados0
+mDados1 mJugador2 mDados0
+mJugador25 mDados1 mJugador2 mDados0
+mDados1 mDados5 mDados0
+mJugador25 mDados1 mDados5 mDados0
+mDados1 mDados5 mJugador2 mDados0
+mDados0 mDados1 mJugador2 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mDados1 mDados0
+mDados1 mJugador3 mDados0
+mJugador25 mDados1 mJugador3 mDados0
+mDados1 mJugador3 mJugador2 mDados0
+mJugador3 mDados0 mDados1 mJugador2 mJugador25
+mQuedaLibreDeLaCarcel0 mDados1 mJugador2 mDados0
+mQuedaLibreDeLaCarcel0 mJugador25 mDados1 mDados0
+mDados0 mQuedaLibreDeLaCarcel0 mDados1 mJugador2 mJugador25
+mQuedaLibreDeLaCarcel0 mDados1 mJugador3 mDados0
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mDados1 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mDados1 mJugador2
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mDados1 mJugador2 mJugador25
+mQuedaLibreDeLaCarcel0 mDados1 mDados5 mDados0
+mDados0 mQuedaLibreDeLaCarcel0 mDados1 mJugador2 mDados5
+mDados0 mQuedaLibreDeLaCarcel0 mDados1 mDados5 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mDados1 mJugador2 mDados5 mJugador25
+mDados1 mJugador3 mDados5 mDados0
+mJugador3 mDados0 mDados1 mDados5 mJugador25
+mJugador3 mDados0 mDados1 mJugador2 mDados5
+mJugador3 mDados0 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mDados1 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mDados1 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mDados1 mJugador2 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mDados1 mJugador2 mDados5 mJugador25
+mCalle1 mDados0
+mJugador3 mCalle1 mDados0
+mQuedaLibreDeLaCarcel0 mCalle1 mDados0
+mQuedaLibreDeLaCarcel0 mJugador3 mCalle1 mDados0
+mCalle1 mJugador2 mDados0
+mJugador25 mCalle1 mDados0
+mJugador25 mJugador3 mCalle1 mDados0
+mJugador3 mCalle1 mJugador2 mDados0
+mJugador25 mCalle1 mJugador2 mDados0
+mJugador3 mDados0 mCalle1 mJugador2 mJugador25
+mQuedaLibreDeLaCarcel0 mCalle1 mJugador2 mDados0
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mJugador2
+mQuedaLibreDeLaCarcel0 mJugador25 mCalle1 mDados0
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mJugador2 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mJugador2 mJugador25
+mDados5 mCalle1 mDados0
+mJugador25 mDados5 mCalle1 mDados0
+mDados5 mCalle1 mJugador2 mDados0
+mDados0 mCalle1 mJugador2 mDados5 mJugador25
+mQuedaLibreDeLaCarcel0 mDados5 mCalle1 mDados0
+mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mJugador2 mDados5
+mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados5 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mJugador2 mDados5 mJugador25
+mJugador3 mDados5 mCalle1 mDados0
+mJugador3 mDados0 mCalle1 mDados5 mJugador25
+mJugador3 mDados0 mCalle1 mJugador2 mDados5
+mJugador3 mDados0 mCalle1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mJugador2 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mJugador2 mDados5 mJugador25
+mDados1 mCalle1 mDados0
+mJugador25 mDados1 mCalle1 mDados0
+mDados1 mCalle1 mJugador2 mDados0
+mDados0 mCalle1 mDados1 mJugador2 mJugador25
+mDados1 mJugador3 mCalle1 mDados0
+mJugador3 mDados0 mCalle1 mDados1 mJugador25
+mJugador3 mDados0 mCalle1 mDados1 mJugador2
+mJugador3 mDados0 mCalle1 mDados1 mJugador2 mJugador25
+mQuedaLibreDeLaCarcel0 mDados1 mCalle1 mDados0
+mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2
+mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2 mJugador25
+mDados1 mDados5 mCalle1 mDados0
+mDados0 mCalle1 mDados1 mDados5 mJugador25
+mDados0 mCalle1 mDados1 mJugador2 mDados5
+mDados0 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mCalle1 mDados1 mDados5
+mJugador3 mDados0 mCalle1 mDados1 mDados5 mJugador25
+mJugador3 mDados0 mCalle1 mDados1 mJugador2 mDados5
+mJugador3 mDados0 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mDados5
+mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mDados5 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2 mDados5
+mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mCasilla1 mDados0
+mCasilla1 mCalle1 mDados0
+mCasilla1 mDados5 mDados0
+mCasilla1 mDados5 mCalle1 mDados0
+mCasilla1 mJugador25 mDados0
+mCasilla1 mJugador25 mCalle1 mDados0
+mCasilla1 mJugador25 mDados5 mDados0
+mDados0 mCasilla1 mCalle1 mDados5 mJugador25
+mCasilla1 mJugador2 mDados0
+mCasilla1 mJugador3 mDados0
+mCasilla1 mJugador25 mJugador3 mDados0
+mCasilla1 mJugador3 mCalle1 mDados0
+mJugador3 mDados0 mCasilla1 mCalle1 mJugador25
+mCasilla1 mJugador25 mJugador2 mDados0
+mCasilla1 mJugador3 mJugador2 mDados0
+mJugador3 mDados0 mCasilla1 mJugador2 mJugador25
+mCasilla1 mCalle1 mJugador2 mDados0
+mDados0 mCasilla1 mCalle1 mJugador2 mJugador25
+mJugador3 mDados0 mCasilla1 mCalle1 mJugador2
+mJugador3 mDados0 mCasilla1 mCalle1 mJugador2 mJugador25
+mCasilla1 mJugador3 mDados5 mDados0
+mCasilla1 mDados5 mJugador2 mDados0
+mDados0 mCasilla1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mCasilla1 mDados5 mJugador25
+mJugador3 mDados0 mCasilla1 mJugador2 mDados5
+mJugador3 mDados0 mCasilla1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mCasilla1 mCalle1 mDados5
+mDados0 mCasilla1 mCalle1 mJugador2 mDados5
+mJugador3 mDados0 mCasilla1 mCalle1 mJugador2 mDados5
+mJugador3 mDados0 mCasilla1 mCalle1 mDados5 mJugador25
+mDados0 mCasilla1 mCalle1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mCasilla1 mCalle1 mJugador2 mDados5 mJugador25
+mCasilla1 mQuedaLibreDeLaCarcel0 mDados0
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador3 mDados0
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador2 mDados0
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mJugador2
+mCasilla1 mQuedaLibreDeLaCarcel0 mJugador25 mDados0
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mJugador2 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mJugador2 mJugador25
+mCasilla1 mQuedaLibreDeLaCarcel0 mCalle1 mDados0
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2 mJugador25
+mCasilla1 mQuedaLibreDeLaCarcel0 mDados5 mDados0
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados5 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mJugador2 mDados5
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mJugador2 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mJugador2 mDados5 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados5
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados5 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2 mDados5
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mJugador2 mDados5 mJugador25
+mCasilla1 mDados1 mDados0
+mCasilla1 mDados1 mCalle1 mDados0
+mCasilla1 mDados1 mDados5 mDados0
+mDados0 mCasilla1 mCalle1 mDados1 mDados5
+mCasilla1 mJugador25 mDados1 mDados0
+mDados0 mCasilla1 mCalle1 mDados1 mJugador25
+mDados0 mCasilla1 mDados1 mDados5 mJugador25
+mDados0 mCasilla1 mCalle1 mDados1 mDados5 mJugador25
+mCasilla1 mDados1 mJugador2 mDados0
+mCasilla1 mDados1 mJugador3 mDados0
+mJugador3 mDados0 mCasilla1 mDados1 mJugador25
+mJugador3 mDados0 mCasilla1 mCalle1 mDados1
+mJugador3 mDados0 mCasilla1 mCalle1 mDados1 mJugador25
+mDados0 mCasilla1 mDados1 mJugador2 mJugador25
+mJugador3 mDados0 mCasilla1 mDados1 mJugador2
+mJugador3 mDados0 mCasilla1 mDados1 mJugador2 mJugador25
+mDados0 mCasilla1 mCalle1 mDados1 mJugador2
+mDados0 mCasilla1 mCalle1 mDados1 mJugador2 mJugador25
+mJugador3 mDados0 mCasilla1 mCalle1 mDados1 mJugador2
+mJugador3 mDados0 mCasilla1 mCalle1 mDados1 mJugador2 mJugador25
+mJugador3 mDados0 mCasilla1 mDados1 mDados5
+mDados0 mCasilla1 mDados1 mJugador2 mDados5
+mDados0 mCasilla1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mCasilla1 mDados1 mDados5 mJugador25
+mJugador3 mDados0 mCasilla1 mDados1 mJugador2 mDados5
+mJugador3 mDados0 mCasilla1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mCasilla1 mCalle1 mDados1 mDados5
+mDados0 mCasilla1 mCalle1 mDados1 mJugador2 mDados5
+mJugador3 mDados0 mCasilla1 mCalle1 mDados1 mJugador2 mDados5
+mJugador3 mDados0 mCasilla1 mCalle1 mDados1 mDados5 mJugador25
+mDados0 mCasilla1 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mCasilla1 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mCasilla1 mQuedaLibreDeLaCarcel0 mDados1 mDados0
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mDados5
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mDados5 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2 mDados5
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mDados1 mJugador2 mDados5 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mDados5
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mDados5 mJugador25
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2 mDados5
+mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mDados5 mJugador25
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2 mDados5
+mJugador3 mDados0 mQuedaLibreDeLaCarcel0 mCasilla1 mCalle1 mDados1 mJugador2 mDados5 mJugador25
+mJugador27 mCasillaConPrecio0
+mCasillaConPrecio0 mJugador29
+mJugador27 mCasillaConPrecio0 mJugador29
