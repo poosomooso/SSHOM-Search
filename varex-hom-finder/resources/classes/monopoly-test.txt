@@ -1,0 +1,11 @@
+edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.TestsMatarCubiertos
+edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.TableroTest
+edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.TableroTestPartida1
+edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.TestPartida3
+edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.DadosTest
+edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.TestEjerciciosYo
+edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.TestEjerciciosMuchasTarjetas
+edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.grupos.GrupoATests
+edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.TableroTestPartida2
+edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.TestsParaCubrirMutantes
+edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.TestCubrirTodos
