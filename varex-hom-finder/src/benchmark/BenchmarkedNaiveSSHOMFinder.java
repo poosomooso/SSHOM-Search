@@ -1,5 +1,6 @@
 package benchmark;
 
+import org.junit.runner.Description;
 import util.CheckStronglySubsuming;
 import util.SSHOMListener;
 import util.SSHOMRunner;
@@ -7,11 +8,13 @@ import util.SSHOMRunner;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.Arrays;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class BenchmarkedNaiveSSHOMFinder {
-  private Benchmarker benchmarker;
-  private SSHOMRunner runner;
+  private Benchmarker                   benchmarker;
+  private SSHOMRunner                   runner;
+  private Map<String, Set<Description>> foms;
 
   public BenchmarkedNaiveSSHOMFinder() {
     benchmarker = new Benchmarker();
@@ -20,16 +23,25 @@ public class BenchmarkedNaiveSSHOMFinder {
   public void naiveSSHOMFinder(Class[] targetClasses, Class[] testClasses)
       throws NoSuchFieldException, IllegalAccessException {
     benchmarker.start();
+    foms = new HashMap<>();
     runner = new SSHOMRunner(targetClasses, testClasses);
     String[] mutants = runner.getMutants().toArray(new String[0]);
+    populateFoms(mutants);
 
-    runOnNOrder(2, new String[0], mutants, 0);
-    runOnNOrder(3, new String[0], mutants, 0);
-    runOnNOrder(4, new String[0], mutants, 0);
-
+    runOnNOrder(2, new ArrayList<>(), mutants, 0);
+    runOnNOrder(3, new ArrayList<>(), mutants, 0);
+    runOnNOrder(4, new ArrayList<>(), mutants, 0);
   }
 
-  private void runOnNOrder(int order, String[] selectedMutants, String[] allMutants, int mutantStart)
+  private void populateFoms(String[] mutants)
+      throws NoSuchFieldException, IllegalAccessException {
+    for (String m : mutants) {
+      SSHOMListener sshomListener = runner.runJunitOnHOM(m);
+      foms.put(m, sshomListener.getHomTests());
+    }
+  }
+
+  private void runOnNOrder(int order, List<String> selectedMutants, String[] allMutants, int mutantStart)
       throws NoSuchFieldException, IllegalAccessException {
 //    PrintStream out = System.out;
 //    PrintStream temp = null;
@@ -41,19 +53,23 @@ public class BenchmarkedNaiveSSHOMFinder {
 //    }
 //    System.setOut(temp);
     if (order <= 0) {
-      SSHOMListener sshomListener = runner.runJunitOnHOMAndFOMs(selectedMutants);
-      if (CheckStronglySubsuming.isStronglySubsuming(sshomListener)) {
-//        System.setOut(out);
+      SSHOMListener sshomListener = runner.runJunitOnHOMAndFOMs(selectedMutants.toArray(new String[0]));
+      List<Set<Description>> currentFoms = selectedMutants.stream()
+          .map(m -> foms.get(m)).collect(Collectors.toList());
+
+      if (CheckStronglySubsuming
+          .isStronglySubsuming(sshomListener.getHomTests(), currentFoms)) {
+        //        System.setOut(out);
         benchmarker.timestamp(String.join(",", selectedMutants));
-//        System.setOut(temp);
+        //        System.setOut(temp);
       }
     } else if (mutantStart < allMutants.length) {
       for (int i = mutantStart; i < allMutants.length; i++) {
-        String[] newSelected = Arrays
-            .copyOf(selectedMutants, selectedMutants.length + 1);
-        newSelected[selectedMutants.length] = allMutants[i];
+        List<String> newSelected = new ArrayList<>(selectedMutants);
+        newSelected.add(allMutants[i]);
         runOnNOrder(order-1, newSelected, allMutants, i+1);
       }
     }
   }
+
 }

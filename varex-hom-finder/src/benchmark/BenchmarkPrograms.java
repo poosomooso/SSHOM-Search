@@ -1,5 +1,8 @@
 package benchmark;
 
+import mutated.triangle.Triangle;
+import mutated.triangle.improved.Triangle_ESTest_improved;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,10 +22,12 @@ public class BenchmarkPrograms {
   private static final String PATH_TO_RESOURCE = "varex-hom-finder/resources/";
 
   public static Class[] getSrcClasses() {
+    if (PROGRAM == Program.TRIANGLE) return new Class[] { Triangle.class };
     return loadClasses(getSrcResource(), getSrcDir(), getSrcPackage());
   }
 
   public static Class[] getTestClasses() {
+    if (PROGRAM == Program.TRIANGLE) return new Class[] { Triangle_ESTest_improved.class };
     return loadClasses(getTestResource(), getTestDir(), getTestPackage());
   }
 

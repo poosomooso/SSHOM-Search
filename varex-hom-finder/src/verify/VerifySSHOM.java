@@ -37,8 +37,8 @@ public class VerifySSHOM {
         SSHOMListener sshomListener = runner.runJunitOnHOMAndFOMs(mutants);
 
         out.println(Arrays.toString(mutants));
-        out.print(CheckStronglySubsuming.isStronglySubsuming(sshomListener) ? "Is strongly subsuming" : "NOT STRONGLY SUBSUMING ****");
-        out.println(CheckStronglySubsuming.isStrictStronglySubsuming(sshomListener) ? " -- Strict" : "");
+        out.print(CheckStronglySubsuming.isStronglySubsuming(sshomListener.getHomTests(), sshomListener.getFomTests()) ? "Is strongly subsuming" : "NOT STRONGLY SUBSUMING ****");
+        out.println(CheckStronglySubsuming.isStrictStronglySubsuming(sshomListener.getHomTests(), sshomListener.getFomTests()) ? " -- Strict" : "");
         out.println(sshomListener.getHomTests());
         out.println(sshomListener.getFomTests());
         out.println();
