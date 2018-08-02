@@ -21,15 +21,14 @@ public class SatisfiableAssignmentIterator implements Iterator<Tuple2<List<Singl
   private Option<Tuple2<List<SingleFeatureExpr>, List<SingleFeatureExpr>>> nextSatisfiableAssignment;
   private Set<SingleFeatureExpr>                                           interestingFeatures;
 
-  static FeatureModel featureModel;
+  private FeatureModel featureModel;
 
   static {
     FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
-    featureModel = BDDFeatureModel.create(FeatureExprFactory.True());
   }
 
   public SatisfiableAssignmentIterator(FeatureExpr[] mutants,
-      FeatureExpr finalExpr) {
+      FeatureExpr finalExpr, FeatureModel model) {
     expr = finalExpr;
 
     HashSet<FeatureExpr> interestingFeaturesMutable = new HashSet<>();

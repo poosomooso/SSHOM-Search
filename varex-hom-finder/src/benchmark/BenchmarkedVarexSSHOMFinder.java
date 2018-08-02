@@ -3,14 +3,19 @@ package benchmark;
 import cmu.conditional.Conditional;
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
+import de.fosd.typechef.featureexpr.FeatureModel;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
 import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.vm.JPF_gov_nasa_jpf_ConsoleOutputStream;
+import scala.Tuple2;
+import scala.collection.immutable.List;
 import testRunner.RunTests;
 import varex.SSHOMExprFactory;
 import util.SSHOMRunner;
 import varex.SatisfiableAssignmentIterator;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Map;
 
 public class BenchmarkedVarexSSHOMFinder {
@@ -32,6 +37,7 @@ public class BenchmarkedVarexSSHOMFinder {
     runner = new SSHOMRunner(targetClasses, testClasses);
     String[] mutants = runner.getMutants().toArray(new String[0]);
     String paths;
+
     if (RunBenchmarks.RUNNING_LOCALLY) {
       String baseDir = "/home/serena/reuse/hom-generator/";
       paths = "+classpath="
@@ -43,14 +49,10 @@ public class BenchmarkedVarexSSHOMFinder {
           + baseDir + "out/production/varex-hom-finder,"
           + "/home/serena/MiscCS/intellij/lib/junit-4.12.jar";
     } else {
-      paths =
-          "+classpath=" + "/home/feature/serena/varex-hom-finder.jar,"
-              + "/home/feature/serena/junit-4.12.jar";
+      paths = "+classpath=" + "/home/feature/serena/varex-hom-finder.jar,"
+          + "/home/feature/serena/junit-4.12.jar";
     }
-
-    FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
-
-    JPF.main(new String[] { "+search.class=.search.RandomSearch", paths,
+    JPF.main(new String[] { "+search.class=.search.RandomSearch", /*"+featuremodel=featuremodel.dimacs",*/ "+choice=MapChoice", paths,
          TestRunner.class.getName()});
 
     Map<String, FeatureExpr> tests = JPF_gov_nasa_jpf_ConsoleOutputStream.testExpressions;
@@ -66,10 +68,15 @@ public class BenchmarkedVarexSSHOMFinder {
       finalExpr = finalExpr.andNot(m);
     }
 
+    FeatureModel fm = FeatureExprFactory.bdd()
+        .featureModelFactory().createFromDimacsFile("featuremodel.dimacs");
     SatisfiableAssignmentIterator iterator = new SatisfiableAssignmentIterator(
-        mutantExprs, finalExpr);
+        mutantExprs, finalExpr, fm);
+
     while (iterator.hasNext()) {
-      benchmarker.timestamp(SSHOMExprFactory.parseAssignment(iterator.next()).toString());
+      Tuple2<List<SingleFeatureExpr>, List<SingleFeatureExpr>> next = iterator
+          .next();
+      benchmarker.timestamp(SSHOMExprFactory.parseAssignment(next).toString());
     }
   }
 

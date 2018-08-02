@@ -3,6 +3,7 @@ package varex;
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
+import de.fosd.typechef.featureexpr.bdd.BDDFeatureModel;
 import scala.Option;
 import scala.Tuple2;
 import scala.collection.JavaConversions;
@@ -130,7 +131,7 @@ public class SSHOMExprFactory {
   public static void printAssignments(FeatureExpr[] mutants,
       FeatureExpr finalExpr) {
     SatisfiableAssignmentIterator iterator = new SatisfiableAssignmentIterator(
-        mutants, finalExpr);
+        mutants, finalExpr, BDDFeatureModel.create(FeatureExprFactory.True()));
 
     while (iterator.hasNext()) {
       System.out.println(parseAssignment(iterator.next()));

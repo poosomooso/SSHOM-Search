@@ -1,7 +1,7 @@
 package benchmark;
 
-import mutated.triangle.Triangle;
-import mutated.triangle.improved.Triangle_ESTest_improved;
+import mutated.triangleAll.Triangle;
+import mutated.triangleAll.Triangle_ESTest_improved;
 
 import java.io.File;
 import java.io.IOException;

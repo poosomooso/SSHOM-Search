@@ -5,6 +5,7 @@ import org.junit.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -44,7 +45,9 @@ public class RunTests {
     }
 
     // run all tests
-    for (Method method : c.getMethods()) {
+    Method[] methods = c.getMethods();
+    Arrays.sort(methods, (x, y) -> x.getName().compareTo(y.getName()));
+    for (Method method : methods) {
       if (method.getAnnotation(Test.class) != null) {
         try {
           invokeIfNonempty(beforeMethod, instance);

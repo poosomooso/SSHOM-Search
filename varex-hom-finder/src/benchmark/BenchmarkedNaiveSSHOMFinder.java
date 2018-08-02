@@ -28,9 +28,12 @@ public class BenchmarkedNaiveSSHOMFinder {
     String[] mutants = runner.getMutants().toArray(new String[0]);
     populateFoms(mutants);
 
-    runOnNOrder(2, new ArrayList<>(), mutants, 0);
-    runOnNOrder(3, new ArrayList<>(), mutants, 0);
-    runOnNOrder(4, new ArrayList<>(), mutants, 0);
+    int maxOrder = 33;
+    benchmarker.timestamp("start homs");
+    for (int i = 2; i < maxOrder; i++) {
+      runOnNOrder(i, new ArrayList<>(), mutants, 0);
+      benchmarker.timestamp("order "+i+" done");
+    }
   }
 
   private void populateFoms(String[] mutants)

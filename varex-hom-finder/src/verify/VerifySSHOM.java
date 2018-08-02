@@ -3,6 +3,7 @@ package verify;
 import util.CheckStronglySubsuming;
 import util.SSHOMListener;
 import util.SSHOMRunner;
+import util.SetArithmetic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
