@@ -1,22 +1,13 @@
 package benchmark;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
+import de.fosd.typechef.featureexpr.FeatureModel;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
+import gov.nasa.jpf.JPF;
+import gov.nasa.jpf.vm.JPF_gov_nasa_jpf_ConsoleOutputStream;
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDFactory;
 import scala.Tuple2;
@@ -26,10 +17,19 @@ import testRunner.RunTests;
 import util.SSHOMRunner;
 import varex.SSHOMExprFactory;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
+
 public class BenchmarkedVarexSSHOMFinder {
 	private Benchmarker benchmarker;
 	private SSHOMRunner runner;
 	public static SingleFeatureExpr[] mutantExprs = null;
+
+	private String baseDir = "/home/serena/reuse/hom-generator/";
 
 	public static class TestRunner {
 		public static void main(String[] args) {
@@ -54,8 +54,13 @@ public class BenchmarkedVarexSSHOMFinder {
 		String[] mutants = runner.getMutants().toArray(new String[0]);
 		String paths;
 		if (RunBenchmarks.RUNNING_LOCALLY) {
-			String baseDir = "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\";
-			paths = "+classpath=" + baseDir + "bin," + baseDir + "code-ut/jars/monopoli100.jar," + baseDir + "lib/bcel-6.0.jar,"
+			paths = "+classpath="
+					+ baseDir + "out/production/code-ut,"
+					+ baseDir + "code-ut/jars/monopoli100.jar,"
+					+ baseDir + "code-ut/jars/commons-validator.jar,"
+					+ baseDir + "lib/bcel-6.0.jar,"
+					+ baseDir + "out/test/code-ut,"
+					+ baseDir + "out/production/varex-hom-finder,"
 					+ baseDir + "lib/junit.jar";
 		} else {
 			paths = "+classpath=" + "/home/feature/serena/varex-hom-finder.jar," + "/home/feature/serena/junit-4.12.jar";
@@ -68,14 +73,8 @@ public class BenchmarkedVarexSSHOMFinder {
 		getTestNames(tests);// XXX only implemented for triangle
 
 		for (Entry<String, FeatureExpr> test : tests.entrySet()) {
-//    	JPF.main(new String[] { 
-//        		"+choice=MapChoice",
-//        		"+featuremodel= model.dimacs",
-//        		"+search.class=.search.RandomSearch", paths,
-//             TestRunner.class.getName(), test.getKey()});
-
 			CommandLineRunner.process("java", "-jar",
-					"C:\\Users\\Jens Meinicke\\git\\VarexJ\\VarexJ\\build\\libs\\RunJPF.jar",
+					baseDir + "lib/RunJPF.jar",
 					"+search.class=.search.RandomSearch",
 					paths, "+choice=MapChoice", TestRunner.class.getName(), test.getKey());
 		}
@@ -104,9 +103,9 @@ public class BenchmarkedVarexSSHOMFinder {
 
 	@SuppressWarnings("unchecked")
 	private Set<java.util.List<String>> getSolutions(FeatureExpr expr, String[] mutants) {
-		java.util.List<byte[]> solitions = (java.util.List<byte[]>)((BDDFeatureExpr)expr).bdd().allsat();
+		java.util.List<byte[]> solutions = (java.util.List<byte[]>)((BDDFeatureExpr)expr).bdd().allsat();
 		Set<java.util.List<String>> allSolutions = new LinkedHashSet<>();
-		for (byte[] s : solitions) {
+		for (byte[] s : solutions) {
 			getSolutions(s, mutants, allSolutions);
 		}
 		return allSolutions;
@@ -115,7 +114,7 @@ public class BenchmarkedVarexSSHOMFinder {
 	/**
 	 * In the byte arrays, -1 means dont-care, 0 means 0, and 1 means 1.
 	 * So we need to expand the given solution.
-	 * @param s
+	 * @param solutions
 	 * @param mutants
 	 */
 	private void getSolutions(byte[] solutions, String[] mutants, Set<java.util.List<String>> allSolutions) {
@@ -292,4 +291,5 @@ public class BenchmarkedVarexSSHOMFinder {
 		}
 		return mutantExprs;
 	}
+
 }

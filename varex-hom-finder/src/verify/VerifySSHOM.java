@@ -3,11 +3,11 @@ package verify;
 import util.CheckStronglySubsuming;
 import util.SSHOMListener;
 import util.SSHOMRunner;
+import util.SetArithmetic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.*;
 
 public class VerifySSHOM {
@@ -38,9 +38,11 @@ public class VerifySSHOM {
         SSHOMListener sshomListener = runner.runJunitOnHOMAndFOMs(mutants);
 
         out.println(Arrays.toString(mutants));
-        out.print(CheckStronglySubsuming.isStronglySubsuming(sshomListener) ? "Is strongly subsuming" : "NOT STRONGLY SUBSUMING ****");
-        out.println(CheckStronglySubsuming.isStrictStronglySubsuming(sshomListener) ? " -- Strict" : "");
+        out.print(CheckStronglySubsuming.isStronglySubsuming(sshomListener.getHomTests(), sshomListener.getFomTests()) ? "Is strongly subsuming" : "NOT STRONGLY SUBSUMING ****");
+        out.println(CheckStronglySubsuming.isStrictStronglySubsuming(sshomListener.getHomTests(), sshomListener.getFomTests()) ? " -- Strict" : "");
         out.println(sshomListener.getHomTests());
+        out.println(sshomListener.getFomTests());
+        out.println();
       }
     } catch (FileNotFoundException | IllegalAccessException | NoSuchFieldException e) {
       e.printStackTrace();

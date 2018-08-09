@@ -3,6 +3,8 @@ package testRunner;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.After;
@@ -24,57 +26,14 @@ public class RunTests {
 	
 	public static void runTests(Class[] testClasses) {
 		for (Class c : testClasses) {
-			runTestAnnotations(c);
-		}
-	}
+			List<Method> methods = Arrays.asList(c.getMethods());
+			methods.stream()
+					.filter(m -> m.getAnnotation(Test.class) != null)
+					.sorted((x, y) -> x.getName().compareTo(y.getName()));
 
-	private static void runTestAnnotations(Class c) {
-
-		Optional<Method> beforeMethod = findOfAnnotation(c, Before.class);
-		Optional<Method> beforeClassMethod = findOfAnnotation(c, BeforeClass.class);
-		Optional<Method> afterMethod = findOfAnnotation(c, After.class);
-		Optional<Method> afterClassMethod = findOfAnnotation(c, AfterClass.class);
-
-		// creating test object
-		Object instance;
-		try {
-			instance = c.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-
-		// before class
-		try {
-			invokeIfNonempty(beforeClassMethod, instance);
-		} catch (InvocationTargetException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-
-		// run all tests
-
-		Method[] methods = c.getMethods();
-		Arrays.sort(methods, (o1, o2) -> o1.getName().compareTo(o2.getName()));
-		for (Method method : methods) {
-			if (method.getAnnotation(Test.class) != null) {
-				try {
-					invokeIfNonempty(beforeMethod, instance);
-					System.out.println("METHOD: " + method);
-					method.invoke(instance, null);
-					invokeIfNonempty(afterMethod, instance);
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (Throwable e) {
-					System.out.println(method.getName());
-				}
-				break;
+			for (Method m : methods) {
+				runTests(testClasses, m.getName());
 			}
-		}
-
-		// after class
-		try {
-			invokeIfNonempty(afterClassMethod, instance);
-		} catch (InvocationTargetException | IllegalAccessException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -143,4 +102,5 @@ public class RunTests {
 			m.get().invoke(instance, null);
 		}
 	}
+
 }
