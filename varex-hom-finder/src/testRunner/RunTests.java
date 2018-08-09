@@ -1,85 +1,146 @@
 package testRunner;
 
-import junit.framework.TestCase;
-import org.junit.*;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Optional;
-import java.util.Set;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class RunTests {
-  public static void runTests(Class testClass) {
-    runTests(new Class[] { testClass });
-  }
+	public static void runTests(Class testClass) {
+		runTests(new Class[] { testClass });
+	}
 
-  public static void runTests(Class[] testClasses) {
-    for (Class c : testClasses) {
-      runTestAnnotations(c);
-    }
-  }
+	public static void runTests(Class[] testClasses, String testName) {
+		for (Class c : testClasses) {
+			runTestAnnotations(c, testName);
+		}
+	}
+	
+	public static void runTests(Class[] testClasses) {
+		for (Class c : testClasses) {
+			runTestAnnotations(c);
+		}
+	}
 
-  private static void runTestAnnotations(Class c) {
+	private static void runTestAnnotations(Class c) {
 
+		Optional<Method> beforeMethod = findOfAnnotation(c, Before.class);
+		Optional<Method> beforeClassMethod = findOfAnnotation(c, BeforeClass.class);
+		Optional<Method> afterMethod = findOfAnnotation(c, After.class);
+		Optional<Method> afterClassMethod = findOfAnnotation(c, AfterClass.class);
 
-    Optional<Method> beforeMethod = findOfAnnotation(c, Before.class);
-    Optional<Method> beforeClassMethod = findOfAnnotation(c, BeforeClass.class);
-    Optional<Method> afterMethod = findOfAnnotation(c, After.class);
-    Optional<Method> afterClassMethod = findOfAnnotation(c, AfterClass.class);
+		// creating test object
+		Object instance;
+		try {
+			instance = c.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 
-    // creating test object
-    Object instance;
-    try {
-      instance = c.newInstance();
-    } catch (InstantiationException | IllegalAccessException e) {
-      throw new RuntimeException(e);
-    }
+		// before class
+		try {
+			invokeIfNonempty(beforeClassMethod, instance);
+		} catch (InvocationTargetException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
 
-    // before class
-    try {
-      invokeIfNonempty(beforeClassMethod, instance);
-    } catch (InvocationTargetException | IllegalAccessException e) {
-      e.printStackTrace();
-    }
+		// run all tests
 
-    // run all tests
-    for (Method method : c.getMethods()) {
-      if (method.getAnnotation(Test.class) != null) {
-        try {
-          invokeIfNonempty(beforeMethod, instance);
-          System.out.println("METHOD: " + method);
-          method.invoke(instance, null);
-          invokeIfNonempty(afterMethod, instance);
-        } catch (IllegalAccessException e) {
-          e.printStackTrace();
-        } catch (Throwable e) {
-          System.out.println(method.getName());
-        }
-      }
-    }
+		Method[] methods = c.getMethods();
+		Arrays.sort(methods, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+		for (Method method : methods) {
+			if (method.getAnnotation(Test.class) != null) {
+				try {
+					invokeIfNonempty(beforeMethod, instance);
+					System.out.println("METHOD: " + method);
+					method.invoke(instance, null);
+					invokeIfNonempty(afterMethod, instance);
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (Throwable e) {
+					System.out.println(method.getName());
+				}
+				break;
+			}
+		}
 
-    // after class
-    try {
-      invokeIfNonempty(afterClassMethod, instance);
-    } catch (InvocationTargetException | IllegalAccessException e) {
-      e.printStackTrace();
-    }
-  }
+		// after class
+		try {
+			invokeIfNonempty(afterClassMethod, instance);
+		} catch (InvocationTargetException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
 
-  private static Optional<Method> findOfAnnotation(Class c, Class annotation) {
-    for (Method method : c.getMethods()) {
-      if (method.getAnnotation(annotation) != null) {
-        return Optional.of(method);
-      }
-    }
-    return Optional.empty();
-  }
+	private static void runTestAnnotations(Class c, String testName) {
+		Optional<Method> beforeMethod = findOfAnnotation(c, Before.class);
+		Optional<Method> beforeClassMethod = findOfAnnotation(c, BeforeClass.class);
+		Optional<Method> afterMethod = findOfAnnotation(c, After.class);
+		Optional<Method> afterClassMethod = findOfAnnotation(c, AfterClass.class);
 
-  private static <T> void invokeIfNonempty(Optional<Method> m, T instance)
-      throws InvocationTargetException, IllegalAccessException {
-    if (m.isPresent()) {
-        m.get().invoke(instance, null);
-    }
-  }
+		// creating test object
+		Object instance;
+		try {
+			instance = c.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+
+		// before class
+		try {
+			invokeIfNonempty(beforeClassMethod, instance);
+		} catch (InvocationTargetException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
+		// run all tests
+
+		Method[] methods = c.getMethods();
+		for (Method method : methods) {
+			if (method.getName().equals(testName)) {
+				if (method.getAnnotation(Test.class) != null) {
+					try {
+						invokeIfNonempty(beforeMethod, instance);
+						System.out.println("METHOD: " + method);
+						method.invoke(instance, null);
+						invokeIfNonempty(afterMethod, instance);
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					} catch (Throwable e) {
+						System.out.println(method.getName());
+					}
+					break;
+				}
+			}
+		}
+
+		// after class
+		try {
+			invokeIfNonempty(afterClassMethod, instance);
+		} catch (InvocationTargetException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static Optional<Method> findOfAnnotation(Class c, Class annotation) {
+		for (Method method : c.getMethods()) {
+			if (method.getAnnotation(annotation) != null) {
+				return Optional.of(method);
+			}
+		}
+		return Optional.empty();
+	}
+
+	private static <T> void invokeIfNonempty(Optional<Method> m, T instance) throws InvocationTargetException,
+			IllegalAccessException {
+		if (m.isPresent()) {
+			m.get().invoke(instance, null);
+		}
+	}
 }

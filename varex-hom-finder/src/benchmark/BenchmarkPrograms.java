@@ -2,7 +2,6 @@ package benchmark;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ public class BenchmarkPrograms {
   public enum Program {
     TRIANGLE, MONOPOLY
   }
-  public static final Program PROGRAM = Program.MONOPOLY;
+  public static final Program PROGRAM = Program.TRIANGLE;
   private static final String PATH_TO_RESOURCE = "varex-hom-finder/resources/";
 
   public static Class[] getSrcClasses() {

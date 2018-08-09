@@ -1,14 +1,7 @@
 package benchmark;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.Scanner;
-
-import edu.uclm.esi.iso5.juegos.monopoly.dominio.*;
-import edu.uclm.esi.iso5.juegos.monopoly.dominio.tarjetas.*;
-import edu.uclm.esi.iso5.juegos.monopoly.dominio.excepciones.*;
-import edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.*;
-import edu.uclm.esi.iso5.juegos.monopoly.dominio.tests.grupos.*;
 
 public class RunBenchmarks {
   public static final boolean RUNNING_LOCALLY = true;
@@ -78,7 +71,7 @@ public class RunBenchmarks {
 //      TestCubrirTodos.class };
 
   public static void main(String[] args)
-      throws NoSuchFieldException, IllegalAccessException {
+      throws NoSuchFieldException, IOException, IllegalAccessException {
     if (args.length < 1) {
       System.err
           .println("A mode must be specified. One of : naive, ga, or varex");
@@ -111,7 +104,7 @@ public class RunBenchmarks {
   }
 
   private static void runVarex(Class[] targets, Class[] tests)
-      throws NoSuchFieldException, IllegalAccessException {
+      throws IOException {
     BenchmarkedVarexSSHOMFinder varexSSHOMFinder = new BenchmarkedVarexSSHOMFinder();
     varexSSHOMFinder.varexSSHOMFinder(targets, tests);
   }

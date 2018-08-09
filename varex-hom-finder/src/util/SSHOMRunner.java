@@ -1,13 +1,18 @@
 package util;
 
-import gov.nasa.jpf.annotation.Conditional;
-import org.junit.runner.Description;
-import org.junit.runner.JUnitCore;
-
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Set;
+import java.util.Map;
+
+import org.junit.runner.Description;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunListener;
+
+import benchmark.BenchmarkedVarexSSHOMFinder;
+import cmu.conditional.Conditional;
+import de.fosd.typechef.featureexpr.FeatureExpr;
+import gov.nasa.jpf.vm.JPF_gov_nasa_jpf_ConsoleOutputStream;
 
 public class SSHOMRunner {
   private       ConditionalMutationWrapper targetClasses;
@@ -23,16 +28,64 @@ public class SSHOMRunner {
     this.testClasses = Arrays.copyOf(testClasses, testClasses.length);
   }
 
+  String currentMutant = "";
   public SSHOMListener runJunitOnHOMAndFOMs(String... mutants)
       throws IllegalAccessException, NoSuchFieldException {
     JUnitCore jUnitCore = new JUnitCore();
     SSHOMListener sshomListener = runJunitOnHOM(mutants);
     jUnitCore.addListener(sshomListener);
 
+    Map<String, FeatureExpr> expressions = JPF_gov_nasa_jpf_ConsoleOutputStream.testExpressions;
+    jUnitCore.addListener(new RunListener() {
+    	
+    	boolean failed = false;
+    	
+    	@Override
+    	public void testFinished(Description description) throws Exception {
+    		super.testFinished(description);
+    		if (!failed) { 
+	    		FeatureExpr ctx = expressions.get(description.getMethodName());
+	    		FeatureExpr feature = Conditional.createFeature(currentMutant);
+	    		FeatureExpr fullSelection = feature;
+	    		for (FeatureExpr f : BenchmarkedVarexSSHOMFinder.mutantExprs) {
+	    			if (feature != f) {
+	    				fullSelection = fullSelection.and(f.not());
+	    			}
+				}
+	    		boolean correctFOM = Conditional.isContradiction(Conditional.and(ctx, fullSelection));
+				if (!correctFOM) {
+					System.out.println("failed " + Conditional.getCTXString(feature) +  " for test " + description.getClassName() + "." + description.getMethodName());
+//					System.exit(-1);
+				}
+    		}
+    		failed = false;
+    	}
+    	
+    	@Override
+    	public void testFailure(Failure failure) throws Exception {
+    		super.testFailure(failure);
+    		failed = true;
+    		FeatureExpr ctx = expressions.get(failure.getDescription().getMethodName());
+    		FeatureExpr feature = Conditional.createFeature(currentMutant);
+    		FeatureExpr fullSelection = feature;
+    		for (FeatureExpr f : BenchmarkedVarexSSHOMFinder.mutantExprs) {
+    			if (!feature.equals(f)) {
+    				fullSelection = fullSelection.and(Conditional.not(f));
+    			}
+			}
+    		boolean correctFOM = !Conditional.isContradiction(Conditional.and(ctx, fullSelection));
+			if (!correctFOM) {
+				System.out.println("failed " + Conditional.getCTXString(feature) +  " for test " + failure.getDescription().getClassName() + "." + failure.getDescription().getMethodName());
+//				System.exit(-1);
+			}
+    	}
+    });
+    
     //foms
     for (String s : mutants) {
       targetClasses.resetMutants();
       targetClasses.setMutant(s);
+      currentMutant = s;
       sshomListener.signalFOMBegin();
       jUnitCore.run(testClasses);
       sshomListener.signalFOMEnd();

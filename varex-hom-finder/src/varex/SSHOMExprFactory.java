@@ -1,19 +1,18 @@
 package varex;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
+
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
-import scala.Option;
 import scala.Tuple2;
 import scala.collection.JavaConversions;
 import scala.collection.immutable.List;
 import scala.collection.mutable.HashSet;
 import scala.collection.mutable.Set;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 public class SSHOMExprFactory {
   private static Map<FomTestKey, Boolean> lambda = new HashMap<>();
@@ -141,7 +140,16 @@ public class SSHOMExprFactory {
       Tuple2<List<SingleFeatureExpr>, List<SingleFeatureExpr>> satisfiableAssignment) {
     StringBuffer sb = new StringBuffer();
     for (SingleFeatureExpr e : JavaConversions.asJavaIterable(satisfiableAssignment._1)) {
-      sb.append(e.feature().substring("CONFIG_".length()));
+    	String name = e.feature();
+		try {
+			if (e.feature().startsWith("CONFIG_")) {
+				name = e.feature().substring("CONFIG_".length());
+			}
+		} catch (Exception ex) {
+			System.out.println(e.feature());
+			throw ex;
+		}
+      sb.append(name);
       sb.append(",");
     }
     if (sb.length() > 0) {
