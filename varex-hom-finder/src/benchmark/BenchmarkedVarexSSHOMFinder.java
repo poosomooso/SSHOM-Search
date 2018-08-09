@@ -4,10 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
@@ -22,7 +25,6 @@ import scala.collection.immutable.List;
 import testRunner.RunTests;
 import util.SSHOMRunner;
 import varex.SSHOMExprFactory;
-import varex.SatisfiableAssignmentIterator;
 
 public class BenchmarkedVarexSSHOMFinder {
 	private Benchmarker benchmarker;
@@ -72,32 +74,70 @@ public class BenchmarkedVarexSSHOMFinder {
 //        		"+search.class=.search.RandomSearch", paths,
 //             TestRunner.class.getName(), test.getKey()});
 
-			CommandLineRunner.process("java", "-jar", "C:\\Users\\Jens Meinicke\\git\\VarexJ\\VarexJ\\build\\libs\\RunJPF.jar",
+			CommandLineRunner.process("java", "-jar",
+					"C:\\Users\\Jens Meinicke\\git\\VarexJ\\VarexJ\\build\\libs\\RunJPF.jar",
+					"+search.class=.search.RandomSearch",
 					paths, "+choice=MapChoice", TestRunner.class.getName(), test.getKey());
 		}
-
+		benchmarker.timestamp("create features");
 		createFeatures(mutants);
+		
+		benchmarker.timestamp("load f(t)");
 		loadTestExpressions(tests);
-
+		
+		benchmarker.timestamp("generate FOMs");
 		FeatureExpr[] fomExprs = SSHOMExprFactory.genFOMs(mutantExprs, mutants.length);
-
+		
+		benchmarker.timestamp("create SSHOM expression");
 		FeatureExpr finalExpr = SSHOMExprFactory.getSSHOMExpr(tests, mutantExprs, mutantExprs.length);
 
-		//exclude foms
+		// exclude foms
 		for (FeatureExpr m : fomExprs) {
 			finalExpr = finalExpr.andNot(m);
 		}
 
-		SatisfiableAssignmentIterator iterator = new SatisfiableAssignmentIterator(mutantExprs, finalExpr);
-		int solutions = 0;
-		while (iterator.hasNext()) {
-			Tuple2<List<SingleFeatureExpr>, List<SingleFeatureExpr>> next = iterator.next();
-			if (isValid(next)) {
-				System.out.println(solutions++);
-				benchmarker.timestamp(SSHOMExprFactory.parseAssignment(next).toString());
+		benchmarker.timestamp("get solutions");
+		getSolutions(finalExpr, mutants);
+	}
+	
+	int numSolutions = 0;
+
+	@SuppressWarnings("unchecked")
+	private Set<java.util.List<String>> getSolutions(FeatureExpr expr, String[] mutants) {
+		java.util.List<byte[]> solitions = (java.util.List<byte[]>)((BDDFeatureExpr)expr).bdd().allsat();
+		// TODO for some reason solutions contains duplicates
+		Set<java.util.List<String>> allSolutions = new LinkedHashSet<>();
+		for (byte[] s : solitions) {
+			getSolutions(s, mutants, allSolutions);
+		}
+		return allSolutions;
+	}
+
+	/**
+	 * In the byte arrays, -1 means dont-care, 0 means 0, and 1 means 1.
+	 * So we need to expand the given solution.
+	 * @param s
+	 * @param mutants
+	 */
+	private void getSolutions(byte[] solutions, String[] mutants, Set<java.util.List<String>> allSolutions) {
+		java.util.List<String> selections = new ArrayList<>();
+		for (int i = 1; i <= mutants.length; i++) {
+			byte selection = solutions[i];
+			if (selection != 0) {
+				selections.add(mutants[i - 1]);
+				if (selection == -1) {
+					byte[] copy = Arrays.copyOf(solutions, mutants.length + 1);
+					copy[i] = 0;
+					getSolutions(copy, mutants, allSolutions);
+				}
 			}
 		}
-		System.out.println(solutions);
+		if (isValid(selections)) {
+			if (!allSolutions.contains(selections)) {
+				allSolutions.add(selections);
+				benchmarker.timestamp(numSolutions++ + " " + selections);
+			}
+		}
 	}
 
 	// TODO implement this
@@ -119,7 +159,7 @@ public class BenchmarkedVarexSSHOMFinder {
 					BDD bdd2 = bddFactory.load(br);
 					FeatureExpr expr = new BDDFeatureExpr(bdd2);
 					test.setValue(expr);
-					file.delete();
+					file.deleteOnExit();
 				}
 			}
 		}
@@ -138,8 +178,6 @@ public class BenchmarkedVarexSSHOMFinder {
 	private boolean isValid(Tuple2<List<SingleFeatureExpr>, List<SingleFeatureExpr>> next) {
 		boolean[] check = new boolean[33];
 		for (SingleFeatureExpr e : JavaConversions.asJavaIterable(next._1)) {
-			int id = -1;
-
 			int number = 0;
 			try {
 				if (e.feature().startsWith("CONFIG_")) {
@@ -151,80 +189,99 @@ public class BenchmarkedVarexSSHOMFinder {
 				System.out.println(e.feature());
 				throw ex;
 			}
-			if (number <= 4) {
-				id = 0;
-			} else if (number <= 9) {
-				id = 1;
-			} else if (number <= 10) {
-				id = 2;
-			} else if (number <= 15) {
-				id = 3;
-			} else if (number <= 16) {
-				id = 4;
-			} else if (number <= 21) {
-				id = 5;
-			} else if (number <= 25) {
-				id = 6;
-			} else if (number <= 30) {
-				id = 7;
-			} else if (number <= 34) {
-				id = 8;
-			} else if (number <= 39) {
-				id = 9;
-			} else if (number <= 43) {
-				id = 10;
-			} else if (number <= 48) {
-				id = 11;
-			} else if (number <= 52) {
-				id = 12;
-			} else if (number <= 57) {
-				id = 13;
-			} else if (number <= 61) {
-				id = 14;
-			} else if (number <= 66) {
-				id = 15;
-			} else if (number <= 67) {
-				id = 16;
-			} else if (number <= 71) {
-				id = 17;
-			} else if (number <= 76) {
-				id = 18;
-			} else if (number <= 77) {
-				id = 19;
-			} else if (number <= 82) {
-				id = 20;
-			} else if (number <= 87) {
-				id = 21;
-			} else if (number <= 91) {
-				id = 22;
-			} else if (number <= 96) {
-				id = 23;
-			} else if (number <= 97) {
-				id = 24;
-			} else if (number <= 102) {
-				id = 25;
-			} else if (number <= 106) {
-				id = 26;
-			} else if (number <= 111) {
-				id = 27;
-			} else if (number <= 112) {
-				id = 28;
-			} else if (number <= 117) {
-				id = 29;
-			} else if (number <= 121) {
-				id = 30;
-			} else if (number <= 126) {
-				id = 31;
-			} else if (number <= 127) {
-				id = 32;
-			} else {
-				throw new RuntimeException(e.toString());
-			}
-			if (check[id]) {
+			if (!check(check, number)) {
 				return false;
-			} else {
-				check[id] = true;
 			}
+		}
+		return true;
+	}
+	
+	private boolean isValid(java.util.List<String> selections) {
+		boolean[] check = new boolean[33];
+		for (String mutation : selections) {
+			int number = Integer.parseInt(mutation.substring("m".length()));
+			if (!check(check, number)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean check(boolean[] check, int number) {
+		int id = -1;
+		if (number <= 4) {
+			id = 0;
+		} else if (number <= 9) {
+			id = 1;
+		} else if (number <= 10) {
+			id = 2;
+		} else if (number <= 15) {
+			id = 3;
+		} else if (number <= 16) {
+			id = 4;
+		} else if (number <= 21) {
+			id = 5;
+		} else if (number <= 25) {
+			id = 6;
+		} else if (number <= 30) {
+			id = 7;
+		} else if (number <= 34) {
+			id = 8;
+		} else if (number <= 39) {
+			id = 9;
+		} else if (number <= 43) {
+			id = 10;
+		} else if (number <= 48) {
+			id = 11;
+		} else if (number <= 52) {
+			id = 12;
+		} else if (number <= 57) {
+			id = 13;
+		} else if (number <= 61) {
+			id = 14;
+		} else if (number <= 66) {
+			id = 15;
+		} else if (number <= 67) {
+			id = 16;
+		} else if (number <= 71) {
+			id = 17;
+		} else if (number <= 76) {
+			id = 18;
+		} else if (number <= 77) {
+			id = 19;
+		} else if (number <= 82) {
+			id = 20;
+		} else if (number <= 87) {
+			id = 21;
+		} else if (number <= 91) {
+			id = 22;
+		} else if (number <= 96) {
+			id = 23;
+		} else if (number <= 97) {
+			id = 24;
+		} else if (number <= 102) {
+			id = 25;
+		} else if (number <= 106) {
+			id = 26;
+		} else if (number <= 111) {
+			id = 27;
+		} else if (number <= 112) {
+			id = 28;
+		} else if (number <= 117) {
+			id = 29;
+		} else if (number <= 121) {
+			id = 30;
+		} else if (number <= 126) {
+			id = 31;
+		} else if (number <= 127) {
+			id = 32;
+		} else {
+			throw new RuntimeException(number + "");
+		}
+		if (check[id]) {
+			return false;
+		} else {
+			check[id] = true;
 		}
 		return true;
 	}
