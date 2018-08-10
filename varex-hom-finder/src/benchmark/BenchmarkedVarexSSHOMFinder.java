@@ -29,7 +29,7 @@ public class BenchmarkedVarexSSHOMFinder {
 	private SSHOMRunner runner;
 	public static SingleFeatureExpr[] mutantExprs = null;
 
-	private static boolean JENS = false;
+	private static boolean JENS = true;
 	private String baseDir = JENS ? "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\" :
 									"/home/serena/reuse/hom-generator/";		
 
@@ -107,14 +107,12 @@ public class BenchmarkedVarexSSHOMFinder {
 		getSolutions(finalExpr, mutants);
 	}
 	
-	int numSolutions = 0;
-
 	@SuppressWarnings("unchecked")
 	private Set<List<String>> getSolutions(FeatureExpr expr, String[] mutants) {
 		List<byte[]> solutions = (List<byte[]>)((BDDFeatureExpr)expr).bdd().allsat();
 		Set<List<String>> allSolutions = new LinkedHashSet<>();
 		for (byte[] s : solutions) {
-			getSolutions(s, mutants, allSolutions);
+			getSolutions(s, mutants, allSolutions, new ArrayList<>(), 1);
 		}
 		return allSolutions;
 	}
@@ -125,25 +123,30 @@ public class BenchmarkedVarexSSHOMFinder {
 	 * @param solutions
 	 * @param mutants
 	 */
-	private void getSolutions(byte[] solutions, String[] mutants, Set<List<String>> allSolutions) {
-		List<String> selections = new ArrayList<>();
-		for (int i = 1; i <= mutants.length; i++) {
+	private void getSolutions(byte[] solutions, String[] mutants, Set<List<String>> allSolutions, List<String> selections, int start) {
+		if (selections.size() >= 2 && !isValid(selections)) {
+			return;
+		}
+		for (int i = start; i <= mutants.length; i++) {
 			byte selection = solutions[i];
 			if (selection != 0) {
 				if (selection == -1) {
-					byte[] copy = Arrays.copyOf(solutions, mutants.length + 1);
-					copy[i] = 0;
-					getSolutions(copy, mutants, allSolutions);
+					byte[] copy = new byte[mutants.length + 1];
+					for (int j = i + 1; j <= mutants.length; j++) {
+						copy[j] = solutions[j];
+					}
+					getSolutions(copy, mutants, allSolutions, new ArrayList<>(selections), i + 1);
 				}
 				
 				selections.add(mutants[i - 1]);
+				if (selections.size() >= 2 && !isValid(selections)) {
+					return;
+				}
 				solutions[i] = 1;
 			}
 		}
-		if (isValid(selections)) {
-			allSolutions.add(selections);
-			benchmarker.timestamp(numSolutions++ + " " + selections);
-		}
+		allSolutions.add(selections);
+		benchmarker.timestamp(allSolutions.size() + " " + selections);
 	}
 
 	// TODO @Serena implement this see: RunTests.runTestAnnotations()
