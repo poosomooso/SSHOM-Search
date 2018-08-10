@@ -3,7 +3,6 @@ package testRunner;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,12 +61,12 @@ public class RunTests {
 
 		Method[] methods = c.getMethods();
 		for (Method method : methods) {
-			if (method.getName().equals(testName)) {
+			if (method.getName().equals(testName)) {// TODO needs to handle duplicate test names 
 				if (method.getAnnotation(Test.class) != null) {
 					try {
 						invokeIfNonempty(beforeMethod, instance);
 						System.out.println("METHOD: " + method);
-						method.invoke(instance, null);
+						method.invoke(instance);
 						invokeIfNonempty(afterMethod, instance);
 					} catch (IllegalAccessException e) {
 						e.printStackTrace();

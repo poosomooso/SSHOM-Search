@@ -1,35 +1,37 @@
 package benchmark;
 
-import de.fosd.typechef.featureexpr.FeatureExpr;
-import de.fosd.typechef.featureexpr.FeatureExprFactory;
-import de.fosd.typechef.featureexpr.FeatureModel;
-import de.fosd.typechef.featureexpr.SingleFeatureExpr;
-import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
-import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
-import gov.nasa.jpf.JPF;
-import gov.nasa.jpf.vm.JPF_gov_nasa_jpf_ConsoleOutputStream;
-import net.sf.javabdd.BDD;
-import net.sf.javabdd.BDDFactory;
-import scala.Tuple2;
-import scala.collection.JavaConversions;
-import scala.collection.immutable.List;
-import testRunner.RunTests;
-import util.SSHOMRunner;
-import varex.SSHOMExprFactory;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+
+import de.fosd.typechef.featureexpr.FeatureExpr;
+import de.fosd.typechef.featureexpr.FeatureExprFactory;
+import de.fosd.typechef.featureexpr.SingleFeatureExpr;
+import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
+import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
+import net.sf.javabdd.BDD;
+import net.sf.javabdd.BDDFactory;
+import testRunner.RunTests;
+import util.SSHOMRunner;
+import varex.SSHOMExprFactory;
 
 public class BenchmarkedVarexSSHOMFinder {
 	private Benchmarker benchmarker;
 	private SSHOMRunner runner;
 	public static SingleFeatureExpr[] mutantExprs = null;
 
-	private String baseDir = "/home/serena/reuse/hom-generator/";
+	private static boolean JENS = false;
+	private String baseDir = JENS ? "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\" :
+									"/home/serena/reuse/hom-generator/";		
 
 	public static class TestRunner {
 		public static void main(String[] args) {
@@ -54,14 +56,20 @@ public class BenchmarkedVarexSSHOMFinder {
 		String[] mutants = runner.getMutants().toArray(new String[0]);
 		String paths;
 		if (RunBenchmarks.RUNNING_LOCALLY) {
-			paths = "+classpath="
-					+ baseDir + "out/production/code-ut,"
-					+ baseDir + "code-ut/jars/monopoli100.jar,"
-					+ baseDir + "code-ut/jars/commons-validator.jar,"
-					+ baseDir + "lib/bcel-6.0.jar,"
-					+ baseDir + "out/test/code-ut,"
-					+ baseDir + "out/production/varex-hom-finder,"
-					+ baseDir + "lib/junit.jar";
+			if (JENS) {
+				String baseDir = "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\";
+				paths = "+classpath=" + baseDir + "bin," + baseDir + "code-ut/jars/monopoli100.jar," + baseDir + "lib/bcel-6.0.jar,"
+						+ baseDir + "lib/junit.jar";
+			} else {
+				paths = "+classpath="
+						+ baseDir + "out/production/code-ut,"
+						+ baseDir + "code-ut/jars/monopoli100.jar,"
+						+ baseDir + "code-ut/jars/commons-validator.jar,"
+						+ baseDir + "lib/bcel-6.0.jar,"
+						+ baseDir + "out/test/code-ut,"
+						+ baseDir + "out/production/varex-hom-finder,"
+						+ baseDir + "lib/junit.jar";
+			}
 		} else {
 			paths = "+classpath=" + "/home/feature/serena/varex-hom-finder.jar," + "/home/feature/serena/junit-4.12.jar";
 		}
@@ -102,9 +110,9 @@ public class BenchmarkedVarexSSHOMFinder {
 	int numSolutions = 0;
 
 	@SuppressWarnings("unchecked")
-	private Set<java.util.List<String>> getSolutions(FeatureExpr expr, String[] mutants) {
-		java.util.List<byte[]> solutions = (java.util.List<byte[]>)((BDDFeatureExpr)expr).bdd().allsat();
-		Set<java.util.List<String>> allSolutions = new LinkedHashSet<>();
+	private Set<List<String>> getSolutions(FeatureExpr expr, String[] mutants) {
+		List<byte[]> solutions = (List<byte[]>)((BDDFeatureExpr)expr).bdd().allsat();
+		Set<List<String>> allSolutions = new LinkedHashSet<>();
 		for (byte[] s : solutions) {
 			getSolutions(s, mutants, allSolutions);
 		}
@@ -117,8 +125,8 @@ public class BenchmarkedVarexSSHOMFinder {
 	 * @param solutions
 	 * @param mutants
 	 */
-	private void getSolutions(byte[] solutions, String[] mutants, Set<java.util.List<String>> allSolutions) {
-		java.util.List<String> selections = new ArrayList<>();
+	private void getSolutions(byte[] solutions, String[] mutants, Set<List<String>> allSolutions) {
+		List<String> selections = new ArrayList<>();
 		for (int i = 1; i <= mutants.length; i++) {
 			byte selection = solutions[i];
 			if (selection != 0) {
@@ -138,7 +146,7 @@ public class BenchmarkedVarexSSHOMFinder {
 		}
 	}
 
-	// TODO implement this
+	// TODO @Serena implement this see: RunTests.runTestAnnotations()
 	private void getTestNames(Map<String, FeatureExpr> tests) {
 		for (int i = 0; i <= 20; i++) {
 			tests.put("test" + (i < 10 ? "0" : "") + i, FeatureExprFactory.False());
@@ -173,28 +181,7 @@ public class BenchmarkedVarexSSHOMFinder {
 		mutantExprs = mutantNamesToFeatures(mutants);
 	}
 
-	private boolean isValid(Tuple2<List<SingleFeatureExpr>, List<SingleFeatureExpr>> next) {
-		boolean[] check = new boolean[33];
-		for (SingleFeatureExpr e : JavaConversions.asJavaIterable(next._1)) {
-			int number = 0;
-			try {
-				if (e.feature().startsWith("CONFIG_")) {
-					number = Integer.parseInt(e.feature().substring("CONFIG_m".length()));
-				} else {
-					number = Integer.parseInt(e.feature().substring("m".length()));
-				}
-			} catch (Exception ex) {
-				System.out.println(e.feature());
-				throw ex;
-			}
-			if (!check(check, number)) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private boolean isValid(java.util.List<String> selections) {
+	private boolean isValid(List<String> selections) {
 		boolean[] check = new boolean[33];
 		for (String mutation : selections) {
 			int number = Integer.parseInt(mutation.substring("m".length()));
