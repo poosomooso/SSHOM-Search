@@ -105,7 +105,6 @@ public class BenchmarkedVarexSSHOMFinder {
 	@SuppressWarnings("unchecked")
 	private Set<java.util.List<String>> getSolutions(FeatureExpr expr, String[] mutants) {
 		java.util.List<byte[]> solitions = (java.util.List<byte[]>)((BDDFeatureExpr)expr).bdd().allsat();
-		// TODO for some reason solutions contains duplicates
 		Set<java.util.List<String>> allSolutions = new LinkedHashSet<>();
 		for (byte[] s : solitions) {
 			getSolutions(s, mutants, allSolutions);
@@ -124,19 +123,19 @@ public class BenchmarkedVarexSSHOMFinder {
 		for (int i = 1; i <= mutants.length; i++) {
 			byte selection = solutions[i];
 			if (selection != 0) {
-				selections.add(mutants[i - 1]);
 				if (selection == -1) {
 					byte[] copy = Arrays.copyOf(solutions, mutants.length + 1);
 					copy[i] = 0;
 					getSolutions(copy, mutants, allSolutions);
 				}
+				
+				selections.add(mutants[i - 1]);
+				solutions[i] = 1;
 			}
 		}
 		if (isValid(selections)) {
-			if (!allSolutions.contains(selections)) {
-				allSolutions.add(selections);
-				benchmarker.timestamp(numSolutions++ + " " + selections);
-			}
+			allSolutions.add(selections);
+			benchmarker.timestamp(numSolutions++ + " " + selections);
 		}
 	}
 
