@@ -17,8 +17,8 @@ public class BenchmarkPrograms {
   public enum Program {
     TRIANGLE, MONOPOLY, VALIDATOR
   }
-  public static final Program PROGRAM = Program.TRIANGLE;
-  private static final String PATH_TO_RESOURCE = "varex-hom-finder/resources/";
+  public static final Program PROGRAM = Program.MONOPOLY;
+  private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
 
   public static Class[] getSrcClasses() {
     if (PROGRAM == Program.TRIANGLE) return new Class[] { Triangle.class };

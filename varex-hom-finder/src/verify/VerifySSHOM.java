@@ -7,6 +7,7 @@ import util.SetArithmetic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.*;
 
@@ -26,11 +27,13 @@ public class VerifySSHOM {
     String[] mutants;
 
     PrintStream out = System.out;
-    try {
-      System.setOut(new PrintStream(new File("/home/serena/reuse/_temp.txt")));
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
+
+    System.setOut(new PrintStream(new OutputStream() {
+      public void write(int b) {
+        // NO-OP
+      }
+    }));
+
 
     try (Scanner in = new Scanner(new File(fname))) {
       while (in.hasNextLine()) {
@@ -40,8 +43,8 @@ public class VerifySSHOM {
         out.println(Arrays.toString(mutants));
         out.print(CheckStronglySubsuming.isStronglySubsuming(sshomListener.getHomTests(), sshomListener.getFomTests()) ? "Is strongly subsuming" : "NOT STRONGLY SUBSUMING ****");
         out.println(CheckStronglySubsuming.isStrictStronglySubsuming(sshomListener.getHomTests(), sshomListener.getFomTests()) ? " -- Strict" : "");
-        out.println(sshomListener.getHomTests());
-        out.println(sshomListener.getFomTests());
+//        out.println(sshomListener.getHomTests());
+//        out.println(SetArithmetic.getIntersection(sshomListener.getFomTests()));
         out.println();
       }
     } catch (FileNotFoundException | IllegalAccessException | NoSuchFieldException e) {

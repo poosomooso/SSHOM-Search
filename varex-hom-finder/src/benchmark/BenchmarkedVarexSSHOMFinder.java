@@ -29,9 +29,9 @@ public class BenchmarkedVarexSSHOMFinder {
 	private SSHOMRunner runner;
 	public static SingleFeatureExpr[] mutantExprs = null;
 
-	private static boolean JENS = true;
+	private static boolean JENS = false;
 	private String baseDir = JENS ? "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\" :
-									"/home/serena/reuse/hom-generator/";		
+									"/home/serena/reuse/hom-generator/";
 
 	public static class TestRunner {
 		public static void main(String[] args) {
@@ -57,7 +57,6 @@ public class BenchmarkedVarexSSHOMFinder {
 		String paths;
 		if (RunBenchmarks.RUNNING_LOCALLY) {
 			if (JENS) {
-				String baseDir = "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\";
 				paths = "+classpath=" + baseDir + "bin," + baseDir + "code-ut/jars/monopoli100.jar," + baseDir + "lib/bcel-6.0.jar,"
 						+ baseDir + "lib/junit.jar";
 			} else {

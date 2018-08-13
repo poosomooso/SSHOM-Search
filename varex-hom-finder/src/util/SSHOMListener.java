@@ -36,7 +36,11 @@ public class SSHOMListener extends RunListener {
     super.testFailure(failure);
 //    failure.getException().printStackTrace();
 //    System.err.println(failure.getDescription());
-    currentTests.add(failure.getDescription());
+    if (failure.getDescription().getDisplayName().equals("Test mechanism")) {
+      // this is from the other junit listener
+    } else {
+      currentTests.add(failure.getDescription());
+    }
   }
 
   @Override
