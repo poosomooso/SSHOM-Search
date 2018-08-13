@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
@@ -20,6 +22,7 @@ import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDFactory;
+import org.junit.Test;
 import testRunner.RunTests;
 import util.SSHOMRunner;
 import varex.SSHOMExprFactory;
@@ -83,7 +86,7 @@ public class BenchmarkedVarexSSHOMFinder {
 
 		Map<String, FeatureExpr> tests = new LinkedHashMap<>();
 
-		getTestNames(tests);// XXX only implemented for triangle
+		getTestNames(testClasses, tests);
 
 		for (Entry<String, FeatureExpr> test : tests.entrySet()) {
 			
@@ -158,14 +161,18 @@ public class BenchmarkedVarexSSHOMFinder {
 		benchmarker.timestamp(allSolutions.size() + " " + selections);
 	}
 
-	// TODO @Serena implement this see: RunTests.runTestAnnotations()
-	private void getTestNames(Map<String, FeatureExpr> tests) {
-		for (int i = 0; i <= 20; i++) {
-			tests.put("test" + (i < 10 ? "0" : "") + i, FeatureExprFactory.False());
+	private void getTestNames(Class[] testClasses, Map<String, FeatureExpr> tests) {
+		for (Class c : testClasses) {
+			List<Method> methods = Arrays.asList(c.getMethods());
+			methods.stream()
+					.filter(m -> m.getAnnotation(Test.class) != null)
+					.collect(Collectors.toList());
+
+			for (Method m : methods) {
+				tests.put(m.getName(), FeatureExprFactory.False());
+			}
 		}
-		for (int i = 0; i <= 4; i++) {
-			tests.put("testCustom" + i, FeatureExprFactory.False());
-		}
+
 	}
 
 	private void loadTestExpressions(Map<String, FeatureExpr> tests) throws IOException {
