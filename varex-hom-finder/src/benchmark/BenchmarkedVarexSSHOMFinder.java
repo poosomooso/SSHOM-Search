@@ -34,6 +34,7 @@ public class BenchmarkedVarexSSHOMFinder {
 									"/home/serena/reuse/hom-generator/";
 
 	public static class TestRunner {
+		
 		public static void main(String[] args) {
 			if (args.length == 0) {
 				RunTests.runTests(RunBenchmarks.TEST_CLASSES);
@@ -52,6 +53,11 @@ public class BenchmarkedVarexSSHOMFinder {
 
 	public void varexSSHOMFinder(Class[] targetClasses, Class[] testClasses) throws IOException {
 		benchmarker.start();
+		
+		System.setProperty("bddCacheSize", Integer.toString(100000));
+		System.setProperty("bddValNum", Integer.toString(1_750_000));
+		System.setProperty("bddVarNum", Integer.toString(128));
+		
 		runner = new SSHOMRunner(targetClasses, testClasses);
 		String[] mutants = runner.getMutants().toArray(new String[0]);
 		String paths;
@@ -80,9 +86,13 @@ public class BenchmarkedVarexSSHOMFinder {
 		getTestNames(tests);// XXX only implemented for triangle
 
 		for (Entry<String, FeatureExpr> test : tests.entrySet()) {
+			
 			CommandLineRunner.process("java", "-jar",
 					baseDir + "lib/RunJPF.jar",
 					"+search.class=.search.RandomSearch",
+					"+bddCacheSize=100000",
+					"+bddValNum=1500000",
+					"+bddVarNum=128",
 					paths, "+choice=MapChoice", TestRunner.class.getName(), test.getKey());
 		}
 		benchmarker.timestamp("create features");
