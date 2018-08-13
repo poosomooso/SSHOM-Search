@@ -47,45 +47,45 @@ public class FindInfLoops {
   }
 
   public static void printIfInf(String... mutants) {
-//    PrintStream originalStream = System.out;
+    PrintStream originalStream = System.out;
+
+    PrintStream dummyStream = new PrintStream(new OutputStream() {
+      public void write(int b) {
+        // NO-OP
+      }
+    });
+
+    System.setOut(dummyStream);
+
+//    String[] args = new String[mutants.length + 4];
+//    args[0] = "java";
+//    args[1] = "-cp";
+//    args[2] = "out/production/varex-hom-finder";
+//    args[3] = "analysis/FindInfLoops";
+//    System.arraycopy(mutants, 0, args, 4, mutants.length);
+//    ProcessBuilder processBuilder = new ProcessBuilder(args);
+//    System.out.println(Arrays.toString(args));;
+//    Process process = null;
 //
-//    PrintStream dummyStream = new PrintStream(new OutputStream() {
-//      public void write(int b) {
-//        // NO-OP
-//      }
-//    });
-//
-//    System.setOut(dummyStream);
+//    CommandLineRunner.process(args);
+//    try {
+//      process = processBuilder.start();
+//    } catch (IOException e) {
+//      e.printStackTrace();
+//    }
 
-    String[] args = new String[mutants.length + 4];
-    args[0] = "java";
-    args[1] = "-cp";
-    args[2] = "out/production/varex-hom-finder";
-    args[3] = "analysis/FindInfLoops";
-    System.arraycopy(mutants, 0, args, 4, mutants.length);
-    ProcessBuilder processBuilder = new ProcessBuilder(args);
-    System.out.println(Arrays.toString(args));;
-    Process process = null;
-
-    CommandLineRunner.process(args);
-    try {
-      process = processBuilder.start();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    //    Thread fomRunner = new Thread(() -> {
-//      try {
-//        runner.runJunitOnHOM(mutants);
-//      } catch (IllegalAccessException | NoSuchFieldException e) {
-//        e.printStackTrace();
-//      }
-//    });
-//    fomRunner.start();
+    Thread fomRunner = new Thread(() -> {
+      try {
+        runner.runJunitOnHOM(mutants);
+      } catch (IllegalAccessException | NoSuchFieldException e) {
+        e.printStackTrace();
+      }
+    });
+    fomRunner.start();
 
     long startTime = System.currentTimeMillis();
     long waitTime = 100;
-    while (System.currentTimeMillis() - startTime < 6000 && process
+    while (System.currentTimeMillis() - startTime < 6000 && fomRunner
         .isAlive()) {
       try {
         Thread.sleep(waitTime);
@@ -94,12 +94,12 @@ public class FindInfLoops {
       }
       waitTime += 50;
     }
-    if (process.isAlive()) {
-      process.destroyForcibly();
-//      System.setOut(originalStream);
+    if (fomRunner.isAlive()) {
+      fomRunner.interrupt();
+      System.setOut(originalStream);
       System.out.println(Arrays.toString(mutants));
     }
-//    System.setOut(originalStream);
+    System.setOut(originalStream);
   }
 
   public static void main(String[] args)

@@ -40,5 +40,15 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="code-ut" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../lib/scala" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/../lib/scala" recursive="false" />
+      </library>
+    </orderEntry>
   </component>
 </module>
