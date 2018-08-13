@@ -206,85 +206,15 @@ public class BenchmarkedVarexSSHOMFinder {
 	private boolean isValid(List<String> selections) {
 		boolean[] check = new boolean[33];
 		for (String mutation : selections) {
-			int number = Integer.parseInt(mutation.substring("m".length()));
-			if (!check(check, number)) {
+			if (!check(check, mutation)) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	private boolean check(boolean[] check, int number) {
-		int id = -1;
-		if (number <= 4) {
-			id = 0;
-		} else if (number <= 9) {
-			id = 1;
-		} else if (number <= 10) {
-			id = 2;
-		} else if (number <= 15) {
-			id = 3;
-		} else if (number <= 16) {
-			id = 4;
-		} else if (number <= 21) {
-			id = 5;
-		} else if (number <= 25) {
-			id = 6;
-		} else if (number <= 30) {
-			id = 7;
-		} else if (number <= 34) {
-			id = 8;
-		} else if (number <= 39) {
-			id = 9;
-		} else if (number <= 43) {
-			id = 10;
-		} else if (number <= 48) {
-			id = 11;
-		} else if (number <= 52) {
-			id = 12;
-		} else if (number <= 57) {
-			id = 13;
-		} else if (number <= 61) {
-			id = 14;
-		} else if (number <= 66) {
-			id = 15;
-		} else if (number <= 67) {
-			id = 16;
-		} else if (number <= 71) {
-			id = 17;
-		} else if (number <= 76) {
-			id = 18;
-		} else if (number <= 77) {
-			id = 19;
-		} else if (number <= 82) {
-			id = 20;
-		} else if (number <= 87) {
-			id = 21;
-		} else if (number <= 91) {
-			id = 22;
-		} else if (number <= 96) {
-			id = 23;
-		} else if (number <= 97) {
-			id = 24;
-		} else if (number <= 102) {
-			id = 25;
-		} else if (number <= 106) {
-			id = 26;
-		} else if (number <= 111) {
-			id = 27;
-		} else if (number <= 112) {
-			id = 28;
-		} else if (number <= 117) {
-			id = 29;
-		} else if (number <= 121) {
-			id = 30;
-		} else if (number <= 126) {
-			id = 31;
-		} else if (number <= 127) {
-			id = 32;
-		} else {
-			throw new RuntimeException(number + "");
-		}
+	private boolean check(boolean[] check, String mutant) {
+		int id = BenchmarkPrograms.getMakeshiftFeatureModel().get(mutant);
 		if (check[id]) {
 			return false;
 		} else {

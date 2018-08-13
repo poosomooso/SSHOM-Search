@@ -7,23 +7,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class BenchmarkPrograms {
-
-  private static Class[] targetClasses;
-  private static Class[] testClasses;
-
-
-
   public enum Program {
     TRIANGLE, MONOPOLY, VALIDATOR
   }
   public static final Program PROGRAM = Program.TRIANGLE;
   private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
+  private static Class[] targetClasses;
+  private static Class[] testClasses;
+  private static Map<String, Integer> makeshiftFeatureModel;
+
 
   public static Class[] getTargetClasses() {
     if (targetClasses == null) {
@@ -47,6 +42,23 @@ public class BenchmarkPrograms {
       System.out.println("TEST CLASSES : " + Arrays.toString(testClasses));
     }
     return testClasses;
+  }
+
+  public static Map<String, Integer> getMakeshiftFeatureModel() {
+    if (makeshiftFeatureModel == null) {
+      Scanner in = new Scanner(RunBenchmarks.class.getClassLoader()
+          .getResourceAsStream(getFeatureModelResource()));
+      makeshiftFeatureModel = new HashMap<>();
+      int id = 0;
+      while (in.hasNextLine()) {
+        String[] mutants = in.nextLine().split(" ");
+        for (String m : mutants) {
+          makeshiftFeatureModel.put(m, id);
+        }
+        id++;
+      }
+    }
+    return makeshiftFeatureModel;
   }
 
   private static Class[] loadClasses(String resourceStr, String classDir, String classPackage) {
@@ -169,6 +181,18 @@ public class BenchmarkPrograms {
       return "classes/monopoly-test.txt";
     case VALIDATOR:
       return "classes/validator-test.txt";
+    }
+    return "";
+  }
+
+  private static String getFeatureModelResource() {
+    switch (PROGRAM) {
+    case TRIANGLE:
+      return "mutantgroups/triangle.txt";
+    case MONOPOLY:
+      return "mutantgroups/monopoly.txt";
+    case VALIDATOR:
+      return "mutantgroups/validator.txt";
     }
     return "";
   }
