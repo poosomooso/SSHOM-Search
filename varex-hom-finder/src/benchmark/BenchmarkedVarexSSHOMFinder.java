@@ -40,11 +40,11 @@ public class BenchmarkedVarexSSHOMFinder {
 		
 		public static void main(String[] args) {
 			if (args.length == 0) {
-				RunTests.runTests(RunBenchmarks.TEST_CLASSES);
+				RunTests.runTests(BenchmarkPrograms.getTestClasses());
 			} else {
 				String testName = args[0];
 				System.out.println("run test  " + testName);
-				RunTests.runTests(RunBenchmarks.TEST_CLASSES, testName);
+				RunTests.runTests(BenchmarkPrograms.getTestClasses(), testName); // TODO: pass in class so we don't have to run getTestClasses()
 			}
 
 		}
@@ -54,9 +54,12 @@ public class BenchmarkedVarexSSHOMFinder {
 		benchmarker = new Benchmarker();
 	}
 
-	public void varexSSHOMFinder(Class[] targetClasses, Class[] testClasses) throws IOException {
+	public void varexSSHOMFinder() throws IOException {
 		benchmarker.start();
-		
+
+		Class[] targetClasses = BenchmarkPrograms.getTargetClasses();
+		Class[] testClasses = BenchmarkPrograms.getTestClasses();
+
 		System.setProperty("bddCacheSize", Integer.toString(100000));
 		System.setProperty("bddValNum", Integer.toString(1_750_000));
 		System.setProperty("bddVarNum", Integer.toString(128));

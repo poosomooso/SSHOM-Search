@@ -8,10 +8,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class BenchmarkPrograms {
+
+  private static Class[] targetClasses;
+  private static Class[] testClasses;
+
+
 
   public enum Program {
     TRIANGLE, MONOPOLY, VALIDATOR
@@ -19,14 +25,28 @@ public class BenchmarkPrograms {
   public static final Program PROGRAM = Program.TRIANGLE;
   private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
 
-  public static Class[] getSrcClasses() {
-    if (PROGRAM == Program.TRIANGLE) return new Class[] { Triangle.class };
-    return loadClasses(getSrcResource(), getSrcDir(), getSrcPackage());
+  public static Class[] getTargetClasses() {
+    if (targetClasses == null) {
+      if (PROGRAM == Program.TRIANGLE) {
+        targetClasses = new Class[] { Triangle.class };
+      } else {
+        targetClasses = loadClasses(getSrcResource(), getSrcDir(), getSrcPackage());
+      }
+      System.out.println("TARGET CLASSES : " + Arrays.toString(targetClasses));
+    }
+    return targetClasses;
   }
 
   public static Class[] getTestClasses() {
-    if (PROGRAM == Program.TRIANGLE) return new Class[] { Triangle_ESTest_improved.class };
-    return loadClasses(getTestResource(), getTestDir(), getTestPackage());
+    if (testClasses == null) {
+      if (PROGRAM == Program.TRIANGLE) {
+        testClasses = new Class[] { Triangle_ESTest_improved.class };
+      } else {
+        testClasses = loadClasses(getTestResource(), getTestDir(), getTestPackage());
+      }
+      System.out.println("TEST CLASSES : " + Arrays.toString(testClasses));
+    }
+    return testClasses;
   }
 
   private static Class[] loadClasses(String resourceStr, String classDir, String classPackage) {

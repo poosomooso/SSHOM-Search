@@ -1,10 +1,15 @@
 package verify;
 
-import benchmark.RunBenchmarks;
+import benchmark.BenchmarkPrograms;
 
 public class VerifyMonopoly {
   public static void main(String[] args) {
-    VerifySSHOM sshom = new VerifySSHOM(RunBenchmarks.TARGET_CLASSES, RunBenchmarks.TEST_CLASSES, "data/found-mutations/monopoly.txt");
+    if (BenchmarkPrograms.PROGRAM != BenchmarkPrograms.Program.MONOPOLY) {
+      throw new IllegalStateException(
+          "BenchmarkPrograms.PROGRAM must be set to MONOPOLY");
+    }
+    VerifySSHOM sshom = new VerifySSHOM(BenchmarkPrograms.getTargetClasses(), BenchmarkPrograms
+        .getTestClasses(), "data/found-mutations/monopoly.txt");
     sshom.printVerify();
   }
 

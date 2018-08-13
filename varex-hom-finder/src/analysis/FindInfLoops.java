@@ -105,9 +105,9 @@ public class FindInfLoops {
   public static void main(String[] args)
       throws NoSuchFieldException, IllegalAccessException {
     if(args.length == 0) {
-      findInfLoops(BenchmarkPrograms.getSrcClasses(), BenchmarkPrograms.getTestClasses());
+      findInfLoops(BenchmarkPrograms.getTargetClasses(), BenchmarkPrograms.getTestClasses());
     } else {
-      runner = new SSHOMRunner(BenchmarkPrograms.getSrcClasses(), BenchmarkPrograms.getTestClasses());
+      runner = new SSHOMRunner(BenchmarkPrograms.getTargetClasses(), BenchmarkPrograms.getTestClasses());
       runner.runJunitOnHOM(args);
     }
   }

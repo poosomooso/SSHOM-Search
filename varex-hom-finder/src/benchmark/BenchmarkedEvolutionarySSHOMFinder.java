@@ -21,9 +21,12 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         this.benchmarker = new Benchmarker();
     }
 
-    public void geneticAlgorithm(Class[] targetClasses, Class[] testClasses)
+    public void geneticAlgorithm()
         throws NoSuchFieldException, IllegalAccessException {
         benchmarker.start();
+
+        Class[] targetClasses = BenchmarkPrograms.getTargetClasses();
+        Class[] testClasses = BenchmarkPrograms.getTestClasses();
 
         this.testRunner = new SSHOMRunner(targetClasses, testClasses);
         this.allFOMs = testRunner.getMutants().toArray(new String[0]);

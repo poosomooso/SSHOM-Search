@@ -20,9 +20,13 @@ public class BenchmarkedNaiveSSHOMFinder {
     benchmarker = new Benchmarker();
   }
 
-  public void naiveSSHOMFinder(Class[] targetClasses, Class[] testClasses)
+  public void naiveSSHOMFinder()
       throws NoSuchFieldException, IllegalAccessException {
     benchmarker.start();
+
+    Class[] targetClasses = BenchmarkPrograms.getTargetClasses();
+    Class[] testClasses = BenchmarkPrograms.getTestClasses();
+
     foms = new HashMap<>();
     runner = new SSHOMRunner(targetClasses, testClasses);
     String[] mutants = runner.getMutants().toArray(new String[0]);
