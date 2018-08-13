@@ -44,6 +44,11 @@ public class BenchmarkPrograms {
     return testClasses;
   }
 
+  /**
+   * Returns a map of {mutantName : mutantGroupID} where mutants that conflict
+   * with each other (m0 ? a+b : m1 ? a*b : ...) share an id.
+   * @return
+   */
   public static Map<String, Integer> getMakeshiftFeatureModel() {
     if (makeshiftFeatureModel == null) {
       Scanner in = new Scanner(RunBenchmarks.class.getClassLoader()

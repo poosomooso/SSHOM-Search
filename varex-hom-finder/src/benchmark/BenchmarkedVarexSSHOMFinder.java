@@ -204,7 +204,8 @@ public class BenchmarkedVarexSSHOMFinder {
 	}
 
 	private boolean isValid(List<String> selections) {
-		boolean[] check = new boolean[33];
+		int numMutantGroups = BenchmarkPrograms.getMakeshiftFeatureModel().size();
+		boolean[] check = new boolean[numMutantGroups];
 		for (String mutation : selections) {
 			if (!check(check, mutation)) {
 				return false;
