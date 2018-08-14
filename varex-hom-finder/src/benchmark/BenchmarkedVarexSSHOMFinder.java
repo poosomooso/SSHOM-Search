@@ -15,6 +15,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.junit.Test;
+
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
@@ -22,7 +24,6 @@ import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDFactory;
-import org.junit.Test;
 import testRunner.RunTests;
 import util.SSHOMRunner;
 import varex.SSHOMExprFactory;
@@ -61,7 +62,7 @@ public class BenchmarkedVarexSSHOMFinder {
 		Class[] testClasses = BenchmarkPrograms.getTestClasses();
 
 		System.setProperty("bddCacheSize", Integer.toString(100000));
-		System.setProperty("bddValNum", Integer.toString(1_750_000));
+		System.setProperty("bddValNum", Integer.toString(2_000_000));
 		System.setProperty("bddVarNum", Integer.toString(128));
 		
 		runner = new SSHOMRunner(targetClasses, testClasses);
@@ -164,10 +165,9 @@ public class BenchmarkedVarexSSHOMFinder {
 		benchmarker.timestamp(allSolutions.size() + " " + selections);
 	}
 
-	private void getTestNames(Class[] testClasses, Map<String, FeatureExpr> tests) {
-		for (Class c : testClasses) {
-			List<Method> methods = Arrays.asList(c.getMethods());
-			methods.stream()
+	private void getTestNames(Class<?>[] testClasses, Map<String, FeatureExpr> tests) {
+		for (Class<?> c : testClasses) {
+			final List<Method> methods = Arrays.stream(c.getMethods())
 					.filter(m -> m.getAnnotation(Test.class) != null)
 					.collect(Collectors.toList());
 
