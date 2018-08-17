@@ -21,7 +21,7 @@ public class FindInfLoops {
     runner = new SSHOMRunner(targetClasses, testClasses);
     String[] mutants = runner.getMutants().toArray(new String[0]);
 //    checkFOMs(mutants);
-    for (int i = 2; i < 3; i++) {
+    for (int i = 3; i < 4; i++) {
       checkNOrder(i, new ArrayList<>(), mutants, 0);
     }
   }
@@ -97,7 +97,7 @@ public class FindInfLoops {
     if (fomRunner.isAlive()) {
       fomRunner.interrupt();
       System.setOut(originalStream);
-      System.out.println(Arrays.toString(mutants));
+      System.out.println(String.join(" ", Arrays.asList(mutants)));
     }
     System.setOut(originalStream);
   }
