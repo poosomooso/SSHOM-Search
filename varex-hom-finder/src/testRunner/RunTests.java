@@ -22,7 +22,11 @@ public class RunTests {
 			runTestAnnotations(c, testName);
 		}
 	}
-	
+
+	public static void runTests(Class testClass, String testName) {
+		runTestAnnotations(testClass, testName);
+	}
+
 	public static void runTests(Class[] testClasses) {
 		for (Class c : testClasses) {
 			List<Method> methods = Arrays.asList(c.getMethods());
@@ -31,7 +35,7 @@ public class RunTests {
 					.sorted((x, y) -> x.getName().compareTo(y.getName()));
 
 			for (Method m : methods) {
-				runTests(testClasses, m.getName());
+				runTestAnnotations(c, m.getName());
 			}
 		}
 	}
@@ -61,7 +65,7 @@ public class RunTests {
 
 		Method[] methods = c.getMethods();
 		for (Method method : methods) {
-			if (method.getName().equals(testName)) {// TODO needs to handle duplicate test names 
+			if (method.getName().equals(testName)) {// TODO needs to handle duplicate test names
 				if (method.getAnnotation(Test.class) != null) {
 					try {
 						invokeIfNonempty(beforeMethod, instance);

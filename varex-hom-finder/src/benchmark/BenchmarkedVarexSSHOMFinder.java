@@ -5,14 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -39,13 +33,14 @@ public class BenchmarkedVarexSSHOMFinder {
 
 	public static class TestRunner {
 		
-		public static void main(String[] args) {
-			if (args.length == 0) {
+		public static void main(String[] args) throws ClassNotFoundException {
+			if (args.length < 2) {
 				RunTests.runTests(BenchmarkPrograms.getTestClasses());
 			} else {
-				String testName = args[0];
+				String className = args[0];
+				String testName = args[1];
 				System.out.println("run test  " + testName);
-				RunTests.runTests(BenchmarkPrograms.getTestClasses(), testName); // TODO: pass in class so we don't have to run getTestClasses()
+				RunTests.runTests(Class.forName(className), testName); // TODO: pass in class so we don't have to run getTestClasses()
 			}
 
 		}
@@ -88,11 +83,12 @@ public class BenchmarkedVarexSSHOMFinder {
 
 		FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
 
-		Map<String, FeatureExpr> tests = new LinkedHashMap<>();
+		Map<Method, FeatureExpr> tests = new LinkedHashMap<>();
 
 		getTestNames(testClasses, tests);
 
-		for (Entry<String, FeatureExpr> test : tests.entrySet()) {
+		for (Entry<Method, FeatureExpr> test : tests.entrySet()) {
+			if (test.getKey().getName().equals("testGanaJugador")) continue;
 			
 			CommandLineRunner.process("java", "-jar",
 					baseDir + "lib/RunJPF.jar",
@@ -100,7 +96,8 @@ public class BenchmarkedVarexSSHOMFinder {
 					"+bddCacheSize=100000",
 					"+bddValNum=1500000",
 					"+bddVarNum=128",
-					paths, "+choice=MapChoice", TestRunner.class.getName(), test.getKey());
+					paths, "+choice=MapChoice",
+					TestRunner.class.getName(), test.getKey().getDeclaringClass().getName(), test.getKey().getName());
 		}
 		benchmarker.timestamp("create features");
 		createFeatures(mutants);
@@ -112,7 +109,11 @@ public class BenchmarkedVarexSSHOMFinder {
 		FeatureExpr[] fomExprs = SSHOMExprFactory.genFOMs(mutantExprs, mutants.length);
 		
 		benchmarker.timestamp("create SSHOM expression");
-		FeatureExpr finalExpr = SSHOMExprFactory.getSSHOMExpr(tests, mutantExprs, mutantExprs.length);
+		Map<String, FeatureExpr> stringTests = new HashMap<>();
+		for (Entry<Method, FeatureExpr> t: tests.entrySet()) {
+			stringTests.put(t.getKey().getName(), t.getValue());
+		}
+		FeatureExpr finalExpr = SSHOMExprFactory.getSSHOMExpr(stringTests, mutantExprs, mutantExprs.length);
 
 		// exclude foms
 		for (FeatureExpr m : fomExprs) {
@@ -165,25 +166,25 @@ public class BenchmarkedVarexSSHOMFinder {
 		benchmarker.timestamp(allSolutions.size() + " " + selections);
 	}
 
-	private void getTestNames(Class<?>[] testClasses, Map<String, FeatureExpr> tests) {
+	private void getTestNames(Class<?>[] testClasses, Map<Method, FeatureExpr> tests) {
 		for (Class<?> c : testClasses) {
 			final List<Method> methods = Arrays.stream(c.getMethods())
 					.filter(m -> m.getAnnotation(Test.class) != null)
 					.collect(Collectors.toList());
 
 			for (Method m : methods) {
-				tests.put(m.getName(), FeatureExprFactory.False());
+				tests.put(m, FeatureExprFactory.False());
 			}
 		}
 
 	}
 
-	private void loadTestExpressions(Map<String, FeatureExpr> tests) throws IOException {
+	private void loadTestExpressions(Map<Method, FeatureExpr> tests) throws IOException {
 		final BDDFactory bddFactory = FExprBuilder.bddFactory();
-		for (Entry<String, FeatureExpr> test : tests.entrySet()) {
-			final File file = new File(test.getKey() + ".txt");
+		for (Entry<Method, FeatureExpr> test : tests.entrySet()) {
+			final File file = new File(test.getKey().getName() + ".txt");
 			if (file.exists()) {
-				try (BufferedReader br = new BufferedReader(new FileReader(test.getKey() + ".txt"))) {
+				try (BufferedReader br = new BufferedReader(new FileReader(test.getKey().getName() + ".txt"))) {
 					BDD bdd2 = bddFactory.load(br);
 					FeatureExpr expr = new BDDFeatureExpr(bdd2);
 					test.setValue(expr);
