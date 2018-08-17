@@ -24,7 +24,6 @@ import varex.SSHOMExprFactory;
 
 public class BenchmarkedVarexSSHOMFinder {
 	private Benchmarker benchmarker;
-	private SSHOMRunner runner;
 	public static SingleFeatureExpr[] mutantExprs = null;
 
 	private static boolean JENS = false;
@@ -55,13 +54,12 @@ public class BenchmarkedVarexSSHOMFinder {
 
 		Class[] targetClasses = BenchmarkPrograms.getTargetClasses();
 		Class[] testClasses = BenchmarkPrograms.getTestClasses();
+		String[] mutants = BenchmarkPrograms.getMutantNames();
 
 		System.setProperty("bddCacheSize", Integer.toString(100000));
 		System.setProperty("bddValNum", Integer.toString(2_000_000));
 		System.setProperty("bddVarNum", Integer.toString(128));
-		
-		runner = new SSHOMRunner(targetClasses, testClasses);
-		String[] mutants = runner.getMutants().toArray(new String[0]);
+
 		String paths;
 		if (RunBenchmarks.RUNNING_LOCALLY) {
 			if (JENS) {
@@ -200,7 +198,6 @@ public class BenchmarkedVarexSSHOMFinder {
 	 * It is importnat that the features are generated in the same order as when executing with Varex 
 	 */
 	private void createFeatures(String[] mutants) {
-		Arrays.sort(mutants, (o1, o2) -> Integer.compare(Integer.parseInt(o1.substring(1)), Integer.parseInt(o2.substring(1))));
 		mutantExprs = mutantNamesToFeatures(mutants);
 	}
 

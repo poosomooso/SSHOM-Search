@@ -13,11 +13,12 @@ public class BenchmarkPrograms {
   public enum Program {
     TRIANGLE, MONOPOLY, VALIDATOR
   }
-  public static final Program PROGRAM = Program.TRIANGLE;
+  public static final Program PROGRAM = Program.MONOPOLY;
   private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
   private static Class[] targetClasses;
   private static Class[] testClasses;
   private static Map<String, Integer> makeshiftFeatureModel;
+  private static String[] mutantNames;
 
 
   public static Class[] getTargetClasses() {
@@ -51,19 +52,33 @@ public class BenchmarkPrograms {
    */
   public static Map<String, Integer> getMakeshiftFeatureModel() {
     if (makeshiftFeatureModel == null) {
-      Scanner in = new Scanner(RunBenchmarks.class.getClassLoader()
-          .getResourceAsStream(getFeatureModelResource()));
-      makeshiftFeatureModel = new HashMap<>();
-      int id = 0;
-      while (in.hasNextLine()) {
-        String[] mutants = in.nextLine().split(" ");
-        for (String m : mutants) {
-          makeshiftFeatureModel.put(m, id);
-        }
-        id++;
-      }
+      loadMutantsAndFM();
     }
     return makeshiftFeatureModel;
+  }
+
+  public static String[] getMutantNames() {
+    if (mutantNames == null) {
+      loadMutantsAndFM();
+    }
+    return mutantNames;
+  }
+
+  private static void loadMutantsAndFM() {
+    Scanner in = new Scanner(RunBenchmarks.class.getClassLoader()
+        .getResourceAsStream(getFeatureModelResource()));
+    makeshiftFeatureModel = new HashMap<>();
+    ArrayList<String> mutantList = new ArrayList<>();
+    int id = 0;
+    while (in.hasNextLine()) {
+      String[] mutants = in.nextLine().split(" ");
+      for (String m : mutants) {
+        makeshiftFeatureModel.put(m, id);
+        mutantList.add(m);
+      }
+      id++;
+    }
+    mutantNames = mutantList.toArray(new String[0]);
   }
 
   private static Class[] loadClasses(String resourceStr, String classDir, String classPackage) {
