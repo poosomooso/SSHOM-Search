@@ -2,8 +2,10 @@ package benchmark;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import cmu.conditional.Conditional;
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
@@ -33,8 +36,8 @@ public class BenchmarkedVarexSSHOMFinder {
 	private SSHOMRunner runner;
 	public static SingleFeatureExpr[] mutantExprs = null;
 
-	private static boolean JENS = false;
-	private String baseDir = JENS ? "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\" :
+	private static boolean JENS = true;
+	private String baseDir = JENS ? "C:/Users/jensm/git/mutationtest-varex/" :
 									"/home/serena/reuse/hom-generator/";
 
 	public static class TestRunner {
@@ -62,7 +65,7 @@ public class BenchmarkedVarexSSHOMFinder {
 		Class[] testClasses = BenchmarkPrograms.getTestClasses();
 
 		System.setProperty("bddCacheSize", Integer.toString(100000));
-		System.setProperty("bddValNum", Integer.toString(2_000_000));
+		System.setProperty("bddValNum", Integer.toString(6_000_000));
 		System.setProperty("bddVarNum", Integer.toString(128));
 		
 		runner = new SSHOMRunner(targetClasses, testClasses);
@@ -100,10 +103,14 @@ public class BenchmarkedVarexSSHOMFinder {
 					"+bddCacheSize=100000",
 					"+bddValNum=1500000",
 					"+bddVarNum=128",
-					paths, "+choice=MapChoice", TestRunner.class.getName(), test.getKey());
+					paths, "+choice=MapChoice", 
+					"+mutants="+ baseDir + "varex-hom-finder\\resources\\mutantgroups\\triangle.txt",
+					TestRunner.class.getName(), test.getKey());
 		}
 		benchmarker.timestamp("create features");
-		createFeatures(mutants);
+		
+		Conditional.createAndGetFeatures(baseDir + "varex-hom-finder\\resources\\mutantgroups\\triangle.txt").toArray(mutants);
+		mutantExprs = mutantNamesToFeatures(mutants);
 		
 		benchmarker.timestamp("load f(t)");
 		loadTestExpressions(tests);
@@ -193,16 +200,6 @@ public class BenchmarkedVarexSSHOMFinder {
 		}
 	}
 
-	/**
-	 * Generates the features. 
-	 * This method essentially initializes the BDD variables.
-	 * It is importnat that the features are generated in the same order as when executing with Varex 
-	 */
-	private void createFeatures(String[] mutants) {
-		Arrays.sort(mutants, (o1, o2) -> Integer.compare(Integer.parseInt(o1.substring(1)), Integer.parseInt(o2.substring(1))));
-		mutantExprs = mutantNamesToFeatures(mutants);
-	}
-
 	private boolean isValid(List<String> selections) {
 		int numMutantGroups = BenchmarkPrograms.getMakeshiftFeatureModel().size();
 		boolean[] check = new boolean[numMutantGroups];
@@ -227,7 +224,7 @@ public class BenchmarkedVarexSSHOMFinder {
 	private SingleFeatureExpr[] mutantNamesToFeatures(String[] mutants) {
 		SingleFeatureExpr[] mutantExprs = new SingleFeatureExpr[mutants.length];
 		for (int i = 0; i < mutants.length; i++) {
-			mutantExprs[i] = FeatureExprFactory.createDefinedExternal(mutants[i]);
+			mutantExprs[i] = Conditional.createFeature(mutants[i]);
 		}
 		return mutantExprs;
 	}
