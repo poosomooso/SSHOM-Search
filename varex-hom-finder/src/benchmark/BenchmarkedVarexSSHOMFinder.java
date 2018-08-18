@@ -2,10 +2,8 @@ package benchmark;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +35,7 @@ public class BenchmarkedVarexSSHOMFinder {
 	public static SingleFeatureExpr[] mutantExprs = null;
 
 	private static boolean JENS = true;
-	private String baseDir = JENS ? "C:/Users/jensm/git/mutationtest-varex/" :
+	private String baseDir = JENS ? "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\" :
 									"/home/serena/reuse/hom-generator/";
 
 	public static class TestRunner {
@@ -66,7 +64,6 @@ public class BenchmarkedVarexSSHOMFinder {
 
 		System.setProperty("bddCacheSize", Integer.toString(100000));
 		System.setProperty("bddValNum", Integer.toString(6_000_000));
-		System.setProperty("bddVarNum", Integer.toString(128));
 		
 		runner = new SSHOMRunner(targetClasses, testClasses);
 		String[] mutants = runner.getMutants().toArray(new String[0]);
@@ -102,7 +99,6 @@ public class BenchmarkedVarexSSHOMFinder {
 					"+search.class=.search.RandomSearch",
 					"+bddCacheSize=100000",
 					"+bddValNum=1500000",
-					"+bddVarNum=128",
 					paths, "+choice=MapChoice", 
 					"+mutants="+ baseDir + "varex-hom-finder\\resources\\mutantgroups\\triangle.txt",
 					TestRunner.class.getName(), test.getKey());
