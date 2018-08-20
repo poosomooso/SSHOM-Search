@@ -100,12 +100,12 @@ public class BenchmarkedVarexSSHOMFinder {
 					"+bddCacheSize=100000",
 					"+bddValNum=1500000",
 					paths, "+choice=MapChoice", 
-					"+mutants="+ baseDir + "varex-hom-finder\\resources\\mutantgroups\\triangle.txt",
+					"+mutants="+ baseDir + "varex-hom-finder\\resources\\mutantgroups\\triangle.txt",// TODO @Serena make path generic
 					TestRunner.class.getName(), test.getKey());
 		}
 		benchmarker.timestamp("create features");
 		
-		Conditional.createAndGetFeatures(baseDir + "varex-hom-finder\\resources\\mutantgroups\\triangle.txt").toArray(mutants);
+		Conditional.createAndGetFeatures(baseDir + "varex-hom-finder\\resources\\mutantgroups\\triangle.txt").toArray(mutants);// TODO @Serena make path generic
 		mutantExprs = mutantNamesToFeatures(mutants);
 		
 		benchmarker.timestamp("load f(t)");
