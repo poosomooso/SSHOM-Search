@@ -36,50 +36,6 @@ public class SSHOMRunner {
     jUnitCore.addListener(sshomListener);
 
     Map<String, FeatureExpr> expressions = JPF_gov_nasa_jpf_ConsoleOutputStream.testExpressions;
-    jUnitCore.addListener(new RunListener() {
-    	
-    	boolean failed = false;
-    	
-    	@Override
-    	public void testFinished(Description description) throws Exception {
-    		super.testFinished(description);
-    		if (!failed) { 
-	    		FeatureExpr ctx = expressions.get(description.getMethodName());
-	    		FeatureExpr feature = Conditional.createFeature(currentMutant);
-	    		FeatureExpr fullSelection = feature;
-	    		for (FeatureExpr f : BenchmarkedVarexSSHOMFinder.mutantExprs) {
-	    			if (feature != f) {
-	    				fullSelection = fullSelection.and(f.not());
-	    			}
-				}
-	    		boolean correctFOM = Conditional.isContradiction(Conditional.and(ctx, fullSelection));
-				if (!correctFOM) {
-					System.out.println("failed " + Conditional.getCTXString(feature) +  " for test " + description.getClassName() + "." + description.getMethodName());
-//					System.exit(-1);
-				}
-    		}
-    		failed = false;
-    	}
-    	
-    	@Override
-    	public void testFailure(Failure failure) throws Exception {
-    		super.testFailure(failure);
-    		failed = true;
-    		FeatureExpr ctx = expressions.get(failure.getDescription().getMethodName());
-    		FeatureExpr feature = Conditional.createFeature(currentMutant);
-    		FeatureExpr fullSelection = feature;
-    		for (FeatureExpr f : BenchmarkedVarexSSHOMFinder.mutantExprs) {
-    			if (!feature.equals(f)) {
-    				fullSelection = fullSelection.and(Conditional.not(f));
-    			}
-			}
-    		boolean correctFOM = !Conditional.isContradiction(Conditional.and(ctx, fullSelection));
-			if (!correctFOM) {
-				System.out.println("failed " + Conditional.getCTXString(feature) +  " for test " + failure.getDescription().getClassName() + "." + failure.getDescription().getMethodName());
-//				System.exit(-1);
-			}
-    	}
-    });
     
     //foms
     for (String s : mutants) {
