@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import net.sf.javabdd.BDDException;
 import org.junit.Test;
 
 import de.fosd.typechef.featureexpr.FeatureExpr;
@@ -19,7 +20,6 @@ import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDFactory;
 import testRunner.RunTests;
-import util.SSHOMRunner;
 import varex.SSHOMExprFactory;
 
 public class BenchmarkedVarexSSHOMFinder {
@@ -180,13 +180,17 @@ public class BenchmarkedVarexSSHOMFinder {
 	private void loadTestExpressions(Map<Method, FeatureExpr> tests) throws IOException {
 		final BDDFactory bddFactory = FExprBuilder.bddFactory();
 		for (Entry<Method, FeatureExpr> test : tests.entrySet()) {
-			final File file = new File(test.getKey().getName() + ".txt");
+			String fname = RunTests.getTestDesc(test.getKey()) + ".txt";
+			final File file = new File(fname);
 			if (file.exists()) {
-				try (BufferedReader br = new BufferedReader(new FileReader(test.getKey().getName() + ".txt"))) {
+				try (BufferedReader br = new BufferedReader(new FileReader(fname))) {
 					BDD bdd2 = bddFactory.load(br);
 					FeatureExpr expr = new BDDFeatureExpr(bdd2);
 					test.setValue(expr);
 					file.deleteOnExit();
+				} catch (BDDException e) {
+					System.err.println(fname);
+					e.printStackTrace();
 				}
 			}
 		}

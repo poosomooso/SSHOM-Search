@@ -75,7 +75,7 @@ public class RunTests {
 					} catch (IllegalAccessException e) {
 						e.printStackTrace();
 					} catch (Throwable e) {
-						System.out.println(method.getName());
+						System.out.println(getTestDesc(method));
 					}
 					break;
 				}
@@ -104,6 +104,10 @@ public class RunTests {
 		if (m.isPresent()) {
 			m.get().invoke(instance, null);
 		}
+	}
+
+	public static String getTestDesc(Method m) {
+		return "test." + m.getDeclaringClass().getName() + "." + m.getName();
 	}
 
 }
