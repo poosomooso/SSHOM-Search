@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import net.sf.javabdd.BDDException;
 import org.junit.Test;
 
+import cmu.conditional.Conditional;
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
@@ -57,8 +58,7 @@ public class BenchmarkedVarexSSHOMFinder {
 		String[] mutants = BenchmarkPrograms.getMutantNames();
 
 		System.setProperty("bddCacheSize", Integer.toString(100000));
-		System.setProperty("bddValNum", Integer.toString(2_000_000));
-		System.setProperty("bddVarNum", Integer.toString(128));
+		System.setProperty("bddValNum", Integer.toString(6_000_000));
 
 		String paths;
 		if (RunBenchmarks.RUNNING_LOCALLY) {
@@ -93,12 +93,14 @@ public class BenchmarkedVarexSSHOMFinder {
 					"+search.class=.search.RandomSearch",
 					"+bddCacheSize=100000",
 					"+bddValNum=1500000",
-					"+bddVarNum=128",
-					paths, "+choice=MapChoice",
-					TestRunner.class.getName(), test.getKey().getDeclaringClass().getName(), test.getKey().getName());
+					paths, "+choice=MapChoice", 
+					"+mutants="+ baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource(),// TODO not sure if path works for Jens
+							TestRunner.class.getName(), test.getKey().getDeclaringClass().getName(), test.getKey().getName());
 		}
 		benchmarker.timestamp("create features");
-		createFeatures(mutants);
+		
+		Conditional.createAndGetFeatures(baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource()).toArray(mutants);// TODO not sure if path works for Jens
+		mutantExprs = mutantNamesToFeatures(mutants);
 		
 		benchmarker.timestamp("load f(t)");
 		loadTestExpressions(tests);
@@ -196,15 +198,6 @@ public class BenchmarkedVarexSSHOMFinder {
 		}
 	}
 
-	/**
-	 * Generates the features. 
-	 * This method essentially initializes the BDD variables.
-	 * It is importnat that the features are generated in the same order as when executing with Varex 
-	 */
-	private void createFeatures(String[] mutants) {
-		mutantExprs = mutantNamesToFeatures(mutants);
-	}
-
 	private boolean isValid(List<String> selections) {
 		int numMutantGroups = BenchmarkPrograms.getMakeshiftFeatureModel().size();
 		boolean[] check = new boolean[numMutantGroups];
@@ -229,7 +222,7 @@ public class BenchmarkedVarexSSHOMFinder {
 	private SingleFeatureExpr[] mutantNamesToFeatures(String[] mutants) {
 		SingleFeatureExpr[] mutantExprs = new SingleFeatureExpr[mutants.length];
 		for (int i = 0; i < mutants.length; i++) {
-			mutantExprs[i] = FeatureExprFactory.createDefinedExternal(mutants[i]);
+			mutantExprs[i] = Conditional.createFeature(mutants[i]);
 		}
 		return mutantExprs;
 	}

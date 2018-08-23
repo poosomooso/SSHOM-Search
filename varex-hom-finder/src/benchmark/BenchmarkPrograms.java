@@ -205,7 +205,7 @@ public class BenchmarkPrograms {
     return "";
   }
 
-  private static String getFeatureModelResource() {
+  public static String getFeatureModelResource() {
     switch (PROGRAM) {
     case TRIANGLE:
       return "mutantgroups/triangle.txt";
