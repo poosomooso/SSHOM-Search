@@ -141,7 +141,7 @@ public class BenchmarkedVarexSSHOMFinder {
 	 * @param mutants
 	 */
 	private void getSolutions(byte[] solutions, String[] mutants, Set<List<String>> allSolutions, List<String> selections, int start) {
-		if (selections.size() >= 2 && !isValid(selections)) {
+		if (selections.size() >= 2 && !BenchmarkPrograms.homIsValid(selections)) {
 			return;
 		}
 		for (int i = start; i <= mutants.length; i++) {
@@ -156,7 +156,7 @@ public class BenchmarkedVarexSSHOMFinder {
 				}
 				
 				selections.add(mutants[i - 1]);
-				if (selections.size() >= 2 && !isValid(selections)) {
+				if (selections.size() >= 2 && !BenchmarkPrograms.homIsValid(selections)) {
 					return;
 				}
 				solutions[i] = 1;
@@ -196,27 +196,6 @@ public class BenchmarkedVarexSSHOMFinder {
 				}
 			}
 		}
-	}
-
-	private boolean isValid(List<String> selections) {
-		int numMutantGroups = BenchmarkPrograms.getMakeshiftFeatureModel().size();
-		boolean[] check = new boolean[numMutantGroups];
-		for (String mutation : selections) {
-			if (!check(check, mutation)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private boolean check(boolean[] check, String mutant) {
-		int id = BenchmarkPrograms.getMakeshiftFeatureModel().get(mutant);
-		if (check[id]) {
-			return false;
-		} else {
-			check[id] = true;
-		}
-		return true;
 	}
 
 	private SingleFeatureExpr[] mutantNamesToFeatures(String[] mutants) {

@@ -1,5 +1,6 @@
 package geneticAlgorithm;
 
+import benchmark.BenchmarkPrograms;
 import org.junit.runner.Description;
 import util.SSHOMListener;
 import util.SSHOMRunner;

@@ -13,7 +13,7 @@ public class BenchmarkPrograms {
   public enum Program {
     TRIANGLE, MONOPOLY, VALIDATOR
   }
-  public static final Program PROGRAM = Program.MONOPOLY;
+  public static final Program PROGRAM = Program.TRIANGLE;
   private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
   private static Class[] targetClasses;
   private static Class[] testClasses;
@@ -79,6 +79,38 @@ public class BenchmarkPrograms {
       id++;
     }
     mutantNames = mutantList.toArray(new String[0]);
+  }
+
+  public static boolean homIsValid(List<String> hom) {
+    int numMutantGroups = BenchmarkPrograms.getMakeshiftFeatureModel().size();
+    boolean[] check = new boolean[numMutantGroups];
+    for (String mutation : hom) {
+      if (!check(check, mutation)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public static boolean homIsValid(String[] hom) {
+    int numMutantGroups = BenchmarkPrograms.getMakeshiftFeatureModel().size();
+    boolean[] check = new boolean[numMutantGroups];
+    for (String mutation : hom) {
+      if (!check(check, mutation)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static boolean check(boolean[] check, String mutant) {
+    int id = BenchmarkPrograms.getMakeshiftFeatureModel().get(mutant);
+    if (check[id]) {
+      return false;
+    } else {
+      check[id] = true;
+    }
+    return true;
   }
 
   private static Class[] loadClasses(String resourceStr, String classDir, String classPackage) {

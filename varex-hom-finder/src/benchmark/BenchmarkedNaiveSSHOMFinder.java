@@ -1,5 +1,6 @@
 package benchmark;
 
+import org.evosuite.shaded.org.hibernate.boot.jaxb.SourceType;
 import org.junit.runner.Description;
 import util.CheckStronglySubsuming;
 import util.SSHOMListener;
@@ -15,6 +16,7 @@ public class BenchmarkedNaiveSSHOMFinder {
   private Benchmarker                   benchmarker;
   private SSHOMRunner                   runner;
   private Map<String, Set<Description>> foms;
+  static long x = 0;
 
   public BenchmarkedNaiveSSHOMFinder() {
     benchmarker = new Benchmarker();
@@ -64,6 +66,7 @@ public class BenchmarkedNaiveSSHOMFinder {
       List<Set<Description>> currentFoms = selectedMutants.stream()
           .map(m -> foms.get(m)).collect(Collectors.toList());
 
+      System.out.println(x++);
       if (CheckStronglySubsuming
           .isStronglySubsuming(sshomListener.getHomTests(), currentFoms)) {
         //        System.setOut(out);
@@ -74,7 +77,9 @@ public class BenchmarkedNaiveSSHOMFinder {
       for (int i = mutantStart; i < allMutants.length; i++) {
         List<String> newSelected = new ArrayList<>(selectedMutants);
         newSelected.add(allMutants[i]);
-        runOnNOrder(order-1, newSelected, allMutants, i+1);
+        if (BenchmarkPrograms.homIsValid(newSelected)) {
+          runOnNOrder(order - 1, newSelected, allMutants, i + 1);
+        }
       }
     }
   }

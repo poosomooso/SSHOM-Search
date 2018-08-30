@@ -21,7 +21,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         this.benchmarker = new Benchmarker();
     }
 
-    public void geneticAlgorithm()
+    public void evolutionarySSHOMFinder()
         throws NoSuchFieldException, IllegalAccessException {
         benchmarker.start();
 
@@ -29,11 +29,11 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         Class[] testClasses = BenchmarkPrograms.getTestClasses();
 
         this.testRunner = new SSHOMRunner(targetClasses, testClasses);
-        this.allFOMs = testRunner.getMutants().toArray(new String[0]);
+        this.allFOMs = BenchmarkPrograms.getMutantNames();
 
         // doing this because I can't get stream to work?
         this.fomFitness = new HashMap<>();
-        for (String m : testRunner.getMutants()) {
+        for (String m : this.allFOMs) {
             this.fomFitness.put(m,
                 new MutationContainer(new String[] { m }, testRunner, null));
         }
@@ -41,11 +41,18 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         System.out.println("Generated FOMs");
 
         // actual algorithm
-        int populationSize = 100;
+        int populationSize = 1000;
         double percentDiscarded = 1.0 / 3.0; // TODO: properties file
 
         int numIters = 100;
 
+        geneticAlgorithm(populationSize, percentDiscarded, numIters);
+
+    }
+
+    private int geneticAlgorithm(int populationSize, double percentDiscarded,
+        int numIters) throws NoSuchFieldException, IllegalAccessException {
+        int sshomsFound = 0;
         //generate some homs based on foms
         MutationContainer[] homPopulation = genHOMs(3, populationSize);
 
@@ -58,21 +65,25 @@ public class BenchmarkedEvolutionarySSHOMFinder {
             int j = homPopulation.length-1;
             while (j >= 0 && homPopulation[j].getFitness() <= 1.0) {
                 if (!recordedSSHOMs.contains(homPopulation[j])) {
+                    assert BenchmarkPrograms
+                        .homIsValid(homPopulation[j].getMutation()) :
+                        "Invalid HOM: " + Arrays
+                            .toString(homPopulation[j].getMutation());
                     benchmarker.timestamp(String.join(",", homPopulation[j].getMutation()));
                     recordedSSHOMs.add(homPopulation[j]);
                 }
                 j--;
             }
-            
+
             int numDiscarded = Math.max(
-                arrLastIndexOf(homPopulation), (int) (populationSize * percentDiscarded));
+                lastValidIndex(homPopulation), (int) (populationSize * percentDiscarded));
             int numCrossovers = crossover(homPopulation, numDiscarded);
             mutate(homPopulation, numCrossovers, numDiscarded);
         }
-
+        return sshomsFound;
     }
 
-    private int arrLastIndexOf(MutationContainer[] homPopulation) {
+    private int lastValidIndex(MutationContainer[] homPopulation) {
         for (int i = homPopulation.length - 1; i >= 0; i--) {
             if (!homPopulation[i].hasValidFitness()) {
                 return i;
@@ -94,11 +105,11 @@ public class BenchmarkedEvolutionarySSHOMFinder {
             MutationContainer parent2 = sortedHOMS[parentIndex2];
 
             MutationContainer[] children = crossoverParents(parent1, parent2);
-            if (!seenMutations.contains(children[0])) {
+            if (!seenMutations.contains(children[0]) && BenchmarkPrograms.homIsValid(children[0].getMutation())) {
                 sortedHOMS[i++] = children[0];
                 seenMutations.add(children[0]);
             }
-            if (!seenMutations.contains(children[1])) {
+            if (!seenMutations.contains(children[1]) && BenchmarkPrograms.homIsValid(children[1].getMutation())) {
                 sortedHOMS[i++] = children[1];
                 seenMutations.add(children[1]);
             }
@@ -114,7 +125,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
                 .randRange(numDiscarded, sortedHOMS.length);
             MutationContainer parent = sortedHOMS[parentIndex];
             MutationContainer m = randomlyMutate(parent);
-            if (!seenMutations.contains(m)) {
+            if (!seenMutations.contains(m) && BenchmarkPrograms.homIsValid(m.getMutation())) {
                 sortedHOMS[i++] = m;
                 seenMutations.add(m);
             }
@@ -219,11 +230,13 @@ public class BenchmarkedEvolutionarySSHOMFinder {
                 newHOM[j] = this.allFOMs[mutationIdx];
             }
 
-            MutationContainer container = new MutationContainer(newHOM,
-                this.testRunner, this.fomFitness);
+            if (BenchmarkPrograms.homIsValid(newHOM)) {
+                MutationContainer container = new MutationContainer(newHOM,
+                    this.testRunner, this.fomFitness);
 
-            if (homsSet.add(container)) {
-                i++;
+                if (homsSet.add(container)) {
+                    i++;
+                }
             }
         }
         seenMutations.addAll(homsSet);

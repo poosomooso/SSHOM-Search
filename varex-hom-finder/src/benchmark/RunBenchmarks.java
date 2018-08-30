@@ -35,7 +35,7 @@ public class RunBenchmarks {
   private static void runEvolutionary()
       throws NoSuchFieldException, IllegalAccessException {
     BenchmarkedEvolutionarySSHOMFinder evolutionarySSHOMFinder = new BenchmarkedEvolutionarySSHOMFinder();
-    evolutionarySSHOMFinder.geneticAlgorithm();
+    evolutionarySSHOMFinder.evolutionarySSHOMFinder();
   }
 
   private static void runVarex()
