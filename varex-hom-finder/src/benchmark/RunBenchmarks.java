@@ -3,7 +3,6 @@ package benchmark;
 import java.io.IOException;
 
 public class RunBenchmarks {
-  public static final boolean RUNNING_LOCALLY = true;
 
   public static void main(String[] args)
       throws NoSuchFieldException, IOException, IllegalAccessException {

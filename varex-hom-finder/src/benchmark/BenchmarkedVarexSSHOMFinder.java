@@ -29,9 +29,23 @@ public class BenchmarkedVarexSSHOMFinder {
 	private Benchmarker benchmarker;
 	public static SingleFeatureExpr[] mutantExprs = null;
 
-	private static boolean JENS = false;
-	private String baseDir = JENS ? "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\" :
-									"/home/serena/reuse/hom-generator/";
+	private enum Machine {
+		JENS,
+		SERENA,
+		FEATURE_SERVER;
+
+		String getBaseDir() {
+			switch (this) {
+			case JENS: return "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\";
+			case SERENA: return "/home/serena/reuse/hom-generator/";
+//			case FEATURE_SERVER: return "/home/feature/serena/";
+			case FEATURE_SERVER: return "/home/serena/";
+			}
+			return "";
+		}
+	}
+	private static Machine machine = Machine.FEATURE_SERVER;
+	private        String  baseDir = machine.getBaseDir();
 
 	public BenchmarkedVarexSSHOMFinder() {
 		benchmarker = new Benchmarker();
@@ -47,24 +61,23 @@ public class BenchmarkedVarexSSHOMFinder {
 		System.setProperty("bddCacheSize", Integer.toString(100000));
 		System.setProperty("bddValNum", Integer.toString(6_000_000));
 
-		String paths;
-		if (RunBenchmarks.RUNNING_LOCALLY) {
-			if (JENS) {
+		String paths, mutantFile, jpfPath;
+		if (machine == Machine.FEATURE_SERVER) {
+			paths = "+classpath=" + baseDir + "hom-generator.jar," + baseDir + "junit-4.12.jar," + baseDir + "lib/bcel-6.0.jar";
+			mutantFile = baseDir + BenchmarkPrograms.getFeatureModelResource();
+			jpfPath = baseDir + "lib/RunJPF.jar";
+		} else if (machine == Machine.JENS) {
 				paths = "+classpath=" + baseDir + "bin," + baseDir + "code-ut/jars/monopoli100.jar," + baseDir + "lib/bcel-6.0.jar,"
 						+ baseDir + "lib/junit.jar";
-			} else {
-				paths = "+classpath="
-						+ baseDir + "out/production/code-ut,"
-						+ baseDir + "code-ut/jars/monopoli100.jar,"
-						+ baseDir + "code-ut/jars/commons-validator.jar,"
-						+ baseDir + "code-ut/jars/mutated-cli.jar,"
-						+ baseDir + "lib/bcel-6.0.jar,"
-						+ baseDir + "out/test/code-ut,"
-						+ baseDir + "out/production/varex-hom-finder,"
-						+ baseDir + "lib/junit.jar";
-			}
+			mutantFile = baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource();
+			jpfPath = baseDir + "lib/RunJPF.jar";
 		} else {
-			paths = "+classpath=" + "/home/feature/serena/varex-hom-finder.jar," + "/home/feature/serena/junit-4.12.jar";
+			paths = "+classpath=" + baseDir + "out/production/code-ut," + baseDir + "code-ut/jars/monopoli100.jar,"
+					+ baseDir + "code-ut/jars/commons-validator.jar," + baseDir + "lib/bcel-6.0.jar,"
+					+ baseDir + "out/test/code-ut," + baseDir + "out/production/varex-hom-finder,"
+					+ baseDir + "lib/junit.jar";
+			mutantFile = baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource();
+			jpfPath = baseDir + "lib/RunJPF.jar";
 		}
 
 		FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
@@ -74,22 +87,18 @@ public class BenchmarkedVarexSSHOMFinder {
 		getTestNames(testClasses, tests);
 
 		for (Entry<Method, FeatureExpr> test : tests.entrySet()) {
-			if (test.getKey().getName().equals("testGanaJugador")) continue;
-
+			if (test.getKey().getName().equals("testGanaJugador"))
+				continue;
 			if (!Modifier.isAbstract(test.getKey().getDeclaringClass().getModifiers())) {
-
-				CommandLineRunner.process("java", "-jar", baseDir + "lib/RunJPF.jar",
+				CommandLineRunner.process("java", "-jar", jpfPath,
 						"+search.class=.search.RandomSearch", "+bddCacheSize=100000",
-						"+bddValNum=1500000", paths, "+choice=MapChoice",
-						"+mutants=" + baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource(),
-						// TODO not sure if path works for Jens
+						"+bddValNum=1500000", paths, "+choice=MapChoice", "+mutants=" + mutantFile,// TODO not sure if path works for Jens
 						TestRunner.class.getName(), test.getKey().getDeclaringClass().getName(),
 						test.getKey().getName());
 			}
 		}
 		benchmarker.timestamp("create features");
-		
-//		Conditional.createAndGetFeatures(baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource()).toArray(mutants);// TODO not sure if path works for Jens
+
 		mutantExprs = mutantNamesToFeatures(mutants);
 		
 		benchmarker.timestamp("load f(t)");

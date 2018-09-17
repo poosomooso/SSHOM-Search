@@ -41,7 +41,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         System.out.println("Generated FOMs");
 
         // actual algorithm
-        int populationSize = 1000;
+        int populationSize = 5000;
         double percentDiscarded = 1.0 / 3.0; // TODO: properties file
 
         int numIters = 100;
