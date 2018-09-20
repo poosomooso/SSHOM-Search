@@ -11,9 +11,9 @@ import java.util.*;
 
 public class BenchmarkPrograms {
   public enum Program {
-    TRIANGLE, MONOPOLY, VALIDATOR
+    TRIANGLE, MONOPOLY, VALIDATOR, CLI
   }
-  public static final Program PROGRAM = Program.TRIANGLE;
+  public static final Program PROGRAM = Program.CLI;
   private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
   private static Class[] targetClasses;
   private static Class[] testClasses;
@@ -165,6 +165,11 @@ public class BenchmarkPrograms {
   private static String localValidatorTestDir     = "/home/serena/reuse/mutated-commons-validator/src/test/java/org/apache/commons/validator";
   private static String localValidatorTestPackage = "org.apache.commons.validator";
 
+  private static String localCliDir         = "/home/serena/reuse/mutated-cli/src/org/apache/commons/cli";
+  private static String localCliPackage     = "org.apache.commons.cli";
+  private static String localCliTestDir     = "/home/serena/reuse/mutated-cli/test/org/apache/commons/cli";
+  private static String localCliTestPackage = "org.apache.commons.cli";
+
   private static String getSrcDir() {
     switch (PROGRAM) {
     case TRIANGLE:
@@ -173,6 +178,8 @@ public class BenchmarkPrograms {
       return localMonopolyDir;
     case VALIDATOR:
       return localValidatorDir;
+    case CLI:
+      return localCliDir;
     }
     return "";
   }
@@ -185,6 +192,8 @@ public class BenchmarkPrograms {
       return localMonopolyPackage;
     case VALIDATOR:
       return localValidatorPackage;
+    case CLI:
+      return localCliPackage;
     }
     return "";
   }
@@ -197,6 +206,8 @@ public class BenchmarkPrograms {
       return localMonopolyTestDir;
     case VALIDATOR:
       return localValidatorTestDir;
+    case CLI:
+      return localCliTestDir;
     }
     return "";
   }
@@ -209,6 +220,8 @@ public class BenchmarkPrograms {
       return localMonopolyTestPackage;
     case VALIDATOR:
       return localValidatorTestPackage;
+    case CLI:
+      return localCliTestPackage;
     }
     return "";
   }
@@ -221,6 +234,8 @@ public class BenchmarkPrograms {
       return "classes/monopoly-src.txt";
     case VALIDATOR:
       return "classes/validator-src.txt";
+    case CLI:
+      return "classes/cli-src.txt";
     }
     return "";
   }
@@ -233,6 +248,8 @@ public class BenchmarkPrograms {
       return "classes/monopoly-test.txt";
     case VALIDATOR:
       return "classes/validator-test.txt";
+    case CLI:
+      return "classes/cli-test.txt";
     }
     return "";
   }
@@ -245,6 +262,8 @@ public class BenchmarkPrograms {
       return "mutantgroups/monopoly.txt";
     case VALIDATOR:
       return "mutantgroups/validator.txt";
+    case CLI:
+      return "mutantgroups/cli.txt";
     }
     return "";
   }
