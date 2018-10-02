@@ -70,6 +70,7 @@ public class BenchmarkedVarexSSHOMFinder {
 						+ baseDir + "out/production/code-ut,"
 						+ baseDir + "code-ut/jars/monopoli100.jar,"
 						+ baseDir + "code-ut/jars/commons-validator.jar,"
+						+ baseDir + "code-ut/jars/mutated-cli.jar,"
 						+ baseDir + "lib/bcel-6.0.jar,"
 						+ baseDir + "out/test/code-ut,"
 						+ baseDir + "out/production/varex-hom-finder,"
