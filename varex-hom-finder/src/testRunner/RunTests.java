@@ -2,6 +2,7 @@ package testRunner;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,9 @@ public class RunTests {
 	}
 
 	public static void runTests(Class testClass, String testName) {
-		runTestAnnotations(testClass, testName);
+		if (!Modifier.isAbstract(testClass.getModifiers())) {
+				runTestAnnotations(testClass, testName);
+		}
 	}
 
 	public static void runTests(Class[] testClasses) {

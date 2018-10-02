@@ -38,7 +38,8 @@ public class CommandLineRunner {
 						}
 						break;
 					} catch (IllegalThreadStateException e) {
-						e.printStackTrace();
+//						e.printStackTrace();
+						//causes spam of stack traces
 					}
 				}
 			}

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -88,19 +89,21 @@ public class BenchmarkedVarexSSHOMFinder {
 
 		for (Entry<Method, FeatureExpr> test : tests.entrySet()) {
 			if (test.getKey().getName().equals("testGanaJugador")) continue;
-			
-			CommandLineRunner.process("java", "-jar",
-					baseDir + "lib/RunJPF.jar",
-					"+search.class=.search.RandomSearch",
-					"+bddCacheSize=100000",
-					"+bddValNum=1500000",
-					paths, "+choice=MapChoice", 
-					"+mutants="+ baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource(),// TODO not sure if path works for Jens
-							TestRunner.class.getName(), test.getKey().getDeclaringClass().getName(), test.getKey().getName());
+
+			if (!Modifier.isAbstract(test.getKey().getDeclaringClass().getModifiers())) {
+
+				CommandLineRunner.process("java", "-jar", baseDir + "lib/RunJPF.jar",
+						"+search.class=.search.RandomSearch", "+bddCacheSize=100000",
+						"+bddValNum=1500000", paths, "+choice=MapChoice",
+						"+mutants=" + baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource(),
+						// TODO not sure if path works for Jens
+						TestRunner.class.getName(), test.getKey().getDeclaringClass().getName(),
+						test.getKey().getName());
+			}
 		}
 		benchmarker.timestamp("create features");
 		
-		Conditional.createAndGetFeatures(baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource()).toArray(mutants);// TODO not sure if path works for Jens
+//		Conditional.createAndGetFeatures(baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource()).toArray(mutants);// TODO not sure if path works for Jens
 		mutantExprs = mutantNamesToFeatures(mutants);
 		
 		benchmarker.timestamp("load f(t)");
