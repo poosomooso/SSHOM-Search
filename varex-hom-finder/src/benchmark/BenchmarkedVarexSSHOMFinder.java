@@ -22,6 +22,7 @@ import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDFactory;
 import testRunner.RunTests;
+import testRunner.TestRunner;
 import varex.SSHOMExprFactory;
 
 public class BenchmarkedVarexSSHOMFinder {
@@ -31,21 +32,6 @@ public class BenchmarkedVarexSSHOMFinder {
 	private static boolean JENS = false;
 	private String baseDir = JENS ? "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\" :
 									"/home/serena/reuse/hom-generator/";
-
-	public static class TestRunner {
-		
-		public static void main(String[] args) throws ClassNotFoundException {
-			if (args.length < 2) {
-				RunTests.runTests(BenchmarkPrograms.getTestClasses());
-			} else {
-				String className = args[0];
-				String testName = args[1];
-				System.out.println("run test  " + testName);
-				RunTests.runTests(Class.forName(className), testName); // TODO: pass in class so we don't have to run getTestClasses()
-			}
-
-		}
-	}
 
 	public BenchmarkedVarexSSHOMFinder() {
 		benchmarker = new Benchmarker();
