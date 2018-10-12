@@ -61,24 +61,7 @@ public class BenchmarkedVarexSSHOMFinder {
 		System.setProperty("bddCacheSize", Integer.toString(100000));
 		System.setProperty("bddValNum", Integer.toString(6_000_000));
 
-		String paths, mutantFile, jpfPath;
-		if (machine == Machine.FEATURE_SERVER) {
-			paths = "+classpath=" + baseDir + "hom-generator.jar," + baseDir + "junit-4.12.jar," + baseDir + "lib/bcel-6.0.jar";
-			mutantFile = baseDir + BenchmarkPrograms.getFeatureModelResource();
-			jpfPath = baseDir + "lib/RunJPF.jar";
-		} else if (machine == Machine.JENS) {
-				paths = "+classpath=" + baseDir + "bin," + baseDir + "code-ut/jars/monopoli100.jar," + baseDir + "lib/bcel-6.0.jar,"
-						+ baseDir + "lib/junit.jar";
-			mutantFile = baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource();
-			jpfPath = baseDir + "lib/RunJPF.jar";
-		} else {
-			paths = "+classpath=" + baseDir + "out/production/code-ut," + baseDir + "code-ut/jars/monopoli100.jar,"
-					+ baseDir + "code-ut/jars/commons-validator.jar," + baseDir + "lib/bcel-6.0.jar,"
-					+ baseDir + "out/test/code-ut," + baseDir + "out/production/varex-hom-finder,"
-					+ baseDir + "lib/junit.jar";
-			mutantFile = baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource();
-			jpfPath = baseDir + "lib/RunJPF.jar";
-		}
+		String paths = getVarexClasspaths(), mutantFile = getMutantFile(), jpfPath = getJpfPath(), jvmClasspath = getJvmClasspath();
 
 		FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
 
@@ -89,10 +72,19 @@ public class BenchmarkedVarexSSHOMFinder {
 		for (Entry<Method, FeatureExpr> test : tests.entrySet()) {
 			if (test.getKey().getName().equals("testGanaJugador"))
 				continue;
-			if (!Modifier.isAbstract(test.getKey().getDeclaringClass().getModifiers())) {
+			if (Modifier.isAbstract(test.getKey().getDeclaringClass().getModifiers()))
+				continue;
+
+      if (jvmClasspath == null) {
 				CommandLineRunner.process("java", "-jar", jpfPath,
 						"+search.class=.search.RandomSearch", "+bddCacheSize=100000",
-						"+bddValNum=1500000", paths, "+choice=MapChoice", "+mutants=" + mutantFile,// TODO not sure if path works for Jens
+						"+bddValNum=1500000", paths, "+choice=MapChoice", "+mutants=" + mutantFile,
+						TestRunner.class.getName(), test.getKey().getDeclaringClass().getName(),
+						test.getKey().getName());
+			} else {
+				CommandLineRunner.process("java", "-classpath", jvmClasspath, "-jar", jpfPath,
+						"+search.class=.search.RandomSearch", "+bddCacheSize=100000",
+						"+bddValNum=1500000", paths, "+choice=MapChoice", "+mutants=" + mutantFile,
 						TestRunner.class.getName(), test.getKey().getDeclaringClass().getName(),
 						test.getKey().getName());
 			}
@@ -100,13 +92,13 @@ public class BenchmarkedVarexSSHOMFinder {
 		benchmarker.timestamp("create features");
 
 		mutantExprs = mutantNamesToFeatures(mutants);
-		
+
 		benchmarker.timestamp("load f(t)");
 		loadTestExpressions(tests);
-		
+
 		benchmarker.timestamp("generate FOMs");
 		FeatureExpr[] fomExprs = SSHOMExprFactory.genFOMs(mutantExprs, mutants.length);
-		
+
 		benchmarker.timestamp("create SSHOM expression");
 		Map<String, FeatureExpr> stringTests = new HashMap<>();
 		for (Entry<Method, FeatureExpr> t: tests.entrySet()) {
@@ -122,7 +114,43 @@ public class BenchmarkedVarexSSHOMFinder {
 		benchmarker.timestamp("get solutions");
 		getSolutions(finalExpr, mutants);
 	}
-	
+
+	private String getVarexClasspaths() {
+		switch (machine) {
+		case FEATURE_SERVER: return "+classpath=" + baseDir + "hom-generator.jar," + baseDir + "junit-4.12.jar," + baseDir + "lib/bcel-6.0.jar";
+		case JENS: return  "+classpath=" + baseDir + "bin," + baseDir + "code-ut/jars/monopoli100.jar," + baseDir + "lib/bcel-6.0.jar,"
+				+ baseDir + "lib/junit.jar";
+		case SERENA: return "+classpath="
+				+ baseDir + "out/production/code-ut,"
+				+ baseDir + "code-ut/jars/monopoli100.jar,"
+				+ baseDir + "code-ut/jars/commons-validator.jar,"
+				+ baseDir + "code-ut/jars/mutated-cli.jar,"
+				+ baseDir + "lib/bcel-6.0.jar,"
+				+ baseDir + "out/test/code-ut,"
+				+ baseDir + "out/production/varex-hom-finder,"
+				+ baseDir + "lib/junit.jar";
+		default: throw new IllegalStateException("Machine " + machine.toString() + " is not supported");
+		}
+	}
+
+	private String getMutantFile() {
+		switch (machine) {
+		case FEATURE_SERVER: return baseDir + BenchmarkPrograms.getFeatureModelResource();
+		default: return baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource();
+		}
+	}
+
+	private String getJpfPath() {
+		return baseDir + "lib/RunJPF.jar";
+	}
+
+	private String getJvmClasspath() {
+		switch (machine) {
+		case FEATURE_SERVER: return "\""+baseDir+"hom-generator.jar;"+baseDir+"lib/*\"";
+		default: return null;
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	private Set<List<String>> getSolutions(FeatureExpr expr, String[] mutants) {
 		List<byte[]> solutions = (List<byte[]>)((BDDFeatureExpr)expr).bdd().allsat();
@@ -153,7 +181,7 @@ public class BenchmarkedVarexSSHOMFinder {
 					}
 					getSolutions(copy, mutants, allSolutions, new ArrayList<>(selections), i + 1);
 				}
-				
+
 				selections.add(mutants[i - 1]);
 				if (selections.size() >= 2 && !BenchmarkPrograms.homIsValid(selections)) {
 					return;
