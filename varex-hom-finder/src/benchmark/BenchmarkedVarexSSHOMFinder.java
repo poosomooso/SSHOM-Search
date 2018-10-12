@@ -39,7 +39,7 @@ public class BenchmarkedVarexSSHOMFinder {
 			case JENS: return "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\";
 			case SERENA: return "/home/serena/reuse/hom-generator/";
 //			case FEATURE_SERVER: return "/home/feature/serena/";
-			case FEATURE_SERVER: return "/home/serena/";
+			case FEATURE_SERVER: return "/home/serena/testvarex";
 			}
 			return "";
 		}
