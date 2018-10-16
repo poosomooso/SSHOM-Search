@@ -16,6 +16,7 @@ public class ConditionalMutationWrapper {
     for (Class c : targetClasses) {
       for (Field f : c.getFields()) {
         if (f.getAnnotation(Conditional.class) != null) {
+          f.setAccessible(true);
           conditionalFields.put(f.getName(), f);
         }
       }
