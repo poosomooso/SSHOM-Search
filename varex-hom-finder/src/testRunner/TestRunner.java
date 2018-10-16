@@ -1,7 +1,6 @@
 package testRunner;
 
 import benchmark.BenchmarkPrograms;
-import testRunner.RunTests;
 
 public class TestRunner {
 

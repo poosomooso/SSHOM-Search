@@ -35,8 +35,6 @@ public class SSHOMRunner {
     SSHOMListener sshomListener = runJunitOnHOM(mutants);
     jUnitCore.addListener(sshomListener);
 
-    Map<String, FeatureExpr> expressions = JPF_gov_nasa_jpf_ConsoleOutputStream.testExpressions;
-    
     //foms
     for (String s : mutants) {
       targetClasses.resetMutants();
