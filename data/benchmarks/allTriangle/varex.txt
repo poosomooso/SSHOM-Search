@@ -4056,11 +4056,6 @@ max memory:         53MB
 loaded code:        classes=98,methods=1837
 
 ====================================================== search finished: 10/25/18 12:14 AM
-TIME     113154|create features
-TIME     113173|load f(t)
-TIME     113240|generate FOMs
-TIME     113497|create SSHOM expression
-TIME     114310|get solutions
 TIME     114320|1 [m125, m127]
 TIME     114320|2 [m124, m127]
 TIME     114320|3 [m121, m122]
