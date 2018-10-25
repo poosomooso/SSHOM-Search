@@ -16,6 +16,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
     private String[]                       allFOMs;
     private SSHOMRunner                    testRunner;
     private Map<String, MutationContainer> fomFitness;
+    private Class[] testClasses;
 
     public BenchmarkedEvolutionarySSHOMFinder() {
         this.benchmarker = new Benchmarker();
@@ -27,6 +28,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
 
         Class[] targetClasses = BenchmarkPrograms.getTargetClasses();
         Class[] testClasses = BenchmarkPrograms.getTestClasses();
+        this.testClasses = testClasses;
 
         this.testRunner = new SSHOMRunner(targetClasses, testClasses);
         this.allFOMs = BenchmarkPrograms.getMutantNames();
@@ -35,7 +37,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         this.fomFitness = new HashMap<>();
         for (String m : this.allFOMs) {
             this.fomFitness.put(m,
-                new MutationContainer(new String[] { m }, testRunner, null));
+                new MutationContainer(new String[] { m }, testRunner, null, testClasses));
         }
 
         System.out.println("Generated FOMs");
@@ -147,7 +149,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
                 generateRandomUnusedFOM(hom.getMutation(), this.allFOMs));
         }
 
-        return new MutationContainer(newMutation, this.testRunner, this.fomFitness);
+        return new MutationContainer(newMutation, this.testRunner, this.fomFitness, this.testClasses);
     }
 
     public MutationContainer[] crossoverParents(MutationContainer a, MutationContainer b)
@@ -169,8 +171,8 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         child2[randIndex2] = a.getMutation()[randIndex1];
 
         return new MutationContainer[] {
-            new MutationContainer(child1, this.testRunner, this.fomFitness),
-            new MutationContainer(child2, this.testRunner, this.fomFitness) };
+            new MutationContainer(child1, this.testRunner, this.fomFitness, this.testClasses),
+            new MutationContainer(child2, this.testRunner, this.fomFitness, this.testClasses) };
     }
 
     protected String[] deleteFOM(MutationContainer hom, int deletedIndex) {
@@ -232,10 +234,11 @@ public class BenchmarkedEvolutionarySSHOMFinder {
 
             if (BenchmarkPrograms.homIsValid(newHOM)) {
                 MutationContainer container = new MutationContainer(newHOM,
-                    this.testRunner, this.fomFitness);
+                    this.testRunner, this.fomFitness, this.testClasses);
 
                 if (homsSet.add(container)) {
                     i++;
+                    System.out.println(i);
                 }
             }
         }

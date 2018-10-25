@@ -13,7 +13,7 @@ public class BenchmarkPrograms {
   public enum Program {
     TRIANGLE, MONOPOLY, VALIDATOR, CLI
   }
-  public static final Program PROGRAM = Program.CLI;
+  public static final Program PROGRAM = Program.TRIANGLE;
   private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
   private static Class[] targetClasses;
   private static Class[] testClasses;
@@ -43,6 +43,14 @@ public class BenchmarkPrograms {
       System.out.println("TEST CLASSES : " + Arrays.toString(testClasses));
     }
     return testClasses;
+  }
+
+  public static boolean programHasInfLoops() {
+    switch (PROGRAM) {
+    case TRIANGLE: return false;
+    case MONOPOLY:
+    default: return true;
+    }
   }
 
   /**

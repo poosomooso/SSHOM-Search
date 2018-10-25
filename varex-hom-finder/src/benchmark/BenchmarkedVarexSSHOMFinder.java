@@ -22,7 +22,7 @@ import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDFactory;
 import testRunner.RunTests;
-import testRunner.TestRunner;
+import testRunner.VarexTestRunner;
 import varex.SSHOMExprFactory;
 
 public class BenchmarkedVarexSSHOMFinder {
@@ -39,7 +39,7 @@ public class BenchmarkedVarexSSHOMFinder {
 			case JENS: return "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\";
 			case SERENA: return "/home/serena/reuse/hom-generator/";
 //			case FEATURE_SERVER: return "/home/feature/serena/";
-			case FEATURE_SERVER: return "/home/serena/testvarex";
+			case FEATURE_SERVER: return "/home/serena/benchmark/";
 			}
 			return "";
 		}
@@ -79,13 +79,13 @@ public class BenchmarkedVarexSSHOMFinder {
 				CommandLineRunner.process("java", "-jar", jpfPath,
 						"+search.class=.search.RandomSearch", "+bddCacheSize=100000",
 						"+bddValNum=1500000", paths, "+choice=MapChoice", "+mutants=" + mutantFile,
-						TestRunner.class.getName(), test.getKey().getDeclaringClass().getName(),
+						VarexTestRunner.class.getName(), test.getKey().getDeclaringClass().getName(),
 						test.getKey().getName());
 			} else {
 				CommandLineRunner.process("java", "-classpath", jvmClasspath, "-jar", jpfPath,
 						"+search.class=.search.RandomSearch", "+bddCacheSize=100000",
 						"+bddValNum=1500000", paths, "+choice=MapChoice", "+mutants=" + mutantFile,
-						TestRunner.class.getName(), test.getKey().getDeclaringClass().getName(),
+						VarexTestRunner.class.getName(), test.getKey().getDeclaringClass().getName(),
 						test.getKey().getName());
 			}
 		}
@@ -146,7 +146,7 @@ public class BenchmarkedVarexSSHOMFinder {
 
 	private String getJvmClasspath() {
 		switch (machine) {
-		case FEATURE_SERVER: return "\""+baseDir+"hom-generator.jar;"+baseDir+"lib/*\"";
+		case FEATURE_SERVER: return "\""+baseDir+"hom-generator.jar;"+baseDir+"lib/scala/scala-library-2.12.6.jar;"+baseDir+"lib/\"";
 		default: return null;
 		}
 	}
