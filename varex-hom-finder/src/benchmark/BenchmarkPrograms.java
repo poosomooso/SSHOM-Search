@@ -1,20 +1,26 @@
 package benchmark;
 
-import mutated.triangleAll.Triangle;
-import mutated.triangleAll.Triangle_ESTest_improved;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+
+import mutated.triangleAll.Triangle;
+import mutated.triangleAll.Triangle_ESTest_improved;
 
 public class BenchmarkPrograms {
   public enum Program {
     TRIANGLE, MONOPOLY, VALIDATOR, CLI
   }
-  public static final Program PROGRAM = Program.CLI;
-  private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
+  public static final Program PROGRAM = Program.TRIANGLE;
+  private static final String PATH_TO_RESOURCE = "bin/";
   private static Class[] targetClasses;
   private static Class[] testClasses;
   private static Map<String, Integer> makeshiftFeatureModel;
@@ -64,24 +70,24 @@ public class BenchmarkPrograms {
     return mutantNames;
   }
 
-  private static void loadMutantsAndFM() {
-    Scanner in = new Scanner(RunBenchmarks.class.getClassLoader()
-        .getResourceAsStream(getFeatureModelResource()));
-    makeshiftFeatureModel = new HashMap<>();
-    ArrayList<String> mutantList = new ArrayList<>();
-    int id = 0;
-    while (in.hasNextLine()) {
-      String[] mutants = in.nextLine().split(" ");
-      for (String m : mutants) {
-        makeshiftFeatureModel.put(m, id);
-        mutantList.add(m);
-      }
-      id++;
-    }
-    mutantNames = mutantList.toArray(new String[0]);
-  }
+	private static void loadMutantsAndFM() {
+		try (Scanner in = new Scanner(RunBenchmarks.class.getClassLoader().getResourceAsStream(getFeatureModelResource()))) {
+			makeshiftFeatureModel = new HashMap<>();
+			ArrayList<String> mutantList = new ArrayList<>();
+			int id = 0;
+			while (in.hasNextLine()) {
+				String[] mutants = in.nextLine().split(" ");
+				for (String m : mutants) {
+					makeshiftFeatureModel.put(m, id);
+					mutantList.add(m);
+				}
+				id++;
+			}
+			mutantNames = mutantList.toArray(new String[0]);
+		}
+	}
 
-  public static boolean homIsValid(List<String> hom) {
+  public static boolean homIsValid(Collection<String> hom) {
     int numMutantGroups = BenchmarkPrograms.getMakeshiftFeatureModel().size();
     boolean[] check = new boolean[numMutantGroups];
     for (String mutation : hom) {

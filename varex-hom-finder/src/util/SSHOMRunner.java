@@ -2,17 +2,8 @@ package util;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 
-import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
-import org.junit.runner.notification.Failure;
-import org.junit.runner.notification.RunListener;
-
-import benchmark.BenchmarkedVarexSSHOMFinder;
-import cmu.conditional.Conditional;
-import de.fosd.typechef.featureexpr.FeatureExpr;
-import gov.nasa.jpf.vm.JPF_gov_nasa_jpf_ConsoleOutputStream;
 
 public class SSHOMRunner {
   private       ConditionalMutationWrapper targetClasses;
@@ -35,8 +26,6 @@ public class SSHOMRunner {
     SSHOMListener sshomListener = runJunitOnHOM(mutants);
     jUnitCore.addListener(sshomListener);
 
-    Map<String, FeatureExpr> expressions = JPF_gov_nasa_jpf_ConsoleOutputStream.testExpressions;
-    
     //foms
     for (String s : mutants) {
       targetClasses.resetMutants();
