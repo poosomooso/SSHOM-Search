@@ -1,6 +1,7 @@
 package geneticAlgorithm;
 
 import benchmark.BenchmarkPrograms;
+import benchmark.InfLoopTestProcess;
 import org.junit.runner.Description;
 import util.SSHOMListener;
 import util.SSHOMRunner;
@@ -18,12 +19,18 @@ public class MutationContainer implements Comparable<MutationContainer>{
     private int hashCode = Integer.MAX_VALUE;
 
     public MutationContainer(String[] hom, SSHOMRunner runner,
-        Map<String, MutationContainer> foms)
+        Map<String, MutationContainer> foms, Class[] testClasses)
         throws NoSuchFieldException, IllegalAccessException {
         this.mutation = hom;
         Arrays.sort(this.mutation);
         if (runner != null) {
-            SSHOMListener sshomListener = runner.runJunitOnHOM(hom);
+            SSHOMListener sshomListener;
+            if (BenchmarkPrograms.programHasInfLoops()) {
+                sshomListener = InfLoopTestProcess
+                    .runTests(testClasses, hom);
+            } else  {
+                sshomListener = runner.runJunitOnHOM(hom);
+            }
             this.killedTests = sshomListener.getHomTests();
             this.fitness = mutationFitness(foms);
         } else {

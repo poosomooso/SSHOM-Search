@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Set;
 
 public class CheckStronglySubsuming {
-  public static boolean isStronglySubsuming(Set<Description> homTests, List<Set<Description>> fomTests) {
+  public static <T> boolean isStronglySubsuming(Set<T> homTests, List<Set<T>> fomTests) {
     if (homTests.size() == 0) return false;
-    Set<Description> overlap = SetArithmetic
+    Set<T> overlap = SetArithmetic
         .getIntersection(fomTests);
     return overlap.containsAll(homTests);
   }
 
-  public static boolean isStrictStronglySubsuming(Set<Description> homTests, List<Set<Description>> fomTests) {
+  public static <T> boolean isStrictStronglySubsuming(Set<T> homTests, List<Set<T>> fomTests) {
     if (homTests.size() == 0) return false;
-    Set<Description> overlap = SetArithmetic
+    Set<T> overlap = SetArithmetic
         .getIntersection(fomTests);
     if (!overlap.containsAll(homTests))
       return false;

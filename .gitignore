@@ -61,3 +61,5 @@ report/
 python/.ipynb_checkpoints
 **/evosuite-report/
 /bin/
+test.*.txt
+output.txt

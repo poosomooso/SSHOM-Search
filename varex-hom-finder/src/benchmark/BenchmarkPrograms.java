@@ -20,7 +20,7 @@ public class BenchmarkPrograms {
     TRIANGLE, MONOPOLY, VALIDATOR, CLI
   }
   public static final Program PROGRAM = Program.TRIANGLE;
-  private static final String PATH_TO_RESOURCE = "bin/";
+  private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
   private static Class[] targetClasses;
   private static Class[] testClasses;
   private static Map<String, Integer> makeshiftFeatureModel;
@@ -49,6 +49,14 @@ public class BenchmarkPrograms {
       System.out.println("TEST CLASSES : " + Arrays.toString(testClasses));
     }
     return testClasses;
+  }
+
+  public static boolean programHasInfLoops() {
+    switch (PROGRAM) {
+    case TRIANGLE: return false;
+    case MONOPOLY:
+    default: return true;
+    }
   }
 
   /**

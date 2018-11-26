@@ -3,6 +3,7 @@ package benchmark;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /**
  * 
@@ -18,6 +19,7 @@ public class CommandLineRunner {
 
 	public static void process(String... commands) {
 		try {
+			System.out.println(Arrays.toString(commands));
 			ProcessBuilder processBuilder = new ProcessBuilder(commands);
 			Process process = processBuilder.start();
 			try (BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -31,6 +33,7 @@ public class CommandLineRunner {
 						while ((line = error.readLine()) != null) {
 							System.err.println(line);
 						}
+						Thread.sleep(10);
 
 						int exitValue = process.exitValue();
 						if (exitValue != 0) {
@@ -40,6 +43,8 @@ public class CommandLineRunner {
 					} catch (IllegalThreadStateException e) {
 //						e.printStackTrace();
 						//causes spam of stack traces
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 				}
 			}
