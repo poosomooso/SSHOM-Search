@@ -1,22 +1,25 @@
 package varex;
 
-import cmu.conditional.Conditional;
-import de.fosd.typechef.featureexpr.*;
-import de.fosd.typechef.featureexpr.bdd.BDDFeatureModel;
-import de.fosd.typechef.featureexpr.sat.SATFeatureModel;
-import gov.nasa.jpf.JPF;
-import gov.nasa.jpf.vm.JPF_gov_nasa_jpf_ConsoleOutputStream;
-import scala.Option;
-import scala.util.matching.Regex;
-import util.SetArithmetic;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
+
+import cmu.conditional.Conditional;
+import de.fosd.typechef.featureexpr.FeatureExpr;
+import de.fosd.typechef.featureexpr.FeatureExprFactory;
+import de.fosd.typechef.featureexpr.FeatureExprParser;
+import de.fosd.typechef.featureexpr.FeatureModel;
+import de.fosd.typechef.featureexpr.SingleFeatureExpr;
+import de.fosd.typechef.featureexpr.bdd.BDDFeatureModel;
+import de.fosd.typechef.featureexpr.sat.SATFeatureModel;
+import gov.nasa.jpf.JPF;
+import scala.Option;
+import scala.util.matching.Regex;
+import util.SetArithmetic;
 
 public class RunVarex {
   private final static int     RUN_FEATURE  = 0;
@@ -75,23 +78,24 @@ public class RunVarex {
   }
 
   public static void sshomSolver(String fname) {
-    long t0 = System.currentTimeMillis();
-    Map<String, FeatureExpr> tests = JPF_gov_nasa_jpf_ConsoleOutputStream.testExpressions;
-
-    SingleFeatureExpr[] mutants = getEachMutant();
-    FeatureExpr[] fomExprs = SSHOMExprFactory.genFOMs(mutants, NUM_MUTANTS);
-
-    FeatureExpr finalExpr = SSHOMExprFactory
-        .getSSHOMExpr(tests, mutants, NUM_MUTANTS);
-
-    //exclude foms
-    for (FeatureExpr m : fomExprs) {
-      finalExpr = finalExpr.andNot(m);
-    }
-
-    SSHOMExprFactory.printAssignments(mutants, finalExpr);
-
-    System.out.printf("%,d ms\n", System.currentTimeMillis() - t0);
+	  throw new RuntimeException();
+//    long t0 = System.currentTimeMillis();
+//    Map<String, FeatureExpr> tests = JPF_gov_nasa_jpf_ConsoleOutputStream.testExpressions;
+//
+//    SingleFeatureExpr[] mutants = getEachMutant();
+//    FeatureExpr[] fomExprs = SSHOMExprFactory.genFOMs(mutants, NUM_MUTANTS);
+//
+//    FeatureExpr finalExpr = SSHOMExprFactory
+//        .getSSHOMExpr(tests, mutants, NUM_MUTANTS);
+//
+//    //exclude foms
+//    for (FeatureExpr m : fomExprs) {
+//      finalExpr = finalExpr.andNot(m);
+//    }
+//
+//    SSHOMExprFactory.printAssignments(mutants, finalExpr);
+//
+//    System.out.printf("%,d ms\n", System.currentTimeMillis() - t0);
   }
 
 
