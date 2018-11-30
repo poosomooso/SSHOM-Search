@@ -1,4 +1,4 @@
-package util;
+package solver.bdd;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -19,11 +19,9 @@ import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
 public class BDDSolver {
 	
 	public final int minSize;
-	private final Benchmarker benchmarker;
 
-	public BDDSolver(int minsize, Benchmarker benchmarker) {
+	public BDDSolver(int minsize) {
 		this.minSize = minsize;
-		this.benchmarker = benchmarker;
 	}
 
 	public Set<Set<String>> getSolutions(BDDFeatureExpr expr, String[] features) {
@@ -70,7 +68,7 @@ public class BDDSolver {
 			}
 		}
 		if (selections.size() >= minSize) { 
-			benchmarker.timestamp(selections.toString());
+			Benchmarker.instance.timestamp(selections.toString());
 			allSolutions.add(selections);
 		}
 	}

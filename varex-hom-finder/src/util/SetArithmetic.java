@@ -1,22 +1,30 @@
 package util;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SetArithmetic {
+	
+	private SetArithmetic() {
+		// private constructor
+	}
+	
   public static <T> Set<T> getIntersection(Set<T> a, Set<T> b) {
     Set<T> newSet;
     if (a.size() < b.size()) {
-      newSet = new HashSet<T>(a);
+      newSet = new HashSet<>(a);
       newSet.retainAll(b);
     } else {
-      newSet = new HashSet<T>(b);
+      newSet = new HashSet<>(b);
       newSet.retainAll(a);
     }
     return newSet;
   }
 
+  @SafeVarargs
   public static <T> Set<T> getIntersection(Set<T>... allSets) {
-
     return getIntersection(Arrays.asList(allSets));
   }
 
@@ -34,6 +42,7 @@ public class SetArithmetic {
     return newSet;
   }
 
+  @SafeVarargs
   public static <T> Set<T> getUnion(Set<T>... allSets) {
     Set<T> newSet = new HashSet<>();
     for (Set<T> s : allSets) {

@@ -1,4 +1,4 @@
-package util;
+package solver.sat;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

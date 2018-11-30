@@ -12,22 +12,18 @@ public class BenchmarkedEvolutionarySSHOMFinder {
 
     private Set<MutationContainer> seenMutations = new HashSet<>();
     private Set<MutationContainer> recordedSSHOMs = new HashSet<>();
-    private Benchmarker benchmarker;
     private String[]                       allFOMs;
     private SSHOMRunner                    testRunner;
     private Map<String, MutationContainer> fomFitness;
-    private Class[] testClasses;
+    private Class<?>[] testClasses;
 
-    public BenchmarkedEvolutionarySSHOMFinder() {
-        this.benchmarker = new Benchmarker();
-    }
 
     public void evolutionarySSHOMFinder()
         throws NoSuchFieldException, IllegalAccessException {
-        benchmarker.start();
+    	Benchmarker.instance.start();
 
-        Class[] targetClasses = BenchmarkPrograms.getTargetClasses();
-        Class[] testClasses = BenchmarkPrograms.getTestClasses();
+        Class<?>[] targetClasses = BenchmarkPrograms.getTargetClasses();
+        Class<?>[] testClasses = BenchmarkPrograms.getTestClasses();
         this.testClasses = testClasses;
 
         this.testRunner = new SSHOMRunner(targetClasses, testClasses);
@@ -71,7 +67,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
                         .homIsValid(homPopulation[j].getMutation()) :
                         "Invalid HOM: " + Arrays
                             .toString(homPopulation[j].getMutation());
-                    benchmarker.timestamp(String.join(",", homPopulation[j].getMutation()));
+                    Benchmarker.instance.timestamp(String.join(",", homPopulation[j].getMutation()));
                     recordedSSHOMs.add(homPopulation[j]);
                 }
                 j--;

@@ -21,13 +21,13 @@ public class BenchmarkPrograms {
   }
   public static final Program PROGRAM = Program.TRIANGLE;
   private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
-  private static Class[] targetClasses;
-  private static Class[] testClasses;
+  private static Class<?>[] targetClasses;
+  private static Class<?>[] testClasses;
   private static Map<String, Integer> makeshiftFeatureModel;
   private static String[] mutantNames;
 
 
-  public static Class[] getTargetClasses() {
+  public static Class<?>[] getTargetClasses() {
     if (targetClasses == null) {
       if (PROGRAM == Program.TRIANGLE) {
         targetClasses = new Class[] { Triangle.class };
@@ -39,7 +39,7 @@ public class BenchmarkPrograms {
     return targetClasses;
   }
 
-  public static Class[] getTestClasses() {
+  public static Class<?>[] getTestClasses() {
     if (testClasses == null) {
       if (PROGRAM == Program.TRIANGLE) {
         testClasses = new Class[] { Triangle_ESTest_improved.class };
@@ -127,18 +127,18 @@ public class BenchmarkPrograms {
     return true;
   }
 
-  private static Class[] loadClasses(String resourceStr, String classDir, String classPackage) {
-    ArrayList<Class> classes = new ArrayList<>();
+  private static Class<?>[] loadClasses(String resourceStr, String classDir, String classPackage) {
+    ArrayList<Class<?>> classes = new ArrayList<>();
     URL u = RunBenchmarks.class.getClassLoader()
         .getResource(resourceStr);
 
     try {
       if (u == null) {
         PrintWriter printWriter = new PrintWriter(PATH_TO_RESOURCE + resourceStr);
-        Class[] targetClasses = BenchmarkPrograms
+        Class<?>[] targetClasses = BenchmarkPrograms
             .getAllJavaFilesInDir(classDir, classPackage)
             .toArray(new Class[0]);
-        for (Class c : targetClasses) {
+        for (Class<?> c : targetClasses) {
           System.out.println(c.getName());
           printWriter.println(c.getName());
         }
@@ -151,10 +151,10 @@ public class BenchmarkPrograms {
         return targetClasses;
 
       } else {
-        Scanner in = new Scanner(RunBenchmarks.class.getClassLoader()
-            .getResourceAsStream(resourceStr));
-        while (in.hasNextLine()) {
-          classes.add(Class.forName(in.nextLine()));
+        try (Scanner in = new Scanner(RunBenchmarks.class.getClassLoader().getResourceAsStream(resourceStr))) {
+	        while (in.hasNextLine()) {
+	          classes.add(Class.forName(in.nextLine()));
+	        }
         }
         return classes.toArray(new Class[0]);
       }
@@ -282,10 +282,10 @@ public class BenchmarkPrograms {
     return "";
   }
 
-  private static List<Class> getAllJavaFilesInDir(String dirStr,
+  private static List<Class<?>> getAllJavaFilesInDir(String dirStr,
       String packageName) throws ClassNotFoundException {
     File directory = new File(dirStr);
-    List<Class> allJavaFiles = new ArrayList<>();
+    List<Class<?>> allJavaFiles = new ArrayList<>();
 
     for (File path : directory.listFiles()) {
       if (path.isFile() && path.getName().endsWith(".java") && !path.getName()

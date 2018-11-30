@@ -19,7 +19,7 @@ public class MutationContainer implements Comparable<MutationContainer>{
     private int hashCode = Integer.MAX_VALUE;
 
     public MutationContainer(String[] hom, SSHOMRunner runner,
-        Map<String, MutationContainer> foms, Class[] testClasses)
+        Map<String, MutationContainer> foms, Class<?>[] testClasses)
         throws NoSuchFieldException, IllegalAccessException {
         this.mutation = hom;
         Arrays.sort(this.mutation);

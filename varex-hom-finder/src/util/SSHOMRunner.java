@@ -7,14 +7,14 @@ import org.junit.runner.JUnitCore;
 
 public class SSHOMRunner {
   private       ConditionalMutationWrapper targetClasses;
-  private final Class[]                    testClasses;
+  private final Class<?>[]                    testClasses;
 
-  public SSHOMRunner(Class targetClass, Class testClass) {
+  public SSHOMRunner(Class<?> targetClass, Class<?> testClass) {
     this.targetClasses = new ConditionalMutationWrapper(targetClass);
     this.testClasses = new Class[] { testClass };
   }
 
-  public SSHOMRunner(Class[] targetClasses, Class[] testClasses) {
+  public SSHOMRunner(Class<?>[] targetClasses, Class<?>[] testClasses) {
     this.targetClasses = new ConditionalMutationWrapper(targetClasses);
     this.testClasses = Arrays.copyOf(testClasses, testClasses.length);
   }

@@ -1,20 +1,18 @@
 package varex;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.FeatureModel;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
-import de.fosd.typechef.featureexpr.bdd.BDDFeatureModel;
-import de.fosd.typechef.featureexpr.sat.SATFeatureModel;
 import scala.Option;
 import scala.Tuple2;
 import scala.collection.JavaConversions;
 import scala.collection.immutable.List;
 import scala.collection.immutable.Set;
 import scala.collection.mutable.HashSet;
-
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 public class SatisfiableAssignmentIterator implements Iterator<Tuple2<List<SingleFeatureExpr>, List<SingleFeatureExpr>>>{
   private FeatureExpr                                                      expr;

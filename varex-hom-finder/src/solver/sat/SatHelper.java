@@ -1,4 +1,4 @@
-package util;
+package solver.sat;
 
 import java.util.ArrayList;
 import java.util.Collection;

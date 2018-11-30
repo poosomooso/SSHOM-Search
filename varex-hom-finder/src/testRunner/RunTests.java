@@ -1,5 +1,6 @@
 package testRunner;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -14,24 +15,24 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class RunTests {
-	public static void runTests(Class testClass) {
+	public static void runTests(Class<?> testClass) {
 		runTests(new Class[] { testClass });
 	}
 
-	public static void runTests(Class[] testClasses, String testName) {
-		for (Class c : testClasses) {
+	public static void runTests(Class<?>[] testClasses, String testName) {
+		for (Class<?> c : testClasses) {
 			runTestAnnotations(c, testName);
 		}
 	}
 
-	public static void runTests(Class testClass, String testName) {
+	public static void runTests(Class<?> testClass, String testName) {
 		if (!Modifier.isAbstract(testClass.getModifiers())) {
 				runTestAnnotations(testClass, testName);
 		}
 	}
 
-	public static void runTests(Class[] testClasses) {
-		for (Class c : testClasses) {
+	public static void runTests(Class<?>[] testClasses) {
+		for (Class<?> c : testClasses) {
 			List<Method> methods = Arrays.asList(c.getMethods());
 			methods.stream()
 					.filter(m -> m.getAnnotation(Test.class) != null)
@@ -43,7 +44,7 @@ public class RunTests {
 		}
 	}
 
-	private static void runTestAnnotations(Class c, String testName) {
+	private static void runTestAnnotations(Class<?> c, String testName) {
 		Optional<Method> beforeMethod = findOfAnnotation(c, Before.class);
 		Optional<Method> beforeClassMethod = findOfAnnotation(c, BeforeClass.class);
 		Optional<Method> afterMethod = findOfAnnotation(c, After.class);
@@ -93,7 +94,7 @@ public class RunTests {
 		}
 	}
 
-	private static Optional<Method> findOfAnnotation(Class c, Class annotation) {
+	private static Optional<Method> findOfAnnotation(Class<?> c, Class<? extends Annotation> annotation) {
 		for (Method method : c.getMethods()) {
 			if (method.getAnnotation(annotation) != null) {
 				return Optional.of(method);
@@ -105,7 +106,7 @@ public class RunTests {
 	private static <T> void invokeIfNonempty(Optional<Method> m, T instance) throws InvocationTargetException,
 			IllegalAccessException {
 		if (m.isPresent()) {
-			m.get().invoke(instance, null);
+			m.get().invoke(instance);
 		}
 	}
 

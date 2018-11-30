@@ -1,24 +1,24 @@
 package verify;
 
-import util.CheckStronglySubsuming;
-import util.SSHOMListener;
-import util.SSHOMRunner;
-import util.SetArithmetic;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Scanner;
+
+import util.CheckStronglySubsuming;
+import util.SSHOMListener;
+import util.SSHOMRunner;
 
 public class VerifySSHOM {
   private       SSHOMRunner runner;
   private final String      fname;
 
-  public VerifySSHOM(Class targetClass, Class testClass, String fname) {
+  public VerifySSHOM(Class<?> targetClass, Class<?> testClass, String fname) {
     this(new Class[] { targetClass }, new Class[] { testClass }, fname);
   }
-  public VerifySSHOM(Class[] targetClass, Class[] testClass, String fname) {
+  public VerifySSHOM(Class<?>[] targetClass, Class<?>[] testClass, String fname) {
     runner = new SSHOMRunner(targetClass, testClass);
     this.fname = fname;
   }

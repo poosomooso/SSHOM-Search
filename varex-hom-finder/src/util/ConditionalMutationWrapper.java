@@ -10,10 +10,10 @@ import java.util.Map;
 
 public class ConditionalMutationWrapper {
   Map<String, Field> conditionalFields = new HashMap<>();
-  Class[] testClasses;
+  Class<?>[] testClasses;
 
-  public ConditionalMutationWrapper(Class... targetClasses) {
-    for (Class c : targetClasses) {
+  public ConditionalMutationWrapper(Class<?>... targetClasses) {
+    for (Class<?> c : targetClasses) {
       for (Field f : c.getFields()) {
         if (f.getAnnotation(Conditional.class) != null) {
           f.setAccessible(true);
@@ -55,7 +55,7 @@ public class ConditionalMutationWrapper {
     return conditionalFields.keySet();
   }
 
-  public Class[] getTestClasses() {
+  public Class<?>[] getTestClasses() {
     return testClasses;
   }
 }

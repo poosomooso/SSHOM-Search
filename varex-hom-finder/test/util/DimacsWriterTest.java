@@ -12,10 +12,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
-import benchmark.Benchmarker;
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
+import solver.bdd.BDDSolver;
+import solver.sat.SATSolver;
 
 @RunWith(Parameterized.class)
 public class DimacsWriterTest {
@@ -60,8 +61,8 @@ public class DimacsWriterTest {
 			currentFeatures[i] = features[i];
 		}
 		
-		Set<Set<String>> bddSolutions = new BDDSolver(0, new Benchmarker()).getSolutions(expr, currentFeatures);
-		Set<Set<String>> satSolutions = new SATSolver(0, new Benchmarker()).getSolutions(expr, "test");
+		Set<Set<String>> bddSolutions = new BDDSolver(0).getSolutions(expr, currentFeatures);
+		Set<Set<String>> satSolutions = new SATSolver(0).getSolutions(expr, "test");
 		assertEquals(bddSolutions, satSolutions);
 	}
 	

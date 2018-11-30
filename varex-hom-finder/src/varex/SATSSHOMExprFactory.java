@@ -23,7 +23,7 @@ import de.fosd.typechef.featureexpr.SingleFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
 import scala.collection.mutable.HashSet;
 import scala.collection.mutable.Set;
-import util.DimacsWriter;
+import solver.sat.DimacsWriter;
 
 /**
  * This class creates and modifies dimacs files to create a cnf expression for finding higher order mutants.

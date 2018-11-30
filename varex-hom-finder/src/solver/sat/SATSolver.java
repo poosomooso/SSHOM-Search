@@ -1,4 +1,4 @@
-package util;
+package solver.sat;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,11 +29,9 @@ import scala.collection.JavaConversions;
 public class SATSolver {
 
 	public final int minSize;
-	private final Benchmarker benchmarker;
 
-	public SATSolver(int minsize, Benchmarker benchmarker) {
+	public SATSolver(int minsize) {
 		this.minSize = minsize;
-		this.benchmarker = benchmarker;
 	}
 
 	public Set<Set<String>> getSolutions(BDDFeatureExpr expr, String fileName) {
@@ -83,7 +81,7 @@ public class SATSolver {
 				solution.add(Conditional.getCTXString(singleFeatureExpr));
 			}
 			if (solution.size() >= minSize && checkValid.apply(solution)) {
-				benchmarker.timestamp(solution.toString());
+				Benchmarker.instance.timestamp(solution.toString());
 				solutions.add(solution);
 			}
 

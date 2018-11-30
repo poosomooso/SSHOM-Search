@@ -1,9 +1,8 @@
 package original.triangle;
 
-import mutated.triangle.*;
-import org.junit.Test;
-
 import static junit.framework.TestCase.assertEquals;
+
+import org.junit.Test;
 
 public class testTriangle {
     public testTriangle() {

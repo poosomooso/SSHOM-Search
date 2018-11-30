@@ -28,16 +28,16 @@ import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDException;
 import net.sf.javabdd.BDDFactory;
+import solver.bdd.BDDSolver;
+import solver.sat.SATSolver;
+import solver.sat.SatHelper;
 import testRunner.RunTests;
 import testRunner.VarexTestRunner;
-import util.BDDSolver;
-import util.SATSolver;
-import util.SatHelper;
 import varex.SATSSHOMExprFactory;
 import varex.SSHOMExprFactory;
 
 public class BenchmarkedVarexSSHOMFinder {
-	private Benchmarker benchmarker;
+
 	public static SingleFeatureExpr[] mutantExprs = null;
 
 	private enum Machine {
@@ -55,18 +55,14 @@ public class BenchmarkedVarexSSHOMFinder {
 			return "";
 		}
 	}
-	private static Machine machine = Machine.FEATURE_SERVER;
+	private static Machine machine = Machine.JENS;
 	private        String  baseDir = machine.getBaseDir();
 
-	public BenchmarkedVarexSSHOMFinder() {
-		benchmarker = new Benchmarker();
-	}
 	
 	public void varexSSHOMFinder() throws IOException {
-		benchmarker.start();
+		Benchmarker.instance.start();
 
-		Class[] targetClasses = BenchmarkPrograms.getTargetClasses();
-		Class[] testClasses = BenchmarkPrograms.getTestClasses();
+		Class<?>[] testClasses = BenchmarkPrograms.getTestClasses();
 		String[] mutants = BenchmarkPrograms.getMutantNames();
 
 		System.setProperty("bddCacheSize", Integer.toString(100000));
@@ -100,11 +96,11 @@ public class BenchmarkedVarexSSHOMFinder {
 								.getDeclaringClass().getName(), test.getKey().getName());
 			}
 		}
-		benchmarker.timestamp("create features");
+		Benchmarker.instance.timestamp("create features");
 		
 		mutantExprs = mutantNamesToFeatures(mutants);
 		
-		benchmarker.timestamp("load f(t)");
+		Benchmarker.instance.timestamp("load f(t)");
 		loadTestExpressions(tests);
 		
 		Map<String, FeatureExpr> stringTests = new HashMap<>();
@@ -123,10 +119,10 @@ public class BenchmarkedVarexSSHOMFinder {
 	}
 
 	private Set<Set<String>> getBDDSolutions(String[] mutants, Map<String, FeatureExpr> stringTests, boolean strict) {
-		benchmarker.timestamp("generate FOMs");
+		Benchmarker.instance.timestamp("generate FOMs");
 		FeatureExpr[] fomExprs = SSHOMExprFactory.genFOMs(mutantExprs, mutants.length);
 		
-		benchmarker.timestamp("create SSHOM expression");
+		Benchmarker.instance.timestamp("create SSHOM expression");
 		
 		FeatureExpr finalExpr;
 		if (strict) {
@@ -138,7 +134,7 @@ public class BenchmarkedVarexSSHOMFinder {
 		for (FeatureExpr m : fomExprs) {
 			finalExpr = finalExpr.andNot(m);
 		}
-		return new BDDSolver(2, benchmarker).getSolutionsBDD((BDDFeatureExpr)finalExpr, mutants, BenchmarkPrograms::homIsValid);
+		return new BDDSolver(2).getSolutionsBDD((BDDFeatureExpr)finalExpr, mutants, BenchmarkPrograms::homIsValid);
 	}
 	
 		private String getVarexClasspaths() {
@@ -178,7 +174,7 @@ public class BenchmarkedVarexSSHOMFinder {
 	}
 
 	private Set<Set<String>> getSATSolutions(Map<String, FeatureExpr> stringTests, boolean strict) {
-		benchmarker.timestamp("create SAT formula");
+		Benchmarker.instance.timestamp("create SAT formula");
 		
 		final boolean splitExpr1 = true;
 		final boolean splitExpr2 = true;
@@ -195,8 +191,8 @@ public class BenchmarkedVarexSSHOMFinder {
 		FeatureExprFactory.setDefault(FeatureExprFactory.sat());
 		FeatureModel featureModel = SatHelper.instance.getModel("fullmodel.dimacs");
 		
-		benchmarker.timestamp("get SAT solutions");
-		return new SATSolver(2, benchmarker).getSolutions(featureModel, mutantExprs, BenchmarkPrograms::homIsValid);
+		Benchmarker.instance.timestamp("get SAT solutions");
+		return new SATSolver(2).getSolutions(featureModel, mutantExprs, BenchmarkPrograms::homIsValid);
 	}
 
 	private void checkSolutions(Set<Set<String>> solutionsBDD, Set<Set<String>> solutionsSAT) {

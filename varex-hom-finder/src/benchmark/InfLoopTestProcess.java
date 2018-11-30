@@ -66,10 +66,10 @@ public class InfLoopTestProcess {
 
   private static SSHOMListener listener = new SSHOMListener();
   private static InfLoopTestProcess process = new InfLoopTestProcess(listener);
-  public static SSHOMListener runTests(Class[] testClasses, String[] mutants) {
+  public static SSHOMListener runTests(Class<?>[] testClasses, String[] mutants) {
 
     listener.signalHOMBegin();
-    for (Class c : testClasses) {
+    for (Class<?> c : testClasses) {
       for (Method m : c.getMethods()) {
         if (m.getAnnotation(Test.class) != null) {
           process.process(c.getName(), m.getName(), mutants);

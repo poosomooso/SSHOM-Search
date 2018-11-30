@@ -9,7 +9,7 @@ public class SetHomTestRunner {
       throws ClassNotFoundException, NoSuchFieldException,
       IllegalAccessException {
     if (args.length >= 4) {
-      Class testClass = Class.forName(args[0]);
+      Class<?> testClass = Class.forName(args[0]);
       String testName = args[1];
       ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(
           BenchmarkPrograms.getTargetClasses());

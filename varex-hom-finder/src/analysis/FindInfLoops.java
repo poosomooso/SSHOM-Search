@@ -1,22 +1,18 @@
 package analysis;
 
-import benchmark.BenchmarkPrograms;
-import benchmark.BenchmarkedVarexSSHOMFinder;
-import benchmark.CommandLineRunner;
-import benchmark.RunBenchmarks;
-import org.junit.runner.Description;
-import util.CheckStronglySubsuming;
-import util.SSHOMListener;
-import util.SSHOMRunner;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import java.io.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import benchmark.BenchmarkPrograms;
+import util.SSHOMRunner;
 
 public class FindInfLoops {
   private static SSHOMRunner runner;
 
-  public static void findInfLoops(Class[] targetClasses, Class[] testClasses)
+  public static void findInfLoops(Class<?>[] targetClasses, Class<?>[] testClasses)
       throws NoSuchFieldException, IllegalAccessException {
     runner = new SSHOMRunner(targetClasses, testClasses);
     String[] mutants = runner.getMutants().toArray(new String[0]);
@@ -26,6 +22,7 @@ public class FindInfLoops {
     }
   }
 
+  @SuppressWarnings("unused")
   private static void checkFOMs(String[] mutants)
       throws NoSuchFieldException, IllegalAccessException {
     for (String m : mutants) {

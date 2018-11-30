@@ -1,35 +1,30 @@
 package benchmark;
 
-import org.evosuite.shaded.org.hibernate.boot.jaxb.SourceType;
-import org.junit.Test;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.runner.Description;
+
 import util.CheckStronglySubsuming;
 import util.SSHOMListener;
 import util.SSHOMRunner;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class BenchmarkedNaiveSSHOMFinder {
-  private Benchmarker                   benchmarker;
   private SSHOMRunner                   runner;
   private Map<String, Set<Description>> foms;
   static long x = 0;
-  private Class[] testClasses;
+  private Class<?>[] testClasses;
 
-  public BenchmarkedNaiveSSHOMFinder() {
-    benchmarker = new Benchmarker();
-  }
 
   public void naiveSSHOMFinder()
       throws NoSuchFieldException, IllegalAccessException {
-    benchmarker.start();
+	Benchmarker.instance.start();
 
-    Class[] targetClasses = BenchmarkPrograms.getTargetClasses();
+    Class<?>[] targetClasses = BenchmarkPrograms.getTargetClasses();
     this.testClasses = BenchmarkPrograms.getTestClasses();
 
     foms = new HashMap<>();
@@ -38,10 +33,10 @@ public class BenchmarkedNaiveSSHOMFinder {
     populateFoms(mutants);
 
     int maxOrder = 33;
-    benchmarker.timestamp("start homs");
+    Benchmarker.instance.timestamp("start homs");
     for (int i = 2; i < maxOrder; i++) {
       runOnNOrder(i, new ArrayList<>(), mutants, 0);
-      benchmarker.timestamp("order "+i+" done");
+      Benchmarker.instance.timestamp("order "+i+" done");
     }
   }
 
@@ -86,7 +81,7 @@ public class BenchmarkedNaiveSSHOMFinder {
       if (CheckStronglySubsuming
           .isStronglySubsuming(listener.getHomTests(), currentFoms)) {
         //        System.setOut(out);
-        benchmarker.timestamp(String.join(",", selectedMutants));
+    	  Benchmarker.instance.timestamp(String.join(",", selectedMutants));
         //        System.setOut(temp);
       }
     } else if (mutantStart < allMutants.length) {
