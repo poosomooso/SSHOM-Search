@@ -134,7 +134,7 @@ public class BenchmarkedVarexSSHOMFinder {
 		for (FeatureExpr m : fomExprs) {
 			finalExpr = finalExpr.andNot(m);
 		}
-		return new BDDSolver(2).getSolutionsBDD((BDDFeatureExpr)finalExpr, mutants, BenchmarkPrograms::homIsValid);
+		return new BDDSolver(2).getSolutions((BDDFeatureExpr)finalExpr, mutants, BenchmarkPrograms::homIsValid);
 	}
 	
 		private String getVarexClasspaths() {
