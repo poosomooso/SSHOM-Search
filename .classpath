@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="src" path="varex-hom-finder/src"/>
+	<classpathentry kind="src" path="varex-hom-finder/resources"/>
+	<classpathentry kind="src" path="code-ut/src"/>
+	<classpathentry kind="src" path="code-ut/test"/>
+	<classpathentry kind="src" path="varex-hom-finder/test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/bcel-6.0.jar"/>
+	<classpathentry kind="lib" path="lib/bcel-6.2.jar"/>
+	<classpathentry kind="lib" path="lib/jpf-annotations.jar"/>
+	<classpathentry kind="lib" path="lib/jpf-classes.jar"/>
+	<classpathentry kind="lib" path="lib/junit.jar"/>
+	<classpathentry kind="lib" path="lib/org.sat4j.core-2.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/RunJPF.jar"/>
+	<classpathentry kind="lib" path="lib/scala/FeatureExprLib.jar"/>
+	<classpathentry kind="lib" path="lib/scala/jbddi-core-1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/scala/scala-library-2.12.6.jar"/>
+	<classpathentry kind="lib" path="lib/scala/scala-parser-combinators_2.12-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/scala/scalacheck_2.12-1.14.0.jar"/>
+	<classpathentry kind="lib" path="code-ut/jars/commons-validator.jar"/>
+	<classpathentry kind="lib" path="code-ut/jars/monopoli100.jar"/>
+	<classpathentry kind="lib" path="code-ut/jars/mutated-cli.jar"/>
+	<classpathentry kind="lib" path="lib/sat4j-1.5.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/VarexJ"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

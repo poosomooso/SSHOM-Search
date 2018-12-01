@@ -1,4 +1,4 @@
-package util;
+package solver.sat;
 
 import static org.junit.Assert.assertEquals;
 
