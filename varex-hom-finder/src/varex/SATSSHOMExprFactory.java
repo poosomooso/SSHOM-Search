@@ -94,7 +94,7 @@ public class SATSSHOMExprFactory {
 						sb.append(currentVariableMapping.get(Math.abs(parseInt)));
 						sb.append(' ');
 					}
-					clauses.add(sb.toString());
+					clauses.add(sb.substring(0, sb.length() - 1));
 				}
 
 			} catch (IOException e) {
@@ -178,7 +178,7 @@ public class SATSSHOMExprFactory {
 						sb.append(currentVariableMapping.getOrDefault(Math.abs(parseInt), Math.abs(parseInt)));
 						sb.append(' ');
 					}
-					clauses.add(sb.toString());
+					clauses.add(sb.substring(0, sb.length() - 1));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

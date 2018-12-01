@@ -26,7 +26,7 @@ import scala.collection.JavaConversions;
  * @author Jens Meinicke
  *
  */
-public class SATSolver {
+public final class SATSolver {
 
 	public final int minSize;
 
@@ -34,11 +34,11 @@ public class SATSolver {
 		this.minSize = minsize;
 	}
 
-	public Set<Set<String>> getSolutions(BDDFeatureExpr expr, String fileName) {
+	Set<Set<String>> getSolutions(BDDFeatureExpr expr, String fileName) {
 		return getSolutions(expr, fileName, x -> true);
 	}
 
-	public Set<Set<String>> getSolutions(BDDFeatureExpr expr, String fileName, Function<Collection<String>, Boolean> valid) {
+	Set<Set<String>> getSolutions(BDDFeatureExpr expr, String fileName, Function<Collection<String>, Boolean> valid) {
 		File dimacsFile = DimacsWriter.instance.bddToDimacsTseytinTransformation(expr, fileName);
 		FeatureModel model = SatHelper.instance.getModel(dimacsFile.getName());
 		Set<SingleFeatureExpr> distinctFeatureObjects = JavaConversions.setAsJavaSet(expr.collectDistinctFeatureObjects());
@@ -54,7 +54,7 @@ public class SATSolver {
 		return getSolutions(model, featuresSet, checkValid);
 	}
 
-	public Set<Set<String>> getSolutions(FeatureModel model, Set<SingleFeatureExpr> distinctFeatureObjects,
+	private Set<Set<String>> getSolutions(FeatureModel model, Set<SingleFeatureExpr> distinctFeatureObjects,
 			Function<Collection<String>, Boolean> checkValid) {
 		HashSet<Set<String>> solutions = new HashSet<>();
 		Set<SingleFeatureExpr> mutants = new HashSet<>();

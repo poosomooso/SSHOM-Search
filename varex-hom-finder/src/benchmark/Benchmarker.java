@@ -3,6 +3,7 @@ package benchmark;
 public class Benchmarker {
 	
   public static final Benchmarker instance = new Benchmarker();
+  
   private Benchmarker() {
 	  // private constructor
   }

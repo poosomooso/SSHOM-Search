@@ -25,15 +25,15 @@ public class BDDSolver {
 	}
 
 	public Set<Set<String>> getSolutions(BDDFeatureExpr expr, String[] features) {
-		return getSolutionsBDD(expr, features, x -> true);
+		return getSolutions(expr, features, x -> true);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Set<Set<String>> getSolutionsBDD(BDDFeatureExpr expr, String[] features, Function<Collection<String>, Boolean> checkValid) {
+	public Set<Set<String>> getSolutions(BDDFeatureExpr expr, String[] features, Function<Collection<String>, Boolean> checkValid) {
 		List<byte[]> solutions = (List<byte[]>)expr.bdd().allsat();
 		Set<Set<String>> allSolutions = new LinkedHashSet<>();
 		for (byte[] s : solutions) {
-			getSolutionsBDD(s, features, allSolutions, new HashSet<>(), 1, checkValid);
+			getSolutions(s, features, allSolutions, new HashSet<>(), 1, checkValid);
 		}
 		return allSolutions;
 	}
@@ -44,7 +44,7 @@ public class BDDSolver {
 	 * @param solutions
 	 * @param features
 	 */
-	private void getSolutionsBDD(byte[] solutions, String[] features, Set<Set<String>> allSolutions, Set<String> selections, int start, Function<Collection<String>, Boolean> checkValid) {
+	private void getSolutions(byte[] solutions, String[] features, Set<Set<String>> allSolutions, Set<String> selections, int start, Function<Collection<String>, Boolean> checkValid) {
 		if (selections.size() >= minSize && !checkValid.apply(selections)) {
 			return;
 		}
@@ -57,7 +57,7 @@ public class BDDSolver {
 					for (int j = i + 1; j <= features.length; j++) {
 						copy[j] = solutions[j];
 					}
-					getSolutionsBDD(copy, features, allSolutions, new HashSet<>(selections), i + 1, checkValid);
+					getSolutions(copy, features, allSolutions, new HashSet<>(selections), i + 1, checkValid);
 				}
 				
 				selections.add(features[i - 1]);

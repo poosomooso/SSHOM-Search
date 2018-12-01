@@ -26,7 +26,6 @@ public class BenchmarkPrograms {
   private static Map<String, Integer> makeshiftFeatureModel;
   private static String[] mutantNames;
 
-
   public static Class<?>[] getTargetClasses() {
     if (targetClasses == null) {
       if (PROGRAM == Program.TRIANGLE) {
