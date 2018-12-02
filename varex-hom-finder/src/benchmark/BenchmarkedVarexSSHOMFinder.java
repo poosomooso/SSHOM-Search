@@ -21,7 +21,6 @@ import org.junit.Test;
 import cmu.conditional.Conditional;
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
-import de.fosd.typechef.featureexpr.FeatureModel;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
@@ -30,7 +29,6 @@ import net.sf.javabdd.BDDException;
 import net.sf.javabdd.BDDFactory;
 import solver.bdd.BDDSolver;
 import solver.sat.SATSolver;
-import solver.sat.SatHelper;
 import testRunner.RunTests;
 import testRunner.VarexTestRunner;
 import varex.SATSSHOMExprFactory;
@@ -188,11 +186,8 @@ public class BenchmarkedVarexSSHOMFinder {
 		}
 		SATSSHOMExprFactory.andDimacsFiles(dimcsFiles, mutantExprs, "fullmodel");
 		
-		FeatureExprFactory.setDefault(FeatureExprFactory.sat());
-		FeatureModel featureModel = SatHelper.instance.getModel("fullmodel.dimacs");
-		
 		Benchmarker.instance.timestamp("get SAT solutions");
-		return new SATSolver(2).getSolutions(featureModel, mutantExprs, BenchmarkPrograms::homIsValid);
+		return new SATSolver(2).getSolutions("fullmodel.dimacs", mutantExprs, BenchmarkPrograms::homIsValid);
 	}
 
 	private void checkSolutions(Set<Set<String>> solutionsBDD, Set<Set<String>> solutionsSAT) {
