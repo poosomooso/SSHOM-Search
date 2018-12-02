@@ -1,10 +1,10 @@
 package analysis;
 
+import java.util.Collection;
+
 import benchmark.BenchmarkPrograms;
 import util.SSHOMListener;
 import util.SSHOMRunner;
-
-import java.util.Collection;
 
 public class FindEqFOMs {
   public static void main(String[] args)

@@ -1,7 +1,6 @@
 package verify;
 
 import mutated.triangleAll.Triangle;
-
 import mutated.triangleAll.Triangle_ESTest_improved;
 
 public class VerifyTriangle {

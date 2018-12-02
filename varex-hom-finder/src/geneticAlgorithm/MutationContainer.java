@@ -1,16 +1,17 @@
 package geneticAlgorithm;
 
-import benchmark.BenchmarkPrograms;
-import benchmark.InfLoopTestProcess;
-import org.junit.runner.Description;
-import util.SSHOMListener;
-import util.SSHOMRunner;
-import util.SetArithmetic;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.junit.runner.Description;
+
+import benchmark.BenchmarkPrograms;
+import benchmark.InfLoopTestProcess;
+import util.SSHOMListener;
+import util.SSHOMRunner;
+import util.SetArithmetic;
 
 public class MutationContainer implements Comparable<MutationContainer>{
     private final String[] mutation;

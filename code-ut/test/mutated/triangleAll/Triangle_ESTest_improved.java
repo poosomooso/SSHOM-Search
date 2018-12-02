@@ -1,8 +1,8 @@
 package mutated.triangleAll;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 public class Triangle_ESTest_improved {
 

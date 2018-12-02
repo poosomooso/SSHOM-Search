@@ -1,11 +1,15 @@
 package util;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class SSHOMListener extends RunListener {
   Set<Description> homTests;

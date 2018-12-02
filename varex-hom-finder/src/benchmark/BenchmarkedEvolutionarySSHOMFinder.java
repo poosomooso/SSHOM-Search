@@ -1,10 +1,14 @@
 package benchmark;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import geneticAlgorithm.MutationContainer;
 import geneticAlgorithm.RandomUtils;
 import util.SSHOMRunner;
-
-import java.util.*;
 
 public class BenchmarkedEvolutionarySSHOMFinder {
     private static final int MIN_ORDER = 2;

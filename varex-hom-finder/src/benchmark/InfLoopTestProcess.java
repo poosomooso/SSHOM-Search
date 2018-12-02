@@ -1,11 +1,5 @@
 package benchmark;
 
-import org.junit.Test;
-import org.junit.runner.Description;
-import org.junit.runner.notification.Failure;
-import testRunner.SetHomTestRunner;
-import util.SSHOMListener;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +7,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
+
+import testRunner.SetHomTestRunner;
+import util.SSHOMListener;
 
 public class InfLoopTestProcess {
 

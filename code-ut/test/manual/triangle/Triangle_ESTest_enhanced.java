@@ -1,7 +1,8 @@
 package manual.triangle;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class Triangle_ESTest_enhanced {
 

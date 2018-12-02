@@ -1,9 +1,10 @@
 package mutated.triangle.exhaustive;
 
-import mutated.triangle.Triangle;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import mutated.triangle.Triangle;
 
 public class testTriangleExhaustive {
   @Test

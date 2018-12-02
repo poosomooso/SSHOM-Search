@@ -1,12 +1,12 @@
 package util;
 
-import gov.nasa.jpf.annotation.Conditional;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import gov.nasa.jpf.annotation.Conditional;
 
 public class ConditionalMutationWrapper {
   Map<String, Field> conditionalFields = new HashMap<>();

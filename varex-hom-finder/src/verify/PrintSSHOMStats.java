@@ -1,16 +1,17 @@
 package verify;
 
-import manual.triangle.Triangle;
-import manual.triangle.Triangle_ESTest_linecoverage;
-import manual.triangle.testTriangleExhaustive;
-import org.junit.runner.Description;
-import util.SSHOMListener;
-import util.SSHOMRunner;
-import util.SetArithmetic;
-
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.junit.runner.Description;
+
+import manual.triangle.Triangle;
+import manual.triangle.Triangle_ESTest_linecoverage;
+import manual.triangle.testTriangleExhaustive;
+import util.SSHOMListener;
+import util.SSHOMRunner;
+import util.SetArithmetic;
 
 public class PrintSSHOMStats {
   public static void main(String[] args)
