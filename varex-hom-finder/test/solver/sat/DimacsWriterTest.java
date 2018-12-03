@@ -2,6 +2,7 @@ package solver.sat;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -48,8 +49,12 @@ public class DimacsWriterTest {
 	@Parameter(2)
 	public int length;
 	
+	/**
+	 * Checks whether the {@link BDDSolver} and the {@link SATSolver} return the same solutions.
+	 * 
+	 */
 	@Test
-	public void testName() throws Exception {
+	public void equivalenceTest() {
 		FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
 		checkExpression(expr);
 	}
@@ -62,9 +67,10 @@ public class DimacsWriterTest {
 		
 		Set<Set<String>> bddSolutions = new BDDSolver(0).getSolutions(expr, currentFeatures);
 		
-		// TODO fix this
-//		Set<Set<String>> satSolutions = new SATSolver(0).getSolutions(expr, "test", currentFeatures);
-//		assertEquals(bddSolutions, satSolutions);
+		File f = DimacsWriter.instance.bddToDimacsTseytinTransformation(expr, this.getClass().getSimpleName());
+		Set<Set<String>> satSolutions = new SATSolver(0).getSolutions(f.getName(), currentFeatures);
+		assertEquals(bddSolutions, satSolutions);
+		f.delete();
 	}
 	
 	

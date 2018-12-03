@@ -39,22 +39,21 @@ public class BenchmarkedVarexSSHOMFinder {
 	public static SingleFeatureExpr[] mutantExprs = null;
 
 	private enum Machine {
-		JENS,
-		SERENA,
-		FEATURE_SERVER;
+		JENS("C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\"),
+		SERENA("/home/serena/reuse/hom-generator/"),
+//		FEATURE_SERVER("/home/feature/serena/"),
+		FEATURE_SERVER("/home/serena/benchmark/");
 
+		private final String path;
+		private Machine(String path) {
+			this.path = path;
+		}
 		String getBaseDir() {
-			switch (this) {
-			case JENS: return "C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\";
-			case SERENA: return "/home/serena/reuse/hom-generator/";
-//			case FEATURE_SERVER: return "/home/feature/serena/";
-			case FEATURE_SERVER: return "/home/serena/benchmark/";
-			}
-			return "";
+			return path;
 		}
 	}
-	private static Machine machine = Machine.JENS;
-	private        String  baseDir = machine.getBaseDir();
+	private static final Machine machine = Machine.JENS;
+	private static final String  baseDir = machine.getBaseDir();
 
 	
 	public void varexSSHOMFinder() throws IOException {
@@ -66,7 +65,10 @@ public class BenchmarkedVarexSSHOMFinder {
 		System.setProperty("bddCacheSize", Integer.toString(100000));
 		System.setProperty("bddValNum", Integer.toString(6_000_000));
 
-		String paths = getVarexClasspaths(), mutantFile = getMutantFile(), jpfPath = getJpfPath(), jvmClasspath = getJvmClasspath();
+		final String paths = getVarexClasspaths();
+		final String mutantFile = getMutantFile();
+		final String jpfPath = getJpfPath();
+		final String jvmClasspath = getJvmClasspath();
 
 		FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
 
@@ -111,7 +113,7 @@ public class BenchmarkedVarexSSHOMFinder {
 		Set<Set<String>> solutionsBDD = getBDDSolutions(mutants, stringTests, strict);
 		
 		// SAT solutions
-		Set<Set<String>> solutionsSAT = getSATSolutions(stringTests, strict); 
+		Set<Set<String>> solutionsSAT = getSATSolutions(mutants, stringTests, strict); 
 		
 		checkSolutions(solutionsBDD, solutionsSAT);
 	}
@@ -171,7 +173,7 @@ public class BenchmarkedVarexSSHOMFinder {
 		}
 	}
 
-	private Set<Set<String>> getSATSolutions(Map<String, FeatureExpr> stringTests, boolean strict) {
+	private Set<Set<String>> getSATSolutions(String[] mutants, Map<String, FeatureExpr> stringTests, boolean strict) {
 		Benchmarker.instance.timestamp("create SAT formula");
 		
 		final boolean splitExpr1 = true;
@@ -187,7 +189,7 @@ public class BenchmarkedVarexSSHOMFinder {
 		SATSSHOMExprFactory.andDimacsFiles(dimcsFiles, mutantExprs, "fullmodel");
 		
 		Benchmarker.instance.timestamp("get SAT solutions");
-		return new SATSolver(2).getSolutions("fullmodel.dimacs", mutantExprs, BenchmarkPrograms::homIsValid);
+		return new SATSolver(2).getSolutions("fullmodel.dimacs", mutants);
 	}
 
 	private void checkSolutions(Set<Set<String>> solutionsBDD, Set<Set<String>> solutionsSAT) {
@@ -250,7 +252,6 @@ public class BenchmarkedVarexSSHOMFinder {
 		for (int i = 0; i < mutants.length; i++) {
 			mutantExprs[i] = Conditional.createFeature(mutants[i]);
 		}
-		Arrays.sort(mutantExprs, (m1, m2)-> Conditional.getCTXString(m1).substring(1).compareTo(Conditional.getCTXString(m2).substring(1)));
 		return mutantExprs;
 	}
 

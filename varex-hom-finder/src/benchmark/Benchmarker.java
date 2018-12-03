@@ -8,15 +8,16 @@ public class Benchmarker {
 	  // private constructor
   }
   
-  private long startTime = -1L;
+  private long startTime = Long.MIN_VALUE;
 
   public void start() {
     startTime = System.currentTimeMillis();
   }
 
   public void timestamp(String descriptor) {
-    System.out
-        .printf("TIME %10d|%s\n", System.currentTimeMillis() - startTime, descriptor);
+	  if (startTime != Long.MIN_VALUE) {
+		  System.out.printf("TIME %10d|%s\n", System.currentTimeMillis() - startTime, descriptor);
+	  }
   }
 
 }

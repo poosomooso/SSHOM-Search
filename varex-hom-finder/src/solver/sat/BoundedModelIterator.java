@@ -5,8 +5,25 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.ModelIterator;
 import org.sat4j.tools.SolverDecorator;
 
+/**
+ * This class allows to iterate through all the models (implicants) of a formula. 
+ * In contrast to {@link ModelIterator}, it only considers the first n variables
+ * 
+ * <pre>
+ * ISolver solver = new BoundedModelIterator(SolverFactory.newDefault());
+ * while (solver.isSatisfiable()) {
+ *     int[] model = solver.model();
+ *     // do something with model
+ * }
+ * </pre>
+ * 
+ * @see ModelIterator
+ * @author Jens Meinicke
+ *
+ */
 public class BoundedModelIterator extends SolverDecorator<ISolver> {
 
 	private static final long serialVersionUID = 1L;

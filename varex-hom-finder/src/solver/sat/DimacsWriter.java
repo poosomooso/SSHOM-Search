@@ -43,14 +43,22 @@ public class DimacsWriter {
 		// private constructor
 	}
 
-	public void printToDimacsDirect(String key, FeatureExpr expr) {
+	/**
+	 * Uses the implementation in {@link SATFeatureModel} to create a dimacs file.<br>
+	 * 
+	 * <b>Do not use for large BDDs</b>
+	 */
+	public void printToDimacsDirect(FeatureExpr expr, String fileName) {
 		if (expr instanceof BDDFeatureExpr) {
 			expr = ((BDDFeatureExpr) expr).toSATFeatureExpr();
 		}
 		SATFeatureModel fm = (SATFeatureModel) SATFeatureModel.create(expr);
-		fm.writeToDimacsFile(new File(key + ".dimacs"));
+		fm.writeToDimacsFile(new File(fileName + ".dimacs"));
 	}
 	
+	/**
+	 * Uses the Tseytin Transformation to create a dimacs file.<br>
+	 */
 	public File bddToDimacsTseytinTransformation(BDDFeatureExpr expr, String fileName) {
 		File file = new File(fileName + ".dimacs");
 		try (OutputStream out = new BufferedOutputStream(new FileOutputStream(file))) {
@@ -62,15 +70,25 @@ public class DimacsWriter {
 		return null;
 	}
 
+	/**
+	 * Uses the Tseytin Transformation to create a dimacs file.<br>
+	 */
 	public void bddToDimacsTseytinTransformation(BDDFeatureExpr expr, OutputStream out) {
+		Collection<FeatureExpr> expressions = new ArrayList<>();
+		Collection<SingleFeatureExpr> variables = createExpressions(expr, expressions);
+
+		Set<SingleFeatureExpr> features = JavaConversions.setAsJavaSet(expr.collectDistinctFeatureObjects());
+		printToDimacs(features, variables, expressions, out);
+	}
+
+	private Collection<SingleFeatureExpr> createExpressions(BDDFeatureExpr expr, Collection<FeatureExpr> expressions) {
+		final Map<BDD, SingleFeatureExpr> variables = new HashMap<>();
 		final Deque<BDD> stack = new ArrayDeque<>();
 		if (!expr.isTautology() && !expr.isContradiction()) {
 			stack.add(expr.bdd());
 		}
-		Map<BDD, SingleFeatureExpr> nodeVariables = new HashMap<>();
-		FeatureExpr rootVariable = getOrCreateVariable(expr.bdd(), nodeVariables);
+		FeatureExpr rootVariable = getOrCreateVariable(expr.bdd(), variables);
 		
-		Collection<FeatureExpr> expressions = new ArrayList<>();
 		if (expr.isContradiction()) {
 			expressions.add(rootVariable.not());
 			expressions.add(rootVariable);
@@ -86,10 +104,10 @@ public class DimacsWriter {
 			BDD high = bdd.high();
 			
 			SingleFeatureExpr feature = FeatureExprFactory.createDefinedExternal(FExprBuilder.lookupFeatureName(bdd.var()));
-			FeatureExpr lowExpr = createExpr(feature.not(), low, nodeVariables);
-			FeatureExpr highExpr = createExpr(feature, high, nodeVariables);
+			FeatureExpr lowExpr = createExpr(feature.not(), low, variables);
+			FeatureExpr highExpr = createExpr(feature, high, variables);
 
-			FeatureExpr nodeExpr = getOrCreateVariable(bdd, nodeVariables);
+			FeatureExpr nodeExpr = getOrCreateVariable(bdd, variables);
 			FeatureExpr current;
 			if (lowExpr == null) {
 				current = nodeExpr.equiv(highExpr);
@@ -109,9 +127,7 @@ public class DimacsWriter {
 				covered.add(high);
 			}
 		}
-
-		Set<SingleFeatureExpr> features = JavaConversions.setAsJavaSet(expr.collectDistinctFeatureObjects());
-		printToDimacs(features, nodeVariables.values(), expressions, out);
+		return variables.values();
 	}
 
 	private FeatureExpr createExpr(FeatureExpr feature, BDD next, Map<BDD, SingleFeatureExpr> nodeVariables) {
