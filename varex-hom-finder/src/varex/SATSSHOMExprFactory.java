@@ -238,7 +238,7 @@ public class SATSSHOMExprFactory {
 	public static Collection<File> getStrictSSHOMExpr(Map<String, FeatureExpr> tests,
 			SingleFeatureExpr[] mutants, int numMutants, boolean splitExpression1, boolean splitExpression2, boolean splitExpression3) {
 		Collection<File> files = getSSHOMExpr(tests, mutants, numMutants, splitExpression1, splitExpression2);
-		getExpression3(tests, mutants, numMutants, files, splitExpression3);
+		createExpression3(tests, mutants, numMutants, files, splitExpression3);
 		return files;
 	}
 
@@ -329,7 +329,7 @@ public class SATSSHOMExprFactory {
 		return testExpr.implies(subexpression2);
 	}
 
-	private static void getExpression3(Map<String, FeatureExpr> tests, SingleFeatureExpr[] mutants, int numMutants,
+	private static void createExpression3(Map<String, FeatureExpr> tests, SingleFeatureExpr[] mutants, int numMutants,
 			Collection<File> files, boolean splitExpression3) {
 		FeatureExpr lt1 = FeatureExprFactory.False();
 		List<File> dimacsFiles = new ArrayList<>();
