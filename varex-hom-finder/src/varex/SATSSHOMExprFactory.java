@@ -46,7 +46,7 @@ public class SATSSHOMExprFactory {
 
 		// create features
 		for (SingleFeatureExpr feature : features) {
-			variableNames.put(Conditional.getCTXString(feature), variableId);
+			variableNames.put(feature.feature(), variableId);
 			variableId++;
 		}
 

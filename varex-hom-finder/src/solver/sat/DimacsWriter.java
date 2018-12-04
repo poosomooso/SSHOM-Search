@@ -23,8 +23,12 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
+import de.fosd.typechef.featureexpr.sat.Not;
+import de.fosd.typechef.featureexpr.sat.Or;
+import de.fosd.typechef.featureexpr.sat.SATFeatureExpr;
 import de.fosd.typechef.featureexpr.sat.SATFeatureModel;
 import net.sf.javabdd.BDD;
+import scala.collection.Iterator;
 import scala.collection.JavaConversions;
 
 /**
@@ -152,6 +156,7 @@ public class DimacsWriter {
 			Collection<FeatureExpr> expressions, OutputStream stream) {
 		Map<String, Integer> featureMap = new HashMap<>();
 		
+		// TODO add featureNames[]
 		List<SingleFeatureExpr> sortedFeatures = new ArrayList<>(features);
 		Collections.sort(sortedFeatures, (f1, f2) -> f1.feature().compareTo(f2.feature()));
 		
@@ -161,7 +166,7 @@ public class DimacsWriter {
 			// print node variables
 			printVariables(nodeVariables, featureMap, out, index);
 			// expressions need to be transformed to CNF
-			List<FeatureExpr> clauses = SatHelper.instance.getClauses(expressions);
+			List<Collection<Integer>> clauses = CNFHelper.instance.getClauses(expressions);
 			out.print("p cnf ");
 			out.print(featureMap.size());
 			out.print(' ');
@@ -171,38 +176,60 @@ public class DimacsWriter {
 		}
 	}
 
-	private void printClauses(List<FeatureExpr> clauses, Map<String, Integer> featureMap, PrintWriter out) {
-		for (FeatureExpr c : clauses) {
-			String line = featureToID(c, featureMap);
+	private void printClauses(List<Collection<Integer>> clauses, Map<String, Integer> featureMap, PrintWriter out) {
+		for (Collection<Integer> c : clauses) {
+			String line = expressionToClause(c, featureMap);
 			out.println(line);
 		}
 	}
 
-	private String featureToID(FeatureExpr c, Map<String, Integer> featureMap) {
-		String line = Conditional.getCTXString(c);
-		line = line.replaceAll("\\(", "");
-		line = line.replaceAll("\\)", "");
-		line = line.replaceAll("\\|", " ");
-		
-		String[] split = line.split(" ");
+	private String expressionToClause(Collection<Integer> c, Map<String, Integer> featureMap) {
+		return exprToString(c,featureMap);
+	}
+	
+	public String exprToString(final Collection<Integer> c, Map<String, Integer> featureMap) {
 		StringBuilder sb = new StringBuilder();
-		for (String feature : split) {
-			int id;
-			if (feature.startsWith("!")) {
-				id = -getFeatureID(feature.substring(1), featureMap);
-			} else {
-				id = getFeatureID(feature, featureMap);
+		
+		for (int var : c) {
+			if (var < 0) {
+				sb.append('-');
 			}
-			sb.append(id);
+			sb.append(getFeatureID(FExprBuilder.lookupFeatureName(Math.abs(var)), featureMap));
 			sb.append(' ');
 		}
-		sb.append('0');
-		
+		sb.append(0);
 		return sb.toString();
+	}
+	
+	public String exprToString(final FeatureExpr ctx, Map<String, Integer> featureMap) {
+		StringBuilder sb = new StringBuilder();
+		if (ctx instanceof SingleFeatureExpr) {
+			return getFeatureID(((SingleFeatureExpr) ctx).feature(), featureMap) + " 0";
+		}
+		if (ctx instanceof Or) {
+			scala.collection.immutable.Set<SATFeatureExpr> clauses = ((Or) ctx).clauses();
+			Iterator<SATFeatureExpr> it = clauses.iterator();
+			while (it.hasNext()) {
+				SATFeatureExpr next = it.next();
+				String feature;
+				if (next instanceof Not) {
+					sb.append('-');
+					SingleFeatureExpr e = (SingleFeatureExpr)((Not)next).expr();
+					feature = e.feature();
+				} else {
+					feature = ((SingleFeatureExpr)next).feature();
+				}
+				sb.append(getFeatureID(feature, featureMap));
+				sb.append(' ');
+			 }
+			sb.append('0');
+			return sb.toString();
+		}
+		throw new RuntimeException(Conditional.getCTXString(ctx));
 	}
 
 	private int getFeatureID(String feature, Map<String, Integer> featureMap) {
-		if (! featureMap.containsKey(feature)) {
+		if (!featureMap.containsKey(feature)) {
 			throw new RuntimeException("Feature not found: " + feature);
 		}
 		return featureMap.get(feature);
@@ -210,7 +237,7 @@ public class DimacsWriter {
 
 	private int printVariables(Collection<SingleFeatureExpr> nodes, Map<String, Integer> featureMap, PrintWriter out, int index) {
 		for (SingleFeatureExpr featureExpr : nodes) {
-			String variableName = Conditional.getCTXString(featureExpr);
+			final String variableName = featureExpr.feature();
 			printNextVariable(out, index, variableName);
 			featureMap.put(variableName, index);
 			index++;
