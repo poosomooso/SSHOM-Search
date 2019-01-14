@@ -52,7 +52,7 @@ public class BenchmarkedVarexSSHOMFinder {
 			return path;
 		}
 	}
-	private static final Machine machine = Machine.JENS;
+	private static final Machine machine = Machine.SERENA;
 	private static final String  baseDir = machine.getBaseDir();
 
 	
@@ -75,15 +75,12 @@ public class BenchmarkedVarexSSHOMFinder {
 		Map<Method, FeatureExpr> tests = new LinkedHashMap<>();
 		
 		getTestNames(testClasses, tests);
+		filterTests(tests);
 
 		int numberOfTests = tests.size();
 		int i = 1;
 		for (Entry<Method, FeatureExpr> test : tests.entrySet()) {
 			System.out.println(i++ + "/" + numberOfTests + " tests");
-			if (test.getKey().getName().equals("testGanaJugador"))
-				continue;
-			if (Modifier.isAbstract(test.getKey().getDeclaringClass().getModifiers()))
-				continue;
 
 			if (jvmClasspath == null) {
 				CommandLineRunner.process("java", "-jar", jpfPath, "+search.class=.search.RandomSearch", "+bddCacheSize=100000",
@@ -116,6 +113,17 @@ public class BenchmarkedVarexSSHOMFinder {
 		Set<Set<String>> solutionsSAT = getSATSolutions(mutants, stringTests, strict); 
 		
 		checkSolutions(solutionsBDD, solutionsSAT);
+	}
+
+	private void filterTests(Map<Method, FeatureExpr> tests) {
+		System.out.println("All tests: " + tests.size());
+		tests.entrySet().removeIf(
+				entry -> (entry.getKey().getName().equals("testGanaJugador")) // Monopoly test causing problems
+						|| (Modifier.isAbstract(entry.getKey().getDeclaringClass().getModifiers())) // abstract methods
+						|| (entry.getKey().getName().contains("testSerial")) // serialization for varexc
+						|| (entry.getKey().getName().toLowerCase().contains("serialization") // serialization for varexc
+				));
+		System.out.println("Remaining tests after filter: " + tests.size());
 	}
 
 	private Set<Set<String>> getBDDSolutions(String[] mutants, Map<String, FeatureExpr> stringTests, boolean strict) {

@@ -24,7 +24,7 @@ import org.sat4j.tools.SolverDecorator;
  * @author Jens Meinicke
  *
  */
-public class BoundedModelIterator extends SolverDecorator<ISolver> {
+public class BoundedModelIterator extends SolverDecorator {
 
 	private static final long serialVersionUID = 1L;
 
