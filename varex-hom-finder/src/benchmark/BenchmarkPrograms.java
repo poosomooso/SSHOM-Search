@@ -270,7 +270,8 @@ public class BenchmarkPrograms {
   public static String getFeatureModelResource() {
     switch (PROGRAM) {
     case TRIANGLE:
-      return "mutantgroups/triangle.txt";
+      return "mutantgroups/triangle-temp.txt"; // TODO: switch back once we get the mutant groups from Joao Paolo
+//      return "mutantgroups/triangle.txt";
     case MONOPOLY:
       return "mutantgroups/monopoly.txt";
     case VALIDATOR:
