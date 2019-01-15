@@ -3,12 +3,14 @@ package testRunner;
 import benchmark.BenchmarkPrograms;
 import util.ConditionalMutationWrapper;
 
+import java.util.Arrays;
+
 public class SetHomTestRunner {
 
   public static void main(String[] args)
       throws ClassNotFoundException, NoSuchFieldException,
       IllegalAccessException {
-    if (args.length >= 4) {
+    if (args.length >= 3) {
       Class<?> testClass = Class.forName(args[0]);
       String testName = args[1];
       ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(

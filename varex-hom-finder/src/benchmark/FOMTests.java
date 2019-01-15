@@ -4,10 +4,7 @@ import org.junit.runner.Description;
 import util.SSHOMListener;
 import util.SSHOMRunner;
 
-import javax.script.Bindings;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,25 +18,11 @@ public class FOMTests {
 
     SSHOMRunner runner = new SSHOMRunner(targetClasses, testClasses);
 
-    Map<String, Set<Description>> tests = runFoms(testClasses, mutants,
-        runner);
-
-    for (Map.Entry<String, Set<Description>> entry : tests.entrySet()) {
-      System.out.print(entry.getKey()+";");
-      Set<Description> failedTests = entry.getValue();
-      List<String> failedTestNames = failedTests
-          .stream()
-          .map(t-> t.getClassName()+"."+t.getMethodName())
-          .sorted()
-          .collect(Collectors.toList());
-      System.out.println(String.join(",", failedTestNames));
-
-    }
+    printFailedForFOMs(testClasses, mutants, runner);
   }
 
-  private static Map<String, Set<Description>> runFoms(Class<?>[] testClasses, String[] mutants, SSHOMRunner runner)
+  private static void printFailedForFOMs(Class<?>[] testClasses, String[] mutants, SSHOMRunner runner)
       throws NoSuchFieldException, IllegalAccessException {
-    Map<String, Set<Description>> foms = new HashMap<>();
     for (String m : mutants) {
       SSHOMListener listener;
       if (BenchmarkPrograms.programHasInfLoops()) {
@@ -47,8 +30,15 @@ public class FOMTests {
       } else {
         listener = runner.runJunitOnHOM(m);
       }
-      foms.put(m, listener.getHomTests());
+
+      Set<Description> failedTests = listener.getHomTests();
+      List<String> failedTestNames = failedTests
+          .stream()
+          .map(t-> t.getClassName()+"."+t.getMethodName())
+          .sorted()
+          .collect(Collectors.toList());
+      failedTestNames.add(0, m);
+      System.out.println(String.join(",", failedTestNames));
     }
-    return foms;
   }
 }

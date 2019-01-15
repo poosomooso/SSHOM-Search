@@ -47,10 +47,12 @@ public class InfLoopTestProcess {
       ) {
           String line;
           while (process.isAlive() && (line = input.readLine()) != null) {
-            if (line.equals(testMethod)) {
+            if (line.startsWith("test.")) {
+              System.out.println("failure");
               listeners.forEach(this::registerFailure);
             }
             if (System.currentTimeMillis() > startTime + delayTime) {
+              System.out.println("timeout");
               listeners.forEach(this::registerFailure);
 //                while ((line = errInput.readLine()) != null) {
 //                  System.err.println(line);
