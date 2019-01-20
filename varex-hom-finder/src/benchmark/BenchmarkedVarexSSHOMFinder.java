@@ -42,7 +42,7 @@ public class BenchmarkedVarexSSHOMFinder {
 		JENS("C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\"),
 		SERENA("/home/serena/reuse/hom-generator/"),
 //		FEATURE_SERVER("/home/feature/serena/"),
-		FEATURE_SERVER("/home/serena/benchmark/");
+		FEATURE_SERVER("/home/ubuntu/");
 
 		private final String path;
 		private Machine(String path) {
@@ -52,7 +52,7 @@ public class BenchmarkedVarexSSHOMFinder {
 			return path;
 		}
 	}
-	private static final Machine machine = Machine.SERENA;
+	private static final Machine machine = Machine.FEATURE_SERVER;
 	private static final String  baseDir = machine.getBaseDir();
 
 	
