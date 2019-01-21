@@ -1,5 +1,4 @@
 _M_Tablero_mut0 _M_Tablero_mut1 _M_Tablero_mut2 _M_Tablero_mut3 _M_Tablero_mut4
-_M_Tablero_mut5
 _M_Tablero_mut25 _M_Tablero_mut26 _M_Tablero_mut27 _M_Tablero_mut28 _M_Tablero_mut29
 _M_Tablero_mut52 _M_Tablero_mut53 _M_Tablero_mut54 _M_Tablero_mut55 _M_Tablero_mut56
 _M_Tablero_mut57 _M_Tablero_mut58 _M_Tablero_mut59 _M_Tablero_mut60 _M_Tablero_mut61
