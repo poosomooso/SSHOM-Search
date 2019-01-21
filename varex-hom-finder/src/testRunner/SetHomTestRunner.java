@@ -3,8 +3,6 @@ package testRunner;
 import benchmark.BenchmarkPrograms;
 import util.ConditionalMutationWrapper;
 
-import java.util.Arrays;
-
 public class SetHomTestRunner {
 
   public static void main(String[] args)
@@ -20,7 +18,7 @@ public class SetHomTestRunner {
         cmw.setMutant(args[i]);
       }
       System.out.println("run test  " + testName);
-      RunTests.runTests(testClass, testName);
+      RunTests.runTest(testClass, testName);
     }
   }
 }

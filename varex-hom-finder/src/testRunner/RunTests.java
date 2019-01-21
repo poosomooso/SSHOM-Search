@@ -15,6 +15,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class RunTests {
+
+	public static boolean print = true;
 	public static void runTests(Class<?> testClass) {
 		runTests(new Class[] { testClass });
 	}
@@ -25,10 +27,11 @@ public class RunTests {
 		}
 	}
 
-	public static void runTests(Class<?> testClass, String testName) {
+	public static Optional<Boolean> runTest(Class<?> testClass, String testName) {
 		if (!Modifier.isAbstract(testClass.getModifiers())) {
-				runTestAnnotations(testClass, testName);
+				return Optional.of(runTestAnnotations(testClass, testName));
 		}
+		return Optional.empty();
 	}
 
 	public static void runTests(Class<?>[] testClasses) {
@@ -44,11 +47,13 @@ public class RunTests {
 		}
 	}
 
-	private static void runTestAnnotations(Class<?> c, String testName) {
+	private static boolean runTestAnnotations(Class<?> c, String testName) {
 		Optional<Method> beforeMethod = findOfAnnotation(c, Before.class);
 		Optional<Method> beforeClassMethod = findOfAnnotation(c, BeforeClass.class);
 		Optional<Method> afterMethod = findOfAnnotation(c, After.class);
 		Optional<Method> afterClassMethod = findOfAnnotation(c, AfterClass.class);
+
+		boolean passed = true;
 
 		// creating test object
 		Object instance;
@@ -73,13 +78,14 @@ public class RunTests {
 				if (method.getAnnotation(Test.class) != null) {
 					try {
 						invokeIfNonempty(beforeMethod, instance);
-						System.out.println("METHOD: " + method);
+						if (print) System.out.println("METHOD: " + method);
 						method.invoke(instance);
 						invokeIfNonempty(afterMethod, instance);
 					} catch (IllegalAccessException e) {
 						e.printStackTrace();
 					} catch (Throwable e) {
-						System.out.println(getTestDesc(method));
+						if (print) System.out.println(getTestDesc(method));
+						passed = false;
 					}
 					break;
 				}
@@ -92,6 +98,8 @@ public class RunTests {
 		} catch (InvocationTargetException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
+
+		return passed;
 	}
 
 	private static Optional<Method> findOfAnnotation(Class<?> c, Class<? extends Annotation> annotation) {
