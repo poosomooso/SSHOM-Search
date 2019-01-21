@@ -4,15 +4,22 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
-import java.util.*;
-import java.util.zip.Inflater;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 
-import org.junit.runners.model.TestClass;
-import testRunner.SetHomTestRunner;
+import testRunner.RunTests;
+import util.ConditionalMutationWrapper;
 import util.SSHOMListener;
 
 public class InfLoopTestProcess {
@@ -30,32 +37,48 @@ public class InfLoopTestProcess {
 
   }
 
-  public void process(String testClass, String testMethod, String... mutants) {
-    String[] commandsPt1 = { "java", "-cp",
-        System.getProperty("java.class.path"), SetHomTestRunner.class.getName(),
-        testClass, testMethod };
-    String[] allCommands = new String[commandsPt1.length + mutants.length];
-    System.arraycopy(commandsPt1, 0, allCommands, 0, commandsPt1.length);
-    System
-        .arraycopy(mutants, 0, allCommands, commandsPt1.length, mutants.length);
+	public void process(String testClass, String testMethod, String... mutants) {
+		Class<?> tClass = null;
+		try {
+			tClass = Class.forName(testClass);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		String testName = testMethod;
+		ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(BenchmarkPrograms.getTargetClasses());
+		cmw.resetMutants();
+		for (int i = 0; i < mutants.length; i++) {
+			cmw.setMutant(mutants[i]);
+		}
+		RunTests.runTests(tClass, testName);
+	}
+	  
+//    String[] commandsPt1 = { "java", "-cp",
+//        System.getProperty("java.class.path"), SetHomTestRunner.class.getName(),
+//        testClass, testMethod };
+//    String[] allCommands = new String[commandsPt1.length + mutants.length];
+//    System.arraycopy(commandsPt1, 0, allCommands, 0, commandsPt1.length);
+//    System
+//        .arraycopy(mutants, 0, allCommands, commandsPt1.length, mutants.length);
+//
+//    while (threadStart.size() >= MAX_THREADS) {
+//      try {
+//        removeFinishedThreads();
+//      } catch (InterruptedException e) {
+//        e.printStackTrace();
+//      }
+//    }
+//
+//    String threadName =
+//        testClass + " " + testMethod + " " + String.join(" ", mutants);
+//    TestRunner tr = new TestRunner(testClass, testMethod, mutants, allCommands);
+//    Thread t = new Thread(tr, threadName);
+//    t.start();
+//    testMap.put(threadName, tr);
+//    threadStart.put(t, System.currentTimeMillis());
+//  }
 
-    while (threadStart.size() >= MAX_THREADS) {
-      try {
-        removeFinishedThreads();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
-
-    String threadName =
-        testClass + " " + testMethod + " " + String.join(" ", mutants);
-    TestRunner tr = new TestRunner(testClass, testMethod, mutants, allCommands);
-    Thread t = new Thread(tr, threadName);
-    t.start();
-    testMap.put(threadName, tr);
-    threadStart.put(t, System.currentTimeMillis());
-  }
-
+	@Deprecated
   public void waitToFinish() {
     // let threads finish
     // if there are blocking threads, try 3x to run
@@ -78,7 +101,7 @@ public class InfLoopTestProcess {
       registerBlocked(tr.testClass, tr.testMethod, tr.activeMutants);
     }
   }
-
+	@Deprecated
   private void removeFinishedThreads() throws InterruptedException {
     Set<Thread> remove = new HashSet<>();
     for (Thread t : threadStart.keySet()) {
@@ -134,22 +157,63 @@ public class InfLoopTestProcess {
   private static SSHOMListener      listener = new SSHOMListener();
   private static InfLoopTestProcess process  = new InfLoopTestProcess(listener);
 
+  private static final int TIMEOUT = 50;
+  private static final Deque<String[]> testCases = new ArrayDeque<>();
+  private static long startTime = Integer.MAX_VALUE;
+  
   public static SSHOMListener runTests(Class<?>[] testClasses,
       String[] mutants) {
-
     listener.signalHOMBegin();
     for (Class<?> c : testClasses) {
       for (Method m : c.getMethods()) {
         if (m.getAnnotation(Test.class) != null) {
-          process.process(c.getName(), m.getName(), mutants);
+        	testCases.add(new String[]{c.getName(), m.getName()});
         }
       }
     }
-    process.waitToFinish();
+    
+    while(!testCases.isEmpty()) {
+    	Thread t = new Thread("Test: " + Arrays.toString(mutants)) {
+    		@Override
+    		public void run() {
+    			while(!InfLoopTestProcess.testCases.isEmpty()) {
+    				startTime = System.currentTimeMillis();
+	    			String[] next = InfLoopTestProcess.testCases.pop();
+	    			process.process(next[0], next[1], mutants);
+    			}
+    		}
+    	};
+    	t.start();
+    	Thread kill = new Thread("kill " + t.getName()) {
+    		@SuppressWarnings("deprecation")
+    		@Override
+			public void run() {
+    			try {
+    				while (System.currentTimeMillis() - startTime < TIMEOUT) {
+    					sleep(TIMEOUT);
+    				}
+					if (t.isAlive()) {
+						t.stop();
+					}
+				} catch (InterruptedException e) {
+					// nothing here
+				}
+    		}
+    	};
+    	kill.start();
+    	try {
+			t.join();
+			kill.interrupt();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+    }
+    
     listener.signalHOMEnd();
     return listener;
   }
-
+  
+  @Deprecated
   private static class TestRunner implements Runnable {
 
     public final String[] commands;
