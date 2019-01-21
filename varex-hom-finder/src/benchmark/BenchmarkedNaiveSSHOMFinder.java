@@ -81,7 +81,10 @@ public class BenchmarkedNaiveSSHOMFinder {
       if (CheckStronglySubsuming
           .isStronglySubsuming(listener.getHomTests(), currentFoms)) {
         //        System.setOut(out);
-    	  Benchmarker.instance.timestamp(String.join(",", selectedMutants));
+        Benchmarker.instance.timestamp(
+            String.join(",", selectedMutants) + " is_strict_subsuming: "
+                + CheckStronglySubsuming
+                .isStrictStronglySubsuming(listener.getHomTests(), currentFoms));
         //        System.setOut(temp);
       }
     } else if (mutantStart < allMutants.length) {

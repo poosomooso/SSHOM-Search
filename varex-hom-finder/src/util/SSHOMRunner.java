@@ -1,8 +1,10 @@
 package util;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
 public class SSHOMRunner {
@@ -49,6 +51,7 @@ public class SSHOMRunner {
       targetClasses.setMutant(s);
     }
     sshomListener.signalHOMBegin();
+
     jUnitCore.run(testClasses);
     sshomListener.signalHOMEnd();
 

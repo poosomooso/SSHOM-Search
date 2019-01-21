@@ -12,7 +12,7 @@ import util.SSHOMRunner;
 
 public class BenchmarkedEvolutionarySSHOMFinder {
     private static final int MIN_ORDER = 2;
-    private static final int MAX_ORDER = 33; //max mutations
+    private static final int MAX_ORDER = 40; //max mutations
 
     private Set<MutationContainer> seenMutations = new HashSet<>();
     private Set<MutationContainer> recordedSSHOMs = new HashSet<>();
@@ -71,11 +71,19 @@ public class BenchmarkedEvolutionarySSHOMFinder {
                         .homIsValid(homPopulation[j].getMutation()) :
                         "Invalid HOM: " + Arrays
                             .toString(homPopulation[j].getMutation());
-                    Benchmarker.instance.timestamp(String.join(",", homPopulation[j].getMutation()));
+                    Benchmarker.instance.timestamp(
+                        String.join(",", homPopulation[j].getMutation())
+                            + " fitness: " + homPopulation[j].getFitness());
                     recordedSSHOMs.add(homPopulation[j]);
                 }
                 j--;
             }
+
+            double epsilon = (populationSize * percentDiscarded);
+            if (Math.abs(seenMutations.size() - (100 * 100)) < epsilon)
+                Benchmarker.instance.timestamp(
+                    "genetic algorithm has seen " + seenMutations.size()
+                        + " mutations");
 
             int numDiscarded = Math.max(
                 lastValidIndex(homPopulation), (int) (populationSize * percentDiscarded));

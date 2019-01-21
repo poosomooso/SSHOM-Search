@@ -19,7 +19,7 @@ public class BenchmarkPrograms {
   public enum Program {
     TRIANGLE, MONOPOLY, VALIDATOR, CLI
   }
-  public static final Program PROGRAM = Program.TRIANGLE;
+  public static final Program PROGRAM = Program.VALIDATOR;
   private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
   private static Class<?>[] targetClasses;
   private static Class<?>[] testClasses;
@@ -275,7 +275,8 @@ public class BenchmarkPrograms {
     case MONOPOLY:
       return "mutantgroups/monopoly.txt";
     case VALIDATOR:
-      return "mutantgroups/validator.txt";
+//      return "mutantgroups/validator.txt";
+      return "mutantgroups/validator-temp.txt";
     case CLI:
       return "mutantgroups/cli.txt";
     }

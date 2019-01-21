@@ -17,7 +17,7 @@ import util.SSHOMListener;
 
 public class InfLoopTestProcess {
 
-  private static final int                   MAX_THREADS = 3;
+  private static final int                   MAX_THREADS = 15;
   private static final long                  delayTime   = 5 * 1000;
   private final        List<SSHOMListener>   listeners   = new ArrayList<>();
   private              Map<Thread, Long> threadStart = new HashMap<>(
@@ -41,7 +41,6 @@ public class InfLoopTestProcess {
 
     while (threadStart.size() >= MAX_THREADS) {
       try {
-        Thread.sleep(100);
         removeFinishedThreads();
       } catch (InterruptedException e) {
         e.printStackTrace();
