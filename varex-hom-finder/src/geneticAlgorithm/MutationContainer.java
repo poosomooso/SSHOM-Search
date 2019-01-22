@@ -28,7 +28,7 @@ public class MutationContainer implements Comparable<MutationContainer>{
             SSHOMListener sshomListener;
             if (BenchmarkPrograms.programHasInfLoops()) {
                 sshomListener = InfLoopTestProcess
-                    .runTests(testClasses, hom);
+                    .getFailedTests(testClasses, hom);
             } else  {
                 sshomListener = runner.runJunitOnHOM(hom);
             }

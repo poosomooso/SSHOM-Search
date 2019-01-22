@@ -26,7 +26,7 @@ public class FOMTests {
     for (String m : mutants) {
       SSHOMListener listener;
       if (BenchmarkPrograms.programHasInfLoops()) {
-        listener =InfLoopTestProcess.runTests(testClasses, new String[] { m });
+        listener =InfLoopTestProcess.getFailedTests(testClasses, new String[] { m });
       } else {
         listener = runner.runJunitOnHOM(m);
       }

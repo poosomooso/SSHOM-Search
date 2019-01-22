@@ -46,7 +46,7 @@ public class BenchmarkedNaiveSSHOMFinder {
 //      SSHOMListener sshomListener = runner.runJunitOnHOM(m);
       SSHOMListener listener;
       if (BenchmarkPrograms.programHasInfLoops()) {
-      listener =InfLoopTestProcess.runTests(testClasses, new String[] { m });
+      listener =InfLoopTestProcess.getFailedTests(testClasses, new String[] { m });
       } else {
         listener = runner.runJunitOnHOM(m);
       }
@@ -67,10 +67,10 @@ public class BenchmarkedNaiveSSHOMFinder {
 //    System.setOut(temp);
     if (order <= 0) {
 //      SSHOMListener sshomListener = runner.runJunitOnHOMAndFOMs(selectedMutants.toArray(new String[0]));
-//      SSHOMListener listener = InfLoopTestProcess.runTests(testClasses, selectedMutants.toArray(new String[0]));
+//      SSHOMListener listener = InfLoopTestProcess.runTest(testClasses, selectedMutants.toArray(new String[0]));
       SSHOMListener listener;
       if (BenchmarkPrograms.programHasInfLoops()) {
-        listener =InfLoopTestProcess.runTests(testClasses, selectedMutants.toArray(new String[0]));
+        listener =InfLoopTestProcess.getFailedTests(testClasses, selectedMutants.toArray(new String[0]));
       } else {
         listener = runner.runJunitOnHOM(selectedMutants.toArray(new String[0]));
       }

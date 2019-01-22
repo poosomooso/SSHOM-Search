@@ -40,7 +40,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
                 new MutationContainer(new String[] { m }, testRunner, null, testClasses));
         }
 
-        System.out.println("Generated FOMs");
+        Benchmarker.instance.timestamp("Generated FOMs");
 
         // actual algorithm
         int populationSize = 5000;
@@ -58,10 +58,10 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         //generate some homs based on foms
         MutationContainer[] homPopulation = genHOMs(3, populationSize);
 
-        System.out.println("Generated HOMs");
+        Benchmarker.instance.timestamp("Generated HOMs");
 
         for (int i = 0; i < numIters; i++) {
-            System.out.println("GENERATION " + i);
+            Benchmarker.instance.timestamp("GENERATION " + i);
             Arrays.sort(homPopulation);
 
             int j = homPopulation.length-1;

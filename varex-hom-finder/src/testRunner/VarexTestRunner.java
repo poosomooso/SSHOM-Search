@@ -11,7 +11,7 @@ public class VarexTestRunner {
       String className = args[0];
       String testName = args[1];
       System.out.println("run test  " + testName);
-      RunTests.runTests(Class.forName(className), testName);
+      RunTests.runTest(Class.forName(className), testName);
     }
 
   }
