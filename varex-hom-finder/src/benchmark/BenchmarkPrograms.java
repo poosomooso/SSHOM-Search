@@ -275,8 +275,7 @@ public class BenchmarkPrograms {
     case MONOPOLY:
       return "mutantgroups/monopoly.txt";
     case VALIDATOR:
-//      return "mutantgroups/validator.txt";
-      return "mutantgroups/validator-temp.txt";
+      return "mutantgroups/validator.txt";
     case CLI:
       return "mutantgroups/cli.txt";
     }
