@@ -119,7 +119,11 @@ public class RunTests {
 	}
 
 	public static String getTestDesc(Method m) {
-		return "test." + m.getDeclaringClass().getName() + "." + m.getName();
+		return getTestDesc(m.getDeclaringClass(), m);
+	}
+	
+	public static String getTestDesc(Class<?> c, Method m) {
+		return "test." + c.getName() + "." + m.getName();
 	}
 
 }
