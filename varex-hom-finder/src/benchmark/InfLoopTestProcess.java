@@ -13,9 +13,10 @@ import util.SSHOMListener;
 
 public class InfLoopTestProcess {
 
+  private              long                startTime = Integer.MAX_VALUE;
+  private final        List<SSHOMListener> listeners = new ArrayList<>();
+  private static final int                 TIMEOUT   = 1000;
 
-  private long startTime = Integer.MAX_VALUE;
-  private final        List<SSHOMListener>   listeners   = new ArrayList<>();
 
   public InfLoopTestProcess(SSHOMListener... listeners) {
     this.listeners.addAll(Arrays.asList(listeners));
@@ -23,16 +24,21 @@ public class InfLoopTestProcess {
   }
 
   public void runTests(String[] mutants, Deque<String[]> testCases) {
+    List<String[]> failedTests = new ArrayList<>();
     while(!testCases.isEmpty()) {
-      final boolean[] testPassed = new boolean[1];
-      String[] next = InfLoopTestProcess.testCases.pop();
+      startTime = System.currentTimeMillis();
       Thread t = new Thread("Test: " + Arrays.toString(mutants)) {
         @Override
         public void run() {
-          while(!InfLoopTestProcess.testCases.isEmpty()) {
+          while(!testCases.isEmpty()) {
             startTime = System.currentTimeMillis();
-            testPassed[0] = process.runSingleTest(next[0], next[1], mutants);
-            if (!testPassed[0]) System.out.println("f");
+            String[] next = testCases.peek(); // don't remove yet, so the other thread can see it if it loops infinitely
+            boolean passed = process.runSingleTest(next[0], next[1], mutants);
+            if (!passed) {
+              System.out.println("f");
+              failedTests.add(next);
+            }
+            testCases.pop(); // we are done, now remove it
           }
         }
       };
@@ -47,12 +53,12 @@ public class InfLoopTestProcess {
             }
             if (t.isAlive()) {
               t.stop();
-              testPassed[0] = false;
+              failedTests.add(testCases.pop());
               System.out.println("t");
             }
           } catch (InterruptedException e) {
             // nothing here
-          }
+          } catch (NoSuchElementException e) {}
         }
       };
       kill.start();
@@ -62,8 +68,6 @@ public class InfLoopTestProcess {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      if (!testPassed[0]) registerFailure(next[0], next[1]);
-
     }
   }
 
@@ -81,8 +85,6 @@ public class InfLoopTestProcess {
 			cmw.setMutant(mutants[i]);
 		}
 		RunTests.print = false;
-    System.out.println(testClass);
-    System.out.println(testMethod);
     Optional<Boolean> testPassed = RunTests.runTest(tClass, testName);
 		if (testPassed.isPresent() && !testPassed.get()) {
 		  return false;
@@ -105,7 +107,6 @@ public class InfLoopTestProcess {
   private static SSHOMListener      listener = new SSHOMListener();
 
   private static InfLoopTestProcess process  = new InfLoopTestProcess(listener);
-  private static final int TIMEOUT = 50;
   private static final Deque<String[]> testCases = new ArrayDeque<>();
 
 
