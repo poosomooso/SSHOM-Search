@@ -284,7 +284,7 @@ public class BenchmarkedVarexSSHOMFinder {
 			}
 		}
 		for (String string : set) {
-			System.out.println(string);
+			System.err.println("test missing for: " + string);
 		}
 	}
 
