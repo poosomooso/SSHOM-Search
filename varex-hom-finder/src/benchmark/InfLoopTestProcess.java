@@ -34,11 +34,17 @@ public class InfLoopTestProcess {
             startTime = System.currentTimeMillis();
             String[] next = testCases.peek(); // don't remove yet, so the other thread can see it if it loops infinitely
             boolean passed = process.runSingleTest(next[0], next[1], mutants);
-            if (!passed) {
-              System.out.println("f");
-              failedTests.add(next);
+            try {
+              if (!passed) {
+                // System.out.println("f");
+                failedTests.add(next);
+              }
+              testCases.pop(); // we are done, now remove it
+            } catch (ThreadDeath e) {
+              // this try catch statement somehow fixed
+              // the NoSuchElementException in testCases.pop()
+              System.out.println("threaddeath");
             }
-            testCases.pop(); // we are done, now remove it
           }
         }
       };
@@ -69,6 +75,10 @@ public class InfLoopTestProcess {
         e.printStackTrace();
       }
     }
+
+    for (String[] test : failedTests) {
+      registerFailure(test[0], test[1]);
+    }
   }
 
 	public boolean runSingleTest(String testClass, String testMethod, String... mutants) {
@@ -95,8 +105,9 @@ public class InfLoopTestProcess {
   private void registerFailure(String testClass, String testMethod) {
     for (SSHOMListener listener : this.listeners) {
       try {
-        listener.testFailure(new Failure(
-            Description.createTestDescription(testClass, testMethod), null));
+        Failure failure = new Failure(
+            Description.createTestDescription(testClass, testMethod), null);
+        listener.testFailure(failure);
       } catch (Exception e) {
         e.printStackTrace();
       }
