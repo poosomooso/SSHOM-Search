@@ -9,6 +9,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,6 @@ import net.sf.javabdd.BDDFactory;
 import solver.bdd.BDDSolver;
 import solver.sat.SATSolver;
 import testRunner.RunTests;
-import testRunner.VarexTestRunner;
 import varex.SATSSHOMExprFactory;
 import varex.SSHOMExprFactory;
 
@@ -65,34 +65,34 @@ public class BenchmarkedVarexSSHOMFinder {
 		System.setProperty("bddCacheSize", Integer.toString(100000));
 		System.setProperty("bddValNum", Integer.toString(6_000_000));
 
-		final String paths = getVarexClasspaths();
-		final String mutantFile = getMutantFile();
-		final String jpfPath = getJpfPath();
-		final String jvmClasspath = getJvmClasspath();
-
 		FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
 
-		Map<Method, FeatureExpr> tests = new LinkedHashMap<>();
-		
+		Map<Class<?>, Map<Method, FeatureExpr>> tests = new LinkedHashMap<>();
 		getTestNames(testClasses, tests);
 		filterTests(tests);
 
-		int numberOfTests = tests.size();
-		int i = 1;
-		for (Entry<Method, FeatureExpr> test : tests.entrySet()) {
-			System.out.println(i++ + "/" + numberOfTests + " tests");
-
-			if (jvmClasspath == null) {
-				CommandLineRunner.process("java", "-jar", jpfPath, "+search.class=.search.RandomSearch", "+bddCacheSize=100000",
-						"+bddValNum=1500000", paths, "+choice=MapChoice", "+mutants=" + mutantFile, VarexTestRunner.class
-								.getName(), test.getKey().getDeclaringClass().getName(), test.getKey().getName());
-			} else {
-				CommandLineRunner.process("java", "-classpath", jvmClasspath, "-jar", jpfPath,
-						"+search.class=.search.RandomSearch", "+bddCacheSize=100000", "+bddValNum=1500000", paths,
-						"+choice=MapChoice", "+mutants=" + mutantFile, VarexTestRunner.class.getName(), test.getKey()
-								.getDeclaringClass().getName(), test.getKey().getName());
-			}
-		}
+		// TODO ignore varex for now
+//		final String paths = getVarexClasspaths();
+//		final String mutantFile = getMutantFile();
+//		final String jpfPath = getJpfPath();
+//		final String jvmClasspath = getJvmClasspath();
+//		int numberOfTests = tests.size();
+//		int i = 1;
+//		for (Entry<Method, FeatureExpr> test : tests.entrySet()) {
+//			System.out.println(i++ + "/" + numberOfTests + " tests");
+//
+//			if (jvmClasspath == null) {
+//				CommandLineRunner.process("java", "-jar", jpfPath, "+search.class=.search.RandomSearch", "+bddCacheSize=100000",
+//						"+bddValNum=1500000", paths, "+choice=MapChoice", "+mutants=" + mutantFile, VarexTestRunner.class
+//								.getName(), test.getKey().getDeclaringClass().getName(), test.getKey().getName());
+//			} else {
+//				CommandLineRunner.process("java", "-classpath", jvmClasspath, "-jar", jpfPath,
+//						"+search.class=.search.RandomSearch", "+bddCacheSize=100000", "+bddValNum=1500000", paths,
+//						"+choice=MapChoice", "+mutants=" + mutantFile, VarexTestRunner.class.getName(), test.getKey()
+//								.getDeclaringClass().getName(), test.getKey().getName());
+//			}
+//		}
+		
 		Benchmarker.instance.timestamp("create features");
 		
 		mutantExprs = mutantNamesToFeatures(mutants);
@@ -101,29 +101,44 @@ public class BenchmarkedVarexSSHOMFinder {
 		loadTestExpressions(tests);
 		
 		Map<String, FeatureExpr> stringTests = new HashMap<>();
-		for (Entry<Method, FeatureExpr> t: tests.entrySet()) {
-			stringTests.put(t.getKey().getName(), t.getValue());
+		for (Entry<Class<?>, Map<Method, FeatureExpr>> t1: tests.entrySet()) {
+			for (Entry<Method, FeatureExpr> t2 : t1.getValue().entrySet()) {
+				stringTests.put(t1.getKey().getName() + "." + t2.getKey().getName(), t2.getValue());
+			}
 		}
 		
-		final boolean strict = true;
+		final boolean strict = false;
 		// BDD solutions
 		Set<Set<String>> solutionsBDD = getBDDSolutions(mutants, stringTests, strict);
 		
 		// SAT solutions
-		Set<Set<String>> solutionsSAT = getSATSolutions(mutants, stringTests, strict); 
+//		Set<Set<String>> solutionsSAT = getSATSolutions(mutants, stringTests, strict); 
 		
-		checkSolutions(solutionsBDD, solutionsSAT);
+//		checkSolutions(solutionsBDD, solutionsSAT);
 	}
 
-	private void filterTests(Map<Method, FeatureExpr> tests) {
-		System.out.println("All tests: " + tests.size());
+	private void filterTests(Map<Class<?>, Map<Method, FeatureExpr>> tests) {
+		int size = 0;
+		for (Map<Method, FeatureExpr> t : tests.values()) {
+			size += t.size();
+		}
+		System.out.println("All tests: " + size);
+		
+		tests.entrySet().forEach(t1 -> t1.getValue().entrySet().removeIf(
+				 entry -> (entry.getKey().getName().contains("testSerial")) // serialization for varexc
+				 	|| (entry.getKey().getName().toLowerCase().contains("serialization") // serialization for varexc
+		)));
+		
 		tests.entrySet().removeIf(
-				entry -> (entry.getKey().getName().equals("testGanaJugador")) // Monopoly test causing problems
-						|| (Modifier.isAbstract(entry.getKey().getDeclaringClass().getModifiers())) // abstract methods
-						|| (entry.getKey().getName().contains("testSerial")) // serialization for varexc
-						|| (entry.getKey().getName().toLowerCase().contains("serialization") // serialization for varexc
-				));
-		System.out.println("Remaining tests after filter: " + tests.size());
+				entry -> entry.getValue().isEmpty() 
+					|| Modifier.isAbstract(entry.getKey().getModifiers())
+					|| entry.getKey().getSimpleName().equals("ValuesTest"));
+		
+		size = 0;
+		for (Map<Method, FeatureExpr> t : tests.values()) {
+			size += t.size();
+		}
+		System.out.println("Remaining tests after filter: " + size);
 	}
 
 	private Set<Set<String>> getBDDSolutions(String[] mutants, Map<String, FeatureExpr> stringTests, boolean strict) {
@@ -224,34 +239,52 @@ public class BenchmarkedVarexSSHOMFinder {
 		}
 	}
 	
-	private void getTestNames(Class<?>[] testClasses, Map<Method, FeatureExpr> tests) {
+	private void getTestNames(Class<?>[] testClasses, Map<Class<?>, Map<Method, FeatureExpr>> tests) {
 		for (Class<?> c : testClasses) {
 			final List<Method> methods = Arrays.stream(c.getMethods())
 					.filter(m -> m.getAnnotation(Test.class) != null)
 					.collect(Collectors.toList());
 
+			Map<Method, FeatureExpr> currentTests = new LinkedHashMap<>();
 			for (Method m : methods) {
-				tests.put(m, FeatureExprFactory.False());
+				currentTests.put(m, FeatureExprFactory.False());
 			}
+			tests.put(c, currentTests);
 		}
 
 	}
 	
-	private void loadTestExpressions(Map<Method, FeatureExpr> tests) throws IOException {
+	private void loadTestExpressions(Map<Class<?>, Map<Method, FeatureExpr>> tests) throws IOException {
+		File folder = new File("BDDS/" + BenchmarkPrograms.PROGRAM.name());
+		
+		String[] files = folder.list();
+		Set<String> set = new HashSet<>();
+		for (String f : files) {
+			set.add(f);
+		}
+		
 		final BDDFactory bddFactory = FExprBuilder.bddFactory();
-		for (Entry<Method, FeatureExpr> test : tests.entrySet()) {
-			String fname = RunTests.getTestDesc(test.getKey()) + ".txt";
-			final File file = new File(fname);
-			if (file.exists()) {
-				try (BufferedReader br = new BufferedReader(new FileReader(fname))) {
-					BDD bdd2 = bddFactory.load(br);
-					FeatureExpr expr = new BDDFeatureExpr(bdd2);
-					test.setValue(expr);
-				} catch (BDDException e) {
-					System.err.println(fname);
-					e.printStackTrace();
+		for (Entry<Class<?>, Map<Method, FeatureExpr>> t1 : tests.entrySet()) {
+			for (Entry<Method, FeatureExpr> t2 : t1.getValue().entrySet()) {
+				String fname = RunTests.getTestDesc(t1.getKey(), t2.getKey()) + ".txt";
+				set.remove(fname);
+				final File file = new File(folder, fname);
+				if (file.exists()) {
+					try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+						BDD bdd2 = bddFactory.load(br);
+						FeatureExpr expr = new BDDFeatureExpr(bdd2);
+						t2.setValue(expr);
+					} catch (BDDException e) {
+						System.err.println(fname);
+						e.printStackTrace();
+					}
+				} else {
+					System.err.println("file not found: " + fname);
 				}
 			}
+		}
+		for (String string : set) {
+			System.out.println(string);
 		}
 	}
 
