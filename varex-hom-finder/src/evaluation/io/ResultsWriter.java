@@ -127,7 +127,7 @@ public class ResultsWriter {
 						writer.print(0);
 					} else {
 						int count = (values[i] * 100) / result.homs.size();
-						if (count > 0) {
+						if (values[i] > 0) {
 							writer.print(count);
 						}
 					}
