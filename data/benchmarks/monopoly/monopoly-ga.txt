@@ -1,0 +1,166 @@
+TIME      36053|Generated FOMs
+TIME    1107517|Generated HOMs
+TIME    1107517|GENERATION 0
+TIME    2245863|GENERATION 1
+TIME    2245866|_M_Tablero_mut68,_M_Tablero_mut72 fitness: 1.0
+TIME    2245866|_M_Calle_mut15,_M_Jugador_mut166 fitness: 1.0
+TIME    2245867|_M_Jugador_mut120,_M_Jugador_mut124 fitness: 1.0
+TIME    2245867|_M_Jugador_mut72,_M_Jugador_mut76 fitness: 1.0
+TIME    2245867|_M_Jugador_mut39,_M_Jugador_mut43 fitness: 1.0
+TIME    2245867|_M_Jugador_mut187,_M_Jugador_mut190 fitness: 1.0
+TIME    2245867|_M_Tablero_mut68,_M_Tablero_mut74 fitness: 1.0
+TIME    2245867|_M_Jugador_mut32,_M_Jugador_mut36 fitness: 1.0
+TIME    2245867|_M_Calle_mut16,_M_Jugador_mut165 fitness: 1.0
+TIME    2245867|_M_Calle_mut17,_M_Jugador_mut164 fitness: 1.0
+TIME    2245867|_M_Tablero_mut67,_M_Tablero_mut73 fitness: 1.0
+TIME    2245867|_M_Tablero_mut66,_M_Tablero_mut67 fitness: 1.0
+TIME    2245867|_M_Tablero_mut68,_M_Tablero_mut73 fitness: 1.0
+TIME    2245867|_M_Compania_mut2,_M_Compania_mut5 fitness: 1.0
+TIME    2245867|_M_Jugador_mut31,_M_Jugador_mut41 fitness: 1.0
+TIME    2245867|_M_Jugador_mut72,_M_Jugador_mut75 fitness: 1.0
+TIME    2245867|_M_Calle_mut15,_M_Jugador_mut163 fitness: 1.0
+TIME    2245867|_M_Jugador_mut15,_M_Jugador_mut16 fitness: 1.0
+TIME    2245867|_M_Tablero_mut64,_M_Tablero_mut68,_M_Tablero_mut74 fitness: 1.0
+TIME    2245867|genetic algorithm has seen 9616 mutations
+TIME    2754981|GENERATION 2
+TIME    2754983|_M_Tablero_mut56,_M_Tablero_mut58 fitness: 1.0
+TIME    2754983|_M_Tablero_mut87,_M_Tablero_mut90 fitness: 1.0
+TIME    2754983|_M_Jugador_mut2,_M_Jugador_mut37 fitness: 1.0
+TIME    2754983|genetic algorithm has seen 11464 mutations
+TIME    3189357|GENERATION 3
+TIME    3189359|_M_Compania_mut1,_M_Compania_mut8 fitness: 0.6666666666666666
+TIME    3189359|_M_Tablero_mut80,_M_Tablero_mut90 fitness: 1.0
+TIME    3189359|_M_Tablero_mut56,_M_Tablero_mut59 fitness: 1.0
+TIME    3189359|_M_Jugador_mut39,_M_Jugador_mut42 fitness: 1.0
+TIME    3189359|_M_Jugador_mut32,_M_Jugador_mut40 fitness: 1.0
+TIME    3189359|_M_Tablero_mut64,_M_Tablero_mut74 fitness: 1.0
+TIME    3189359|_M_Tablero_mut62,_M_Tablero_mut67 fitness: 1.0
+TIME    3189359|_M_Jugador_mut2,_M_Jugador_mut36,_M_Jugador_mut43 fitness: 1.0
+TIME    3646447|GENERATION 4
+TIME    3646449|_M_Tablero_mut66,_M_Tablero_mut69 fitness: 1.0
+TIME    3646449|_M_Jugador_mut34,_M_Jugador_mut42 fitness: 1.0
+TIME    3646449|_M_Tablero_mut67,_M_Tablero_mut74 fitness: 1.0
+TIME    3646449|_M_Tablero_mut56,_M_Tablero_mut57 fitness: 1.0
+TIME    3646449|_M_Jugador_mut36,_M_Jugador_mut43 fitness: 1.0
+TIME    3646449|_M_Tablero_mut52,_M_Tablero_mut59 fitness: 1.0
+TIME    4232600|GENERATION 5
+TIME    4232602|_M_Jugador_mut163,_M_Jugador_mut174 fitness: 0.6666666666666666
+TIME    4232602|_M_Jugador_mut70,_M_Jugador_mut75 fitness: 1.0
+TIME    4232602|_M_Jugador_mut32,_M_Jugador_mut42 fitness: 1.0
+TIME    4232602|_M_Jugador_mut31,_M_Jugador_mut42 fitness: 1.0
+TIME    4232602|_M_Tablero_mut62,_M_Tablero_mut74 fitness: 1.0
+TIME    4232603|_M_Tablero_mut69,_M_Tablero_mut74 fitness: 1.0
+TIME    4232603|_M_Tablero_mut66,_M_Tablero_mut72 fitness: 1.0
+TIME    4232603|_M_Jugador_mut15,_M_Jugador_mut19 fitness: 1.0
+TIME    4232603|_M_Jugador_mut36,_M_Jugador_mut42 fitness: 1.0
+TIME    4232603|_M_Jugador_mut34,_M_Jugador_mut41 fitness: 1.0
+TIME    4899647|GENERATION 6
+TIME    4899650|_M_Tablero_mut54,_M_Tablero_mut57 fitness: 0.06666666666666667
+TIME    4899650|_M_Tablero_mut67,_M_Tablero_mut72 fitness: 1.0
+TIME    4899650|_M_Tablero_mut64,_M_Tablero_mut68 fitness: 1.0
+TIME    4899650|_M_Jugador_mut37,_M_Jugador_mut42 fitness: 1.0
+TIME    4899650|_M_Jugador_mut2,_M_Jugador_mut43 fitness: 1.0
+TIME    5573964|GENERATION 7
+TIME    5573966|_M_Jugador_mut31,_M_Jugador_mut36 fitness: 1.0
+TIME    5573966|_M_Jugador_mut69,_M_Jugador_mut75 fitness: 1.0
+TIME    5573966|_M_Jugador_mut31,_M_Jugador_mut40 fitness: 1.0
+TIME    6303248|GENERATION 8
+TIME    6303251|_M_Tablero_mut84,_M_Tablero_mut92 fitness: 1.0
+TIME    6303251|_M_Jugador_mut32,_M_Jugador_mut41 fitness: 1.0
+TIME    6303251|_M_Jugador_mut32,_M_Jugador_mut36,_M_Jugador_mut42 fitness: 1.0
+TIME    7129740|GENERATION 9
+TIME    7129742|_M_Jugador_mut34,_M_Jugador_mut36 fitness: 1.0
+TIME    7129743|_M_Jugador_mut72,_M_Jugador_mut74 fitness: 1.0
+TIME    7129743|_M_Jugador_mut37,_M_Jugador_mut43 fitness: 1.0
+TIME    8204732|GENERATION 10
+TIME    8204733|_M_Jugador_mut36,_M_Jugador_mut40 fitness: 0.7142857142857143
+TIME    8204733|_M_Jugador_mut38,_M_Jugador_mut42 fitness: 1.0
+TIME    9283282|GENERATION 11
+TIME    9283283|_M_Jugador_mut34,_M_Jugador_mut40 fitness: 1.0
+TIME    9283283|_M_Jugador_mut63,_M_Tablero_mut54,_M_Tablero_mut57 fitness: 1.0
+TIME    9283283|_M_Jugador_mut34,_M_Jugador_mut36,_M_Jugador_mut42 fitness: 1.0
+TIME   10524235|GENERATION 12
+TIME   10524237|_M_Jugador_mut38,_M_Jugador_mut43 fitness: 1.0
+TIME   11856382|GENERATION 13
+TIME   11856383|_M_Jugador_mut36,_M_Jugador_mut41 fitness: 1.0
+TIME   11856383|_M_Jugador_mut32,_M_Jugador_mut36,_M_Jugador_mut41 fitness: 1.0
+TIME   11856383|_M_Jugador_mut31,_M_Jugador_mut36,_M_Jugador_mut41 fitness: 1.0
+TIME   13280012|GENERATION 14
+TIME   13280014|_M_Tablero_mut52,_M_Tablero_mut58 fitness: 0.06666666666666667
+TIME   14976444|GENERATION 15
+TIME   14976445|_M_Jugador_mut2,_M_Jugador_mut37,_M_Jugador_mut42 fitness: 1.0
+TIME   14976446|_M_Jugador_mut31,_M_Jugador_mut36,_M_Jugador_mut42 fitness: 1.0
+TIME   14976446|_M_Jugador_mut34,_M_Jugador_mut36,_M_Jugador_mut40 fitness: 1.0
+TIME   16717382|GENERATION 16
+TIME   16717384|_M_Tablero_mut62,_M_Tablero_mut72 fitness: 1.0
+TIME   16717384|_M_Tablero_mut66,_M_Tablero_mut68,_M_Tablero_mut74 fitness: 1.0
+TIME   16717384|_M_Jugador_mut34,_M_Jugador_mut36,_M_Jugador_mut41 fitness: 1.0
+TIME   18831063|GENERATION 17
+TIME   18831064|_M_Tablero_mut54,_M_Tablero_mut58,_M_Tablero_mut74 fitness: 1.0
+TIME   18831064|_M_Tablero_mut64,_M_Tablero_mut67,_M_Tablero_mut74 fitness: 1.0
+TIME   18831065|_M_Tablero_mut62,_M_Tablero_mut68,_M_Tablero_mut74 fitness: 1.0
+TIME   18831065|_M_Jugador_mut31,_M_Jugador_mut36,_M_Jugador_mut40 fitness: 1.0
+TIME   21258730|GENERATION 18
+TIME   23891789|GENERATION 19
+TIME   26897687|GENERATION 20
+TIME   26897688|_M_Jugador_mut32,_M_Jugador_mut36,_M_Jugador_mut40 fitness: 1.0
+TIME   30089723|GENERATION 21
+TIME   30089724|_M_Jugador_mut2,_M_Jugador_mut37,_M_Jugador_mut43 fitness: 1.0
+TIME   33298565|GENERATION 22
+TIME   33298567|_M_Tablero_mut54,_M_Tablero_mut59 fitness: 1.0
+TIME   36731422|GENERATION 23
+TIME   40143702|GENERATION 24
+TIME   44126908|GENERATION 25
+TIME   44126909|_M_Tablero_mut64,_M_Tablero_mut67 fitness: 1.0
+TIME   48482295|GENERATION 26
+TIME   48482296|_M_Tablero_mut54,_M_Tablero_mut57,_M_Tablero_mut69 fitness: 1.0
+TIME   52579242|GENERATION 27
+TIME   52579243|_M_Tablero_mut54,_M_Tablero_mut57,_M_Tablero_mut73 fitness: 1.0
+TIME   56883361|GENERATION 28
+TIME   60991558|GENERATION 29
+TIME   60991559|_M_Tablero_mut62,_M_Tablero_mut68 fitness: 1.0
+TIME   64980251|GENERATION 30
+TIME   68368126|GENERATION 31
+TIME   70965911|GENERATION 32
+TIME   70965912|_M_Tablero_mut66,_M_Tablero_mut74 fitness: 1.0
+TIME   72941442|GENERATION 33
+TIME   75122271|GENERATION 34
+TIME   77472950|GENERATION 35
+TIME   77472952|_M_Tablero_mut66,_M_Tablero_mut69,_M_Tablero_mut72 fitness: 1.0
+TIME   79468511|GENERATION 36
+TIME   81227183|GENERATION 37
+TIME   82885637|GENERATION 38
+TIME   84709535|GENERATION 39
+TIME   86432491|GENERATION 40
+TIME   86432492|_M_Tablero_mut69,_M_Tablero_mut72 fitness: 1.0
+TIME   88067523|GENERATION 41
+TIME   88067524|_M_Tablero_mut66,_M_Tablero_mut68 fitness: 1.0
+TIME   88067524|_M_Tablero_mut62,_M_Tablero_mut69,_M_Tablero_mut72 fitness: 1.0
+TIME   88067524|_M_Tablero_mut54,_M_Tablero_mut57,_M_Tablero_mut69,_M_Tablero_mut72 fitness: 1.0
+TIME   89678685|GENERATION 42
+TIME   89678686|_M_Tablero_mut54,_M_Tablero_mut58 fitness: 0.06666666666666667
+TIME   91355314|GENERATION 43
+TIME   92679788|GENERATION 44
+TIME   92679789|_M_Tablero_mut62,_M_Tablero_mut68,_M_Tablero_mut72 fitness: 1.0
+TIME   93691190|GENERATION 45
+TIME   94695043|GENERATION 46
+TIME   94695044|_M_Tablero_mut62,_M_Tablero_mut69 fitness: 1.0
+TIME   95598565|GENERATION 47
+TIME   96668380|GENERATION 48
+TIME   97714876|GENERATION 49
+TIME   98789651|GENERATION 50
+TIME   98789652|_M_Tablero_mut66,_M_Tablero_mut67,_M_Tablero_mut74 fitness: 1.0
+TIME   98789652|_M_Jugador_mut128,_M_Tablero_mut54,_M_Tablero_mut58 fitness: 1.0
+TIME   99862104|GENERATION 51
+TIME   99862105|_M_Tablero_mut54,_M_Tablero_mut57,_M_Tablero_mut72 fitness: 1.0
+TIME  100911740|GENERATION 52
+TIME  102015058|GENERATION 53
+TIME  102015060|_M_Jugador_mut68,_M_Tablero_mut54,_M_Tablero_mut58 fitness: 1.0
+TIME  102015060|_M_Tablero_mut54,_M_Tablero_mut58,_M_Tablero_mut69 fitness: 1.0
+TIME  103030445|GENERATION 54
+TIME  103030446|_M_Tablero_mut62,_M_Tablero_mut69,_M_Tablero_mut74 fitness: 1.0
+TIME  103030447|_M_Tablero_mut66,_M_Tablero_mut68,_M_Tablero_mut72 fitness: 1.0
+TIME  103030447|_M_Tablero_mut54,_M_Tablero_mut57,_M_Tablero_mut62,_M_Tablero_mut69,_M_Tablero_mut72 fitness: 1.0
+TIME  104110832|GENERATION 55
+TIME  105121390|GENERATION 56
+TIME  105121391|_M_Tablero_mut54,_M_Tablero_mut57,_M_Tablero_mut62,_M_Tablero_mut72 fitness: 1.0

@@ -1,0 +1,267 @@
+TIME       3383|Generated FOMs
+TIME      52192|Generated HOMs
+TIME      52192|GENERATION 0
+TIME     125259|GENERATION 1
+TIME     125263|_mut68,_mut75 fitness: 0.5
+TIME     125263|_mut103,_mut108 fitness: 1.0
+TIME     125263|_mut71,_mut75 fitness: 1.0
+TIME     125263|_mut12,_mut18 fitness: 1.0
+TIME     125263|_mut14,_mut18 fitness: 1.0
+TIME     125263|_mut50,_mut57 fitness: 1.0
+TIME     125263|_mut170,_mut172 fitness: 1.0
+TIME     125263|_mut103,_mut94 fitness: 1.0
+TIME     125263|_mut94,_mut99 fitness: 1.0
+TIME     125263|_mut14,_mut15 fitness: 1.0
+TIME     125263|_mut189,_mut198 fitness: 1.0
+TIME     125264|_mut68,_mut71 fitness: 1.0
+TIME     125264|_mut188,_mut193,_mut198 fitness: 1.0
+TIME     125264|genetic algorithm has seen 9900 mutations
+TIME     166545|GENERATION 2
+TIME     166548|_mut50,_mut58 fitness: 0.9605263157894737
+TIME     166548|_mut50,_mut55 fitness: 0.987012987012987
+TIME     166548|_mut49,_mut57 fitness: 1.0
+TIME     166548|_mut186,_mut196 fitness: 1.0
+TIME     166548|_mut191,_mut196 fitness: 1.0
+TIME     166548|_mut164,_mut170 fitness: 1.0
+TIME     166549|_mut49,_mut55 fitness: 1.0
+TIME     166549|_mut6,_mut7 fitness: 1.0
+TIME     166549|_mut189,_mut196 fitness: 1.0
+TIME     166549|_mut188,_mut191 fitness: 1.0
+TIME     166549|_mut49,_mut53 fitness: 1.0
+TIME     166549|_mut167,_mut172 fitness: 1.0
+TIME     166549|_mut106,_mut94,_mut99 fitness: 1.0
+TIME     166549|_mut218,_mut230,_mut233 fitness: 1.0
+TIME     166549|_mut68,_mut74,_mut75 fitness: 1.0
+TIME     190810|GENERATION 3
+TIME     190813|_mut55,_mut58 fitness: 0.23684210526315788
+TIME     190813|_mut51,_mut55 fitness: 0.987012987012987
+TIME     190813|_mut50,_mut53 fitness: 0.987012987012987
+TIME     190813|_mut51,_mut53 fitness: 0.987012987012987
+TIME     190813|_mut186,_mut191 fitness: 1.0
+TIME     190813|_mut191,_mut197 fitness: 1.0
+TIME     190813|_mut106,_mut108 fitness: 1.0
+TIME     190813|_mut141,_mut149 fitness: 1.0
+TIME     190813|_mut218,_mut233 fitness: 1.0
+TIME     190813|_mut187,_mut191 fitness: 1.0
+TIME     190813|_mut189,_mut199 fitness: 1.0
+TIME     190813|_mut107,_mut94 fitness: 1.0
+TIME     190813|_mut14,_mut18,_mut84,_mut86 fitness: 1.0
+TIME     213363|GENERATION 4
+TIME     213365|_mut53,_mut58 fitness: 0.23684210526315788
+TIME     213365|_mut188,_mut197 fitness: 1.0
+TIME     213365|_mut79,_mut84 fitness: 1.0
+TIME     213365|_mut191,_mut198 fitness: 1.0
+TIME     213365|_mut189,_mut191 fitness: 1.0
+TIME     235832|GENERATION 5
+TIME     235834|_mut103,_mut97 fitness: 0.6875
+TIME     235834|_mut191,_mut199 fitness: 1.0
+TIME     235834|_mut186,_mut198 fitness: 1.0
+TIME     235834|_mut76,_mut84 fitness: 1.0
+TIME     235834|_mut188,_mut198 fitness: 1.0
+TIME     235834|_mut186,_mut199 fitness: 1.0
+TIME     259418|GENERATION 6
+TIME     259419|_mut84,_mut87 fitness: 0.3333333333333333
+TIME     259420|_mut187,_mut199 fitness: 1.0
+TIME     259420|_mut193,_mut199 fitness: 1.0
+TIME     259420|_mut101,_mut94 fitness: 1.0
+TIME     259420|_mut208,_mut211 fitness: 1.0
+TIME     259420|_mut195,_mut197 fitness: 1.0
+TIME     259420|_mut106,_mut94 fitness: 1.0
+TIME     259420|_mut186,_mut191,_mut196 fitness: 1.0
+TIME     259420|_mut189,_mut193,_mut198 fitness: 1.0
+TIME     283322|GENERATION 7
+TIME     283323|_mut187,_mut197 fitness: 1.0
+TIME     283323|_mut68,_mut74 fitness: 1.0
+TIME     283324|_mut100,_mut94 fitness: 1.0
+TIME     283324|_mut208,_mut210 fitness: 1.0
+TIME     283324|_mut193,_mut197 fitness: 1.0
+TIME     283324|_mut163,_mut169 fitness: 1.0
+TIME     307441|GENERATION 8
+TIME     307442|_mut79,_mut85 fitness: 1.0
+TIME     307442|_mut193,_mut198 fitness: 1.0
+TIME     307443|_mut107,_mut99 fitness: 1.0
+TIME     307443|_mut166,_mut167,_mut172 fitness: 1.0
+TIME     307443|_mut189,_mut195,_mut196 fitness: 1.0
+TIME     307443|_mut189,_mut195,_mut199 fitness: 1.0
+TIME     331518|GENERATION 9
+TIME     331519|_mut106,_mut97 fitness: 0.6875
+TIME     331519|_mut103,_mut96 fitness: 0.6875
+TIME     331519|_mut105,_mut97 fitness: 0.9166666666666666
+TIME     331519|_mut208,_mut216 fitness: 1.0
+TIME     331519|_mut189,_mut197 fitness: 1.0
+TIME     331519|_mut107,_mut94,_mut99 fitness: 1.0
+TIME     331519|_mut189,_mut191,_mut198 fitness: 1.0
+TIME     331519|_mut187,_mut195,_mut198 fitness: 1.0
+TIME     356171|GENERATION 10
+TIME     356172|_mut108,_mut96 fitness: 0.42105263157894735
+TIME     356172|_mut195,_mut198 fitness: 1.0
+TIME     356172|_mut105,_mut94 fitness: 1.0
+TIME     356172|_mut165,_mut172 fitness: 1.0
+TIME     356172|_mut189,_mut195,_mut197 fitness: 1.0
+TIME     356172|_mut100,_mut103,_mut97 fitness: 1.0
+TIME     381497|GENERATION 11
+TIME     381498|_mut51,_mut58 fitness: 0.9605263157894737
+TIME     381498|_mut195,_mut196 fitness: 1.0
+TIME     381498|_mut103,_mut99 fitness: 1.0
+TIME     381499|_mut195,_mut199 fitness: 1.0
+TIME     381499|_mut193,_mut196 fitness: 1.0
+TIME     407646|GENERATION 12
+TIME     407647|_mut106,_mut96 fitness: 0.6875
+TIME     407647|_mut187,_mut196 fitness: 1.0
+TIME     407647|_mut66,_mut74,_mut75 fitness: 1.0
+TIME     407647|_mut208,_mut210,_mut216 fitness: 1.0
+TIME     407647|_mut189,_mut193,_mut196 fitness: 1.0
+TIME     407647|_mut189,_mut191,_mut196 fitness: 1.0
+TIME     407647|_mut189,_mut191,_mut197 fitness: 1.0
+TIME     407647|_mut189,_mut191,_mut199 fitness: 1.0
+TIME     433702|GENERATION 13
+TIME     433703|_mut105,_mut96 fitness: 0.9166666666666666
+TIME     433703|_mut164,_mut167 fitness: 1.0
+TIME     433703|_mut51,_mut57 fitness: 1.0
+TIME     433703|_mut208,_mut213 fitness: 1.0
+TIME     433703|_mut187,_mut198 fitness: 1.0
+TIME     433703|_mut188,_mut196 fitness: 1.0
+TIME     433703|_mut208,_mut214 fitness: 1.0
+TIME     433703|_mut208,_mut211,_mut214 fitness: 1.0
+TIME     460595|GENERATION 14
+TIME     460596|_mut165,_mut170,_mut172 fitness: 1.0
+TIME     460596|_mut187,_mut193,_mut198 fitness: 1.0
+TIME     460596|_mut189,_mut195,_mut198 fitness: 1.0
+TIME     460596|_mut187,_mut195,_mut199 fitness: 1.0
+TIME     487476|GENERATION 15
+TIME     487477|_mut66,_mut75 fitness: 1.0
+TIME     487477|_mut208,_mut215 fitness: 1.0
+TIME     487477|_mut188,_mut199 fitness: 1.0
+TIME     487477|_mut161,_mut170 fitness: 1.0
+TIME     487477|_mut187,_mut191,_mut198 fitness: 1.0
+TIME     487477|_mut18,_mut84,_mut86 fitness: 1.0
+TIME     487477|_mut187,_mut191,_mut196 fitness: 1.0
+TIME     487477|_mut187,_mut195,_mut196 fitness: 1.0
+TIME     514321|GENERATION 16
+TIME     514322|_mut186,_mut197 fitness: 1.0
+TIME     514322|_mut161,_mut167 fitness: 1.0
+TIME     514322|_mut187,_mut193,_mut199 fitness: 1.0
+TIME     514322|_mut165,_mut167,_mut172 fitness: 1.0
+TIME     514322|_mut187,_mut191,_mut199 fitness: 1.0
+TIME     514322|_mut186,_mut191,_mut199 fitness: 1.0
+TIME     541347|GENERATION 17
+TIME     541348|_mut189,_mut193,_mut197 fitness: 1.0
+TIME     541348|_mut188,_mut193,_mut196 fitness: 1.0
+TIME     541348|_mut188,_mut191,_mut196 fitness: 1.0
+TIME     541348|_mut187,_mut193,_mut197 fitness: 1.0
+TIME     569829|GENERATION 18
+TIME     569830|_mut171,_mut172 fitness: 1.0
+TIME     569830|_mut186,_mut191,_mut198 fitness: 1.0
+TIME     569830|_mut188,_mut195,_mut199 fitness: 1.0
+TIME     569830|_mut188,_mut191,_mut198 fitness: 1.0
+TIME     569830|_mut189,_mut193,_mut199 fitness: 1.0
+TIME     599224|GENERATION 19
+TIME     599225|_mut164,_mut166 fitness: 1.0
+TIME     599225|_mut166,_mut172 fitness: 1.0
+TIME     599225|_mut105,_mut97,_mut99 fitness: 1.0
+TIME     599225|_mut188,_mut191,_mut199 fitness: 1.0
+TIME     599225|_mut186,_mut193,_mut196 fitness: 1.0
+TIME     629350|GENERATION 20
+TIME     629351|_mut208,_mut213,_mut215 fitness: 1.0
+TIME     629351|_mut187,_mut193,_mut196 fitness: 1.0
+TIME     629351|_mut208,_mut210,_mut214 fitness: 1.0
+TIME     629351|_mut188,_mut193,_mut199 fitness: 1.0
+TIME     629351|_mut188,_mut191,_mut197 fitness: 1.0
+TIME     660065|GENERATION 21
+TIME     660066|_mut108,_mut97 fitness: 0.42105263157894735
+TIME     660066|_mut208,_mut210,_mut215 fitness: 1.0
+TIME     660066|_mut186,_mut193,_mut199 fitness: 1.0
+TIME     660066|_mut208,_mut211,_mut215 fitness: 1.0
+TIME     660066|_mut186,_mut195,_mut198 fitness: 1.0
+TIME     691368|GENERATION 22
+TIME     691369|_mut186,_mut195,_mut196 fitness: 1.0
+TIME     722405|GENERATION 23
+TIME     722406|_mut186,_mut195,_mut197 fitness: 1.0
+TIME     722406|_mut1,_mut6,_mut7 fitness: 1.0
+TIME     722406|_mut186,_mut193,_mut198 fitness: 1.0
+TIME     755121|GENERATION 24
+TIME     755122|_mut218,_mut230 fitness: 1.0
+TIME     755122|_mut76,_mut85 fitness: 1.0
+TIME     755122|_mut161,_mut166 fitness: 1.0
+TIME     755122|_mut186,_mut191,_mut197 fitness: 1.0
+TIME     755122|_mut208,_mut211,_mut216 fitness: 1.0
+TIME     788319|GENERATION 25
+TIME     788320|_mut188,_mut195,_mut197 fitness: 1.0
+TIME     788320|_mut187,_mut191,_mut197 fitness: 1.0
+TIME     821819|GENERATION 26
+TIME     821820|_mut1,_mut7 fitness: 1.0
+TIME     821820|_mut166,_mut171 fitness: 1.0
+TIME     821820|_mut188,_mut193,_mut197 fitness: 1.0
+TIME     856770|GENERATION 27
+TIME     856771|_mut103,_mut94,_mut99 fitness: 1.0
+TIME     856771|_mut188,_mut195,_mut196 fitness: 1.0
+TIME     892430|GENERATION 28
+TIME     892430|_mut165,_mut171 fitness: 1.0
+TIME     892430|_mut186,_mut195,_mut199 fitness: 1.0
+TIME     927078|GENERATION 29
+TIME     927078|_mut188,_mut195,_mut198 fitness: 1.0
+TIME     961910|GENERATION 30
+TIME     961911|_mut1,_mut6 fitness: 1.0
+TIME     961911|_mut208,_mut213,_mut214 fitness: 1.0
+TIME     961911|_mut186,_mut193,_mut197 fitness: 1.0
+TIME     998238|GENERATION 31
+TIME    1035505|GENERATION 32
+TIME    1035506|_mut166,_mut170,_mut172 fitness: 1.0
+TIME    1073868|GENERATION 33
+TIME    1073869|_mut187,_mut195,_mut197 fitness: 1.0
+TIME    1113215|GENERATION 34
+TIME    1113216|_mut208,_mut213,_mut216 fitness: 1.0
+TIME    1153615|GENERATION 35
+TIME    1153616|_mut165,_mut166 fitness: 1.0
+TIME    1195067|GENERATION 36
+TIME    1195067|_mut100,_mut106,_mut96 fitness: 1.0
+TIME    1234773|GENERATION 37
+TIME    1274203|GENERATION 38
+TIME    1274203|_mut14,_mut84,_mut86 fitness: 1.0
+TIME    1313837|GENERATION 39
+TIME    1313838|_mut100,_mut106,_mut94 fitness: 1.0
+TIME    1313841|_mut103,_mut96,_mut99 fitness: 1.0
+TIME    1353659|GENERATION 40
+TIME    1353660|_mut106,_mut97,_mut99 fitness: 1.0
+TIME    1393993|GENERATION 41
+TIME    1432667|GENERATION 42
+TIME    1432668|_mut161,_mut166,_mut172 fitness: 1.0
+TIME    1473017|GENERATION 43
+TIME    1515242|GENERATION 44
+TIME    1515243|_mut161,_mut166,_mut171 fitness: 1.0
+TIME    1555514|GENERATION 45
+TIME    1594389|GENERATION 46
+TIME    1635147|GENERATION 47
+TIME    1676870|GENERATION 48
+TIME    1717666|GENERATION 49
+TIME    1761115|GENERATION 50
+TIME    1804171|GENERATION 51
+TIME    1845770|GENERATION 52
+TIME    1885607|GENERATION 53
+TIME    1928474|GENERATION 54
+TIME    1972107|GENERATION 55
+TIME    2016186|GENERATION 56
+TIME    2061537|GENERATION 57
+TIME    2061538|_mut101,_mut106,_mut94 fitness: 1.0
+TIME    2106456|GENERATION 58
+TIME    2106457|_mut100,_mut107,_mut94 fitness: 1.0
+TIME    2149679|GENERATION 59
+TIME    2149679|_mut78,_mut84 fitness: 1.0
+TIME    2149679|_mut101,_mut105,_mut97 fitness: 1.0
+TIME    2149679|_mut100,_mut103,_mut96 fitness: 1.0
+TIME    2196361|GENERATION 60
+TIME    2241015|GENERATION 61
+TIME    2286136|GENERATION 62
+TIME    2330903|GENERATION 63
+TIME    2330904|_mut100,_mut106,_mut97 fitness: 1.0
+TIME    2379346|GENERATION 64
+TIME    2427094|GENERATION 65
+TIME    2474458|GENERATION 66
+TIME    2521721|GENERATION 67
+TIME    2567899|GENERATION 68
+TIME    2671476|GENERATION 69
+TIME    3088925|GENERATION 70
+TIME    3551904|GENERATION 71
+TIME    4010079|GENERATION 72
+TIME    4504633|GENERATION 73
+TIME    4504634|_mut101,_mut106,_mut97 fitness: 1.0

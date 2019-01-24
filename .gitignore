@@ -62,3 +62,4 @@ python/.ipynb_checkpoints
 **/evosuite-report/
 /bin/
 output.txt
+data/benchmarks/from-aws
