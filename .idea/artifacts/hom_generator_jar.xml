@@ -9,7 +9,6 @@
       <element id="module-test-output" name="code-ut" />
       <element id="module-output" name="hom-generator" />
       <element id="module-output" name="varex-hom-finder" />
-      <element id="library" level="project" name="code-ut" />
       <element id="extracted-dir" path="$PROJECT_DIR$/code-ut/jars/monopoli100.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/code-ut/jars/mutated-cli.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/code-ut/jars/mutated-chess.jar" path-in-jar="/" />
