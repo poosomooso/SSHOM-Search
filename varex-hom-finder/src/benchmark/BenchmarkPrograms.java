@@ -17,9 +17,9 @@ import mutated.triangleAll.Triangle_ESTest_improved;
 
 public class BenchmarkPrograms {
   public enum Program {
-    TRIANGLE, MONOPOLY, VALIDATOR, CLI
+    TRIANGLE, MONOPOLY, VALIDATOR, CLI, CHESS
   }
-  public static final Program PROGRAM = Program.VALIDATOR;
+  public static final Program PROGRAM = Program.CHESS;
   private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
   private static Class<?>[] targetClasses;
   private static Class<?>[] testClasses;
@@ -106,14 +106,7 @@ public class BenchmarkPrograms {
   }
 
   public static boolean homIsValid(String[] hom) {
-    int numMutantGroups = BenchmarkPrograms.getMakeshiftFeatureModel().size();
-    boolean[] check = new boolean[numMutantGroups];
-    for (String mutation : hom) {
-      if (!check(check, mutation)) {
-        return false;
-      }
-    }
-    return true;
+    return homIsValid(Arrays.asList(hom));
   }
 
   private static boolean check(boolean[] check, String mutant) {
@@ -183,6 +176,9 @@ public class BenchmarkPrograms {
   private static String localCliTestDir     = "/home/serena/reuse/mutated-cli/test/org/apache/commons/cli";
   private static String localCliTestPackage = "org.apache.commons.cli";
 
+  private static String localChessDir     = "/home/serena/reuse/mutated-chess/src/ajedrez/server";
+  private static String localChessPackage = "ajedrez.server";
+
   private static String getSrcDir() {
     switch (PROGRAM) {
     case TRIANGLE:
@@ -193,6 +189,8 @@ public class BenchmarkPrograms {
       return localValidatorDir;
     case CLI:
       return localCliDir;
+    case CHESS:
+      return localChessDir;
     }
     return "";
   }
@@ -207,6 +205,8 @@ public class BenchmarkPrograms {
       return localValidatorPackage;
     case CLI:
       return localCliPackage;
+    case CHESS:
+      return localChessPackage;
     }
     return "";
   }
@@ -249,6 +249,8 @@ public class BenchmarkPrograms {
       return "classes/validator-src.txt";
     case CLI:
       return "classes/cli-src.txt";
+    case CHESS:
+      return "classes/chess-src.txt";
     }
     return "";
   }
@@ -263,6 +265,8 @@ public class BenchmarkPrograms {
       return "classes/validator-test.txt";
     case CLI:
       return "classes/cli-test.txt";
+    case CHESS:
+      return "classes/chess-test.txt";
     }
     return "";
   }
@@ -278,6 +282,8 @@ public class BenchmarkPrograms {
       return "mutantgroups/validator.txt";
     case CLI:
       return "mutantgroups/cli.txt";
+    case CHESS:
+      return "mutantgroups/chess.txt";
     }
     return "";
   }
