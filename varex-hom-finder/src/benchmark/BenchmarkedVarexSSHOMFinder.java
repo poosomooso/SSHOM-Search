@@ -275,7 +275,7 @@ public class BenchmarkedVarexSSHOMFinder {
 	}
 	
 	private void loadTestExpressions(Map<Class<?>, Map<Method, FeatureExpr>> tests) throws IOException {
-		File folder = new File("BDDS/" + BenchmarkPrograms.PROGRAM.name());
+		File folder = new File(".");//"BDDS/" + BenchmarkPrograms.PROGRAM.name());
 		
 		String[] files = folder.list();
 		Set<String> set = new HashSet<>();
