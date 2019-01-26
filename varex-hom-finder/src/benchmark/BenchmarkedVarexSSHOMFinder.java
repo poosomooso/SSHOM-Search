@@ -92,6 +92,8 @@ public class BenchmarkedVarexSSHOMFinder {
 //								.getDeclaringClass().getName(), test.getKey().getName());
 //			}
 //		}
+		/* VarexC */
+		runMonopolyVarexC();
 		
 		Benchmarker.instance.timestamp("create features");
 		
@@ -116,6 +118,15 @@ public class BenchmarkedVarexSSHOMFinder {
 		
 //		checkSolutions(solutionsBDD, solutionsSAT);
 	}
+
+	private void runMonopolyVarexC() {
+		CommandLineRunner.process("java", "-Xmx12g", "-cp", "code-ut/jars/vbc-monopoly.jar",
+				"edu.cmu.cs.vbc.testutils.MonopoliForkTestLauncher",
+				"code-ut/jars/vbc-monopoly.jar",
+				"code-ut/jars/monopoli100.jar"
+		);
+	}
+
 
 	private void filterTests(Map<Class<?>, Map<Method, FeatureExpr>> tests) {
 		int size = 0;
