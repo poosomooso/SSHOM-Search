@@ -93,7 +93,8 @@ public class BenchmarkedVarexSSHOMFinder {
 //			}
 //		}
 		/* VarexC */
-		runMonopolyVarexC();
+//		runMonopolyVarexC();
+        runCLIVarexC();
 		
 		Benchmarker.instance.timestamp("create features");
 		
@@ -124,6 +125,14 @@ public class BenchmarkedVarexSSHOMFinder {
 				"edu.cmu.cs.vbc.testutils.MonopoliForkTestLauncher",
 				"code-ut/jars/vbc-monopoly.jar",
 				"code-ut/jars/monopoli100.jar"
+		);
+	}
+
+	private void runCLIVarexC() {
+		CommandLineRunner.process("java", "-Xmx12g", "-cp", "code-ut/jars/vbc-cli.jar",
+				"edu.cmu.cs.vbc.testutils.CLIForkTestLauncher",
+				"code-ut/jars/vbc-cli.jar",
+				"code-ut/jars/mutated-cli.jar"
 		);
 	}
 
