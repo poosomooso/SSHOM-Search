@@ -21,6 +21,7 @@ public class CommandLineRunner {
 		try {
 			System.out.println(Arrays.toString(commands));
 			ProcessBuilder processBuilder = new ProcessBuilder(commands);
+			processBuilder.redirectErrorStream(true);
 			Process process = processBuilder.start();
 			try (BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 					BufferedReader error = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {

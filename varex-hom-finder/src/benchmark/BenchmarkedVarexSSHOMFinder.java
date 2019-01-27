@@ -95,7 +95,8 @@ public class BenchmarkedVarexSSHOMFinder {
 		/* VarexC */
 //		runMonopolyVarexC();
 //        runCLIVarexC();
-        runValidatorVarexC();
+//        runValidatorVarexC();
+        runChessVarexC();
 		
 		Benchmarker.instance.timestamp("create features");
 		
@@ -134,6 +135,14 @@ public class BenchmarkedVarexSSHOMFinder {
 				"edu.cmu.cs.vbc.testutils.CLIForkTestLauncher",
 				"code-ut/jars/vbc-cli.jar",
 				"code-ut/jars/mutated-cli.jar"
+		);
+	}
+
+	private void runChessVarexC() {
+		CommandLineRunner.process("java", "-Xmx12g", "-cp", "code-ut/jars/vbc-chess/vbc.jar",
+				"edu.cmu.cs.vbc.testutils.ChessForkTestLauncher",
+				"code-ut/jars/vbc-chess/vbc.jar",
+				"code-ut/jars/mutated-chess.jar"
 		);
 	}
 
