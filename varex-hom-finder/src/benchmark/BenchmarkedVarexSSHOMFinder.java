@@ -63,7 +63,8 @@ public class BenchmarkedVarexSSHOMFinder {
 		String[] mutants = BenchmarkPrograms.getMutantNames();
 
 		System.setProperty("bddCacheSize", Integer.toString(100000));
-		System.setProperty("bddValNum", Integer.toString(429496728));
+		System.setProperty("bddValNum", Integer.toString(6_000_000));
+		FExprBuilder.bddFactory().setMaxNodeNum(429496728);
 
 		FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
 
