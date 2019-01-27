@@ -15,7 +15,7 @@ public class InfLoopTestProcess {
 
   private              long                startTime = Integer.MAX_VALUE;
   private final        List<SSHOMListener> listeners = new ArrayList<>();
-  private static final int                 TIMEOUT   = 1000;
+  private static final int                 TIMEOUT   = 2000;
 
 
   public InfLoopTestProcess(SSHOMListener... listeners) {
@@ -33,6 +33,7 @@ public class InfLoopTestProcess {
           while(!testCases.isEmpty()) {
             startTime = System.currentTimeMillis();
             String[] next = testCases.peek(); // don't remove yet, so the other thread can see it if it loops infinitely
+            System.out.println("Running "+ Arrays.toString(next));
             boolean passed = process.runSingleTest(next[0], next[1], mutants);
             try {
               if (!passed) {
@@ -112,6 +113,7 @@ public class InfLoopTestProcess {
         e.printStackTrace();
       }
     }
+    System.out.println("failtest "+testClass+","+testMethod);
   }
 
 
@@ -124,6 +126,13 @@ public class InfLoopTestProcess {
 
   public static SSHOMListener getFailedTests(Class<?>[] testClasses,
       String[] mutants) {
+    //very jank check to use another class for chess
+    //since chess leaks memory
+    if (BenchmarkPrograms.PROGRAM == BenchmarkPrograms.PROGRAM.CHESS) {
+      SSHOMListener l = ChessInfLoopTestProcess.runTests(testClasses, mutants);
+      return l;
+    }
+
     listener.signalHOMBegin();
 
     for (Class<?> c : testClasses) {

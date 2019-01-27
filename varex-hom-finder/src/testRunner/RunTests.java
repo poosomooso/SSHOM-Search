@@ -84,6 +84,7 @@ public class RunTests {
 					} catch (IllegalAccessException e) {
 						e.printStackTrace();
 					} catch (Throwable e) {
+						e.printStackTrace(System.out);
 						if (print) System.out.println(getTestDesc(method));
 						passed = false;
 					}
