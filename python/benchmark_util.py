@@ -16,7 +16,8 @@ MONOPOLY = "data/benchmarks/monopoly/monopoly"
 CHESS = "data/benchmarks/chess/chess"
 
 CLI_ALL = 377
-MONOPOLY_ALL = 1258
+MONOPOLY_ALL = 1043
+VALIDATOR_ALL = 10000
 
 def at_index(arr, i):
     if (i >= len(arr)):

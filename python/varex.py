@@ -24,7 +24,7 @@ def get_sshom_times(fname, end_time):
 
 def avg_times(times1, times2, times3):
     if len(times1) == 1: # only one thing -> only have varex times to report
-        return [(times1[0] + times2[0] + times3[0]) / 3.0], [0]
+        return [((times1[0] + times2[0] + times3[0]) / 3.0)], [bk.VALIDATOR_ALL]
     return bk.avg_times_3(times1, times2, times3)
 
 def get_varex_avg(path, start_time, end_time):
@@ -33,6 +33,9 @@ def get_varex_avg(path, start_time, end_time):
     run3 = get_sshom_times(path+bk.VAREX3, end_time)
 
     times, avg = avg_times(run1, run2, run3)
+    if len(times) == 1:
+        times.insert(0, times[0]-1)
+        avg.insert(0, 0)
     times.insert(0, start_time)
     avg.insert(0, 0)
     return times, avg
