@@ -95,7 +95,8 @@ public class BenchmarkedVarexSSHOMFinder {
 		/* VarexC */
 //		runMonopolyVarexC();
 //        runCLIVarexC();
-        runValidatorVarexC();
+//        runValidatorVarexC();
+        runTriangleVarexC();
 		
 		Benchmarker.instance.timestamp("create features");
 		
@@ -141,6 +142,12 @@ public class BenchmarkedVarexSSHOMFinder {
 		CommandLineRunner.process("java", "-Xmx12g", "-cp", "code-ut/jars/vbc-validator.jar",
 				"edu.cmu.cs.vbc.testutils.ValidatorTestLauncher",
 				"code-ut/jars/commons-validator.jar"
+		);
+	}
+
+	private void runTriangleVarexC() {
+		CommandLineRunner.process("java", "-Xmx12g", "-cp", "code-ut/jars/vbc-triangle.jar",
+				"edu.cmu.cs.vbc.testutils.TriangleTestLauncher"
 		);
 	}
 
