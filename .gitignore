@@ -63,3 +63,4 @@ python/.ipynb_checkpoints
 /bin/
 output.txt
 data/benchmarks/from-aws
+*.pyc
