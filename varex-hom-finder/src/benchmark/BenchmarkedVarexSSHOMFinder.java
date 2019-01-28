@@ -64,6 +64,7 @@ public class BenchmarkedVarexSSHOMFinder {
 
 		System.setProperty("bddCacheSize", Integer.toString(100000));
 		System.setProperty("bddValNum", Integer.toString(6_000_000));
+		FExprBuilder.bddFactory().setMaxNodeNum(429496728);
 
 		FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
 
@@ -178,7 +179,7 @@ public class BenchmarkedVarexSSHOMFinder {
 
 	private Set<Set<String>> getBDDSolutions(String[] mutants, Map<String, FeatureExpr> stringTests, boolean strict) {
 		Benchmarker.instance.timestamp("generate FOMs");
-		FeatureExpr[] fomExprs = SSHOMExprFactory.genFOMs(mutantExprs, mutants.length);
+//		FeatureExpr[] fomExprs = SSHOMExprFactory.genFOMs(mutantExprs, mutants.length);
 		
 		Benchmarker.instance.timestamp("create SSHOM expression");
 		
@@ -189,9 +190,9 @@ public class BenchmarkedVarexSSHOMFinder {
 			finalExpr = SSHOMExprFactory.getSSHOMExpr(stringTests, mutantExprs, mutantExprs.length);
 		}
 		// exclude foms
-		for (FeatureExpr m : fomExprs) {
-			finalExpr = finalExpr.andNot(m);
-		}
+//		for (FeatureExpr m : fomExprs) {
+//			finalExpr = finalExpr.andNot(m);
+//		}
 		return new BDDSolver(2).getSolutions((BDDFeatureExpr)finalExpr, mutants, BenchmarkPrograms::homIsValid);
 	}
 	
@@ -290,7 +291,7 @@ public class BenchmarkedVarexSSHOMFinder {
 	}
 	
 	private void loadTestExpressions(Map<Class<?>, Map<Method, FeatureExpr>> tests) throws IOException {
-		File folder = new File("BDDS/" + BenchmarkPrograms.PROGRAM.name());
+		File folder = new File(".");//"BDDS/" + BenchmarkPrograms.PROGRAM.name());
 		
 		String[] files = folder.list();
 		Set<String> set = new HashSet<>();

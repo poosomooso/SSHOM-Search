@@ -32,7 +32,10 @@ public class BDDSolver {
 	public Set<Set<String>> getSolutions(BDDFeatureExpr expr, String[] features, Function<Collection<String>, Boolean> checkValid) {
 		List<byte[]> solutions = (List<byte[]>)expr.bdd().allsat();
 		Set<Set<String>> allSolutions = new LinkedHashSet<>();
+		int counter = 0;
 		for (byte[] s : solutions) {
+			if (counter++ > 1000000) return allSolutions;
+
 			getSolutions(s, features, allSolutions, new HashSet<>(), 1, checkValid);
 		}
 		return allSolutions;
