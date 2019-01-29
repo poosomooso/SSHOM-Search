@@ -57,3 +57,21 @@ def get_ga_avg(path, start_time, end_time):
     avg_at_100k = (avg[i-1] + avg[i]) / 2.0
 
     return times, avg
+
+def triangle_get_ga_avg(path, start_time, end_time):
+    run1 = get_sshom_times(path+bk.GA1, end_time)
+    run1.insert(0, start_time)
+    avg = list(range(len(run1)))
+    avg.append(avg[-1])
+    run1.append(end_time)
+
+    global candidates_100k
+    global avg_at_100k
+    candidates_100k = sum_100k_candidates
+
+    i = 0
+    while i < len(run1) and run1[i] < candidates_100k:
+        i += 1
+    avg_at_100k = (avg[i-1] + avg[i]) / 2.0
+
+    return run1, avg

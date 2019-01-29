@@ -14,10 +14,12 @@ CLI = "data/benchmarks/cli/cli"
 VALIDATOR = "data/benchmarks/validator/validator"
 MONOPOLY = "data/benchmarks/monopoly/monopoly"
 CHESS = "data/benchmarks/chess/chess"
+TRIANGLE = "data/benchmarks/allTriangle/triangle"
 
 CLI_ALL = 377
 MONOPOLY_ALL = 1043
 VALIDATOR_ALL = 10000
+TRIANGLE_ALL = 965
 
 def at_index(arr, i):
     if (i >= len(arr)):

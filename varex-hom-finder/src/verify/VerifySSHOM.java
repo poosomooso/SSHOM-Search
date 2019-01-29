@@ -28,11 +28,11 @@ public class VerifySSHOM {
 
     PrintStream out = System.out;
 
-    System.setOut(new PrintStream(new OutputStream() {
-      public void write(int b) {
-        // NO-OP
-      }
-    }));
+//    System.setOut(new PrintStream(new OutputStream() {
+//      public void write(int b) {
+//        // NO-OP
+//      }
+//    }));
 
 
     try (Scanner in = new Scanner(new File(fname))) {

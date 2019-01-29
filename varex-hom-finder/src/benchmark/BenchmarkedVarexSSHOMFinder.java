@@ -92,7 +92,6 @@ public class BenchmarkedVarexSSHOMFinder {
 //								.getDeclaringClass().getName(), test.getKey().getName());
 //			}
 //		}
-		
 		Benchmarker.instance.timestamp("create features");
 		
 		mutantExprs = mutantNamesToFeatures(mutants);

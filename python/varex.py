@@ -39,3 +39,11 @@ def get_varex_avg(path, start_time, end_time):
     times.insert(0, start_time)
     avg.insert(0, 0)
     return times, avg
+
+
+def triangle_get_varex_avg(path, start_time, end_time):
+    run1 = get_sshom_times(path+bk.VAREX1, end_time)
+    run1.insert(0, start_time)
+    avg = list(range(len(run1)))
+
+    return run1, avg

@@ -32,3 +32,11 @@ def get_naive_avg(path, start_time, end_time):
     times.append(end_time)
     avg.append(avg[-1])
     return times, avg
+
+def triangle_get_naive_avg(path, start_time, end_time):
+    run1 = get_sshom_times(path+bk.BRUTE1, end_time)
+    run1.insert(0, start_time)
+    avg = list(range(len(run1)))
+    avg.append(avg[-1])
+    run1.append(end_time)
+    return run1, avg
