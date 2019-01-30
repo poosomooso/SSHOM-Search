@@ -16,9 +16,9 @@ MONOPOLY = "data/benchmarks/monopoly/monopoly"
 CHESS = "data/benchmarks/chess/chess"
 TRIANGLE = "data/benchmarks/allTriangle/triangle"
 
-CLI_ALL = 377
-MONOPOLY_ALL = 1043
-VALIDATOR_ALL = 10000
+CLI_ALL = 376
+MONOPOLY_ALL = 818
+VALIDATOR_ALL = 100000
 TRIANGLE_ALL = 965
 
 def at_index(arr, i):
