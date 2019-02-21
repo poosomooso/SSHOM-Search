@@ -19,7 +19,7 @@ public class BenchmarkPrograms {
   public enum Program {
     TRIANGLE, MONOPOLY, VALIDATOR, CLI, CHESS
   }
-  public static final Program PROGRAM = Program.TRIANGLE;
+  public static final Program PROGRAM = Program.CHESS;
   private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
   private static Class<?>[] targetClasses;
   private static Class<?>[] testClasses;
