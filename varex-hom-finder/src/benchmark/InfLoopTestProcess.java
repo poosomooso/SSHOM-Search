@@ -40,11 +40,13 @@ public class InfLoopTestProcess {
                 // System.out.println("f");
                 failedTests.add(next);
               }
-              testCases.pop(); // we are done, now remove it
+              System.out.println("popped : "+Arrays.toString(testCases.pop())); // we are done, now remove it
             } catch (ThreadDeath e) {
               // this try catch statement somehow fixed
               // the NoSuchElementException in testCases.pop()
               System.out.println("threaddeath");
+              System.out.println("popped : "+Arrays.toString(testCases.pop())); // we are done, now remove it
+
             }
           }
         }
@@ -60,7 +62,7 @@ public class InfLoopTestProcess {
             }
             if (t.isAlive()) {
               t.stop();
-              failedTests.add(testCases.pop());
+              failedTests.add(testCases.peek()); // avoiding the case where it pops twice; should be ok if it registers as a failure twice
               System.out.println("t");
             }
           } catch (InterruptedException e) {
