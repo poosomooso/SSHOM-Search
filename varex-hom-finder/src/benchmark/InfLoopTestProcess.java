@@ -2,6 +2,7 @@ package benchmark;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.junit.Test;
 import org.junit.runner.Description;
@@ -16,6 +17,7 @@ public class InfLoopTestProcess {
   private              long                startTime = Integer.MAX_VALUE;
   private final        List<SSHOMListener> listeners = new ArrayList<>();
   private static final int                 TIMEOUT   = 2000;
+  private static final int WAIT_FOR_KILL = 500;
 
 
   public InfLoopTestProcess(SSHOMListener... listeners) {
@@ -25,6 +27,7 @@ public class InfLoopTestProcess {
 
   public void runTests(String[] mutants, Deque<String[]> testCases) {
     List<String[]> failedTests = new ArrayList<>();
+    ConcurrentLinkedQueue<String[]> testUnderExecution = new ConcurrentLinkedQueue<>();
     while(!testCases.isEmpty()) {
       startTime = System.currentTimeMillis();
       Thread t = new Thread("Test: " + Arrays.toString(mutants)) {
@@ -33,19 +36,23 @@ public class InfLoopTestProcess {
           while(!testCases.isEmpty()) {
             startTime = System.currentTimeMillis();
             String[] next = testCases.peek(); // don't remove yet, so the other thread can see it if it loops infinitely
+            testUnderExecution.add(next);
             System.out.println("Running "+ Arrays.toString(next));
-            boolean passed = process.runSingleTest(next[0], next[1], mutants);
             try {
-              if (!passed) {
+              boolean passed = process.runSingleTest(next[0], next[1], mutants);
+              if (testUnderExecution.size() > 0 && !passed) {
                 // System.out.println("f");
                 failedTests.add(next);
               }
-              System.out.println("popped : "+Arrays.toString(testCases.pop())); // we are done, now remove it
+              if (testUnderExecution.size() > 0 && testUnderExecution.peek() == testCases.peek()) {
+                System.out.println("popped : " + Arrays.toString(testCases.pop())); // we are done, now remove it
+                testUnderExecution.poll();
+              }
             } catch (ThreadDeath e) {
               // this try catch statement somehow fixed
               // the NoSuchElementException in testCases.pop()
-              System.out.println("threaddeath");
-              System.out.println("popped : "+Arrays.toString(testCases.pop())); // we are done, now remove it
+              System.out.println("thread death");
+//              System.out.println("popped : "+Arrays.toString(testCases.pop())); // we are done, now remove it
 
             }
           }
@@ -57,13 +64,25 @@ public class InfLoopTestProcess {
         @Override
         public void run() {
           try {
-            while (System.currentTimeMillis() - startTime < TIMEOUT) {
-              sleep(TIMEOUT);
-            }
-            if (t.isAlive()) {
-              t.stop();
-              failedTests.add(testCases.peek()); // avoiding the case where it pops twice; should be ok if it registers as a failure twice
-              System.out.println("t");
+            while (true) {
+              String[] last = testCases.peek();
+              while (System.currentTimeMillis() - startTime < TIMEOUT) {
+                sleep(TIMEOUT);
+              }
+              if (t.isAlive()) {
+                String[] current = testCases.peek();
+                if (last != null && current != null && current[0].equals(last[0]) && current[1].equals(last[1])) {
+                  t.stop();
+                  failedTests.add(testCases.peek()); // avoiding the case where it pops twice; should be ok if it registers as a failure twice
+                  System.out.println("t");
+                  String[] killed = testCases.pop();
+                  testUnderExecution.poll();
+                  System.out.println("popped in kill: "+Arrays.toString(killed)); // we are done, now remove it
+                  while (testUnderExecution.size() == 0) {
+                    sleep(WAIT_FOR_KILL);
+                  }
+                }
+              }
             }
           } catch (InterruptedException e) {
             // nothing here
