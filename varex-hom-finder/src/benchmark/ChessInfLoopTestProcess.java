@@ -134,6 +134,7 @@ public class ChessInfLoopTestProcess {
   }
 
   public static void main(String[] args) throws ClassNotFoundException {
+    BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.CHESS;
     String[] mutants = args[0].split(",");
     String[] classStr = args[1].split(",");
 

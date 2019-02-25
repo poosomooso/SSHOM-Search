@@ -7,6 +7,7 @@ public class ChessMutationRunner {
   static String[] mutantsToRun = {"_mut916"};
 
   public static void main(String[] args) {
+    BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.CHESS;
     Class<?>[] testClasses = BenchmarkPrograms.getTestClasses();
 
     Class<?>[] particularClasses = {};
