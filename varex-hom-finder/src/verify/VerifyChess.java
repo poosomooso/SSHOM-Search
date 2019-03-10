@@ -2,12 +2,12 @@ package verify;
 
 import benchmark.BenchmarkPrograms;
 
-public class VerifyMonopoly {
+public class VerifyChess {
+  static String fname = "data/found-mutations/chess-19-3-3.txt";
   public static void main(String[] args) {
-    BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.MONOPOLY;
+    BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.CHESS;
     VerifySSHOM sshom = new VerifySSHOM(BenchmarkPrograms.getTargetClasses(), BenchmarkPrograms
-        .getTestClasses(), "data/found-mutations/monopoly.txt");
+        .getTestClasses(), fname);
     sshom.printVerify();
   }
-
 }
