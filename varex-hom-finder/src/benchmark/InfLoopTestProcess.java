@@ -37,7 +37,7 @@ public class InfLoopTestProcess {
             startTime = System.currentTimeMillis();
             String[] next = testCases.peek(); // don't remove yet, so the other thread can see it if it loops infinitely
             testUnderExecution.add(next);
-            System.out.println("Running "+ Arrays.toString(next));
+//            System.out.println("Running "+ Arrays.toString(next));
             try {
               boolean passed = process.runSingleTest(next[0], next[1], mutants);
               if (testUnderExecution.size() > 0 && !passed) {
@@ -45,7 +45,8 @@ public class InfLoopTestProcess {
                 failedTests.add(next);
               }
               if (testUnderExecution.size() > 0 && testUnderExecution.peek() == testCases.peek()) {
-                System.out.println("popped : " + Arrays.toString(testCases.pop())); // we are done, now remove it
+                String[] test = testCases.pop(); // we are done, now remove it
+//                System.out.println("popped : " + Arrays.toString(test));
                 testUnderExecution.poll();
               }
             } catch (ThreadDeath e) {
