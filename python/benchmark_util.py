@@ -1,20 +1,26 @@
 TIMESTAMP_PATTERN = "^TIME\s+(\d+)\|(.+)"
 
-BRUTE1 = "-brute.txt"
-BRUTE2 = "-brute2.txt"
-BRUTE3 = "-brute3.txt"
-GA1 = "-ga.txt"
+CLI = 0
+VALIDATOR = 1
+MONOPOLY = 2
+CHESS = 3
+TRIANGLE = 4
+
+BRUTE1 = "-naive1.txt"
+BRUTE2 = "-naive2.txt"
+BRUTE3 = "-naive3.txt"
+GA1 = "-ga1.txt"
 GA2 = "-ga2.txt"
 GA3 = "-ga3.txt"
-VAREX1 = "-varex.txt"
+VAREX1 = "-varex1.txt"
 VAREX2 = "-varex2.txt"
 VAREX3 = "-varex3.txt"
 
-CLI = "data/benchmarks/cli/cli"
-VALIDATOR = "data/benchmarks/validator/validator"
-MONOPOLY = "data/benchmarks/monopoly/monopoly"
-CHESS = "data/benchmarks/chess/chess"
-TRIANGLE = "data/benchmarks/allTriangle/triangle"
+CLI_PATH = "data/benchmarks/ase-submission/cli/cli"
+VALIDATOR_PATH = "data/benchmarks/ase-submission/validator/validator"
+MONOPOLY_PATH = "data/benchmarks/ase-submission/monopoly/monopoly"
+CHESS_PATH = "data/benchmarks/ase-submission/chess/chess"
+TRIANGLE_PATH = "data/benchmarks/ase-submission/allTriangle/triangle"
 
 CLI_ALL = 376
 MONOPOLY_ALL = 818

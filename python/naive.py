@@ -4,6 +4,9 @@ import re
 # real jank, but I don't want to implementregex for this
 special_terms = set(["start homs", "order 2 done", "order 3 done", "order 4 done", "order 5 done"])
 
+for i in range(2,100):
+    special_terms.add("order {} done".format(i))
+
 def get_sshom_times(fname, end_time):
     naive_times = []
 
