@@ -40,7 +40,7 @@ public class BenchmarkedHeuristicsSSHOMFinder {
 
 			BenchmarkedHeuristicsSSHOMFinder heuristics = new BenchmarkedHeuristicsSSHOMFinder();
 			heuristics.maxSSHOMsOrder = 4;
-			heuristics.runOverlappedTests = true;
+			heuristics.runOverlappedTests = false;
 			heuristics.runNPlusOne = true;
 			heuristics.runEqualSets = true;
 			heuristics.heuristicsSSHOMFinder();
@@ -156,11 +156,8 @@ public class BenchmarkedHeuristicsSSHOMFinder {
 		
 		List<Set<String>> sshomsN = this.sshomsByOrder.get(hom.size() - 1);
 		
-		for (String fom : hom) {
-			Set<String> homN = new HashSet<String>(hom); 
-			homN.remove(fom);
-
-			if (sshomsN.contains(homN)) return true;
+		for (Set<String> sshomN : sshomsN) {
+			if (hom.containsAll(sshomN)) return true;
 		}
 		
 		return false;
