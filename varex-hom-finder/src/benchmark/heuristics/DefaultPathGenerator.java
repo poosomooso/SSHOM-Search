@@ -2,6 +2,7 @@ package benchmark.heuristics;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,16 +13,14 @@ import org.junit.runner.Description;
 public final class DefaultPathGenerator implements IPathGenerator {
 
 	private final List<FirstOrderMutant> nodes;
-	private final Map<Description, Set<FirstOrderMutant>> testsMap;
 
 	public DefaultPathGenerator(List<FirstOrderMutant> nodes, Map<Description, Set<FirstOrderMutant>> testsMap) {
 		this.nodes = nodes;
-		this.testsMap = testsMap;
 	}
 
 	@Override
 	public Collection<Set<FirstOrderMutant>> getPaths() {// would be nice to have an iterator instead
-		return getOrder(3, 0);
+		return getOrder(Configuration.maxDegree, 0);
 	}
 
 	private List<Set<FirstOrderMutant>> getOrder(int order, int startIndex) {
@@ -52,7 +51,17 @@ public final class DefaultPathGenerator implements IPathGenerator {
 
 	@Override
 	public Collection<Set<FirstOrderMutant>> getAllDirektChildren(Set<FirstOrderMutant> nodes) {
-		throw new RuntimeException("not implemented");
+		if (nodes.size() >= Configuration.maxDegree) {
+			return Collections.emptySet();
+		}
+		final Collection<Set<FirstOrderMutant>> children = new HashSet<>();
+		for (FirstOrderMutant node : this.nodes) {
+			if (!nodes.contains(node)) {
+				Set<FirstOrderMutant> child = new HashSet<>(nodes);
+				children.add(child);
+			}
+		}
+		return children;
 	}
 
 }

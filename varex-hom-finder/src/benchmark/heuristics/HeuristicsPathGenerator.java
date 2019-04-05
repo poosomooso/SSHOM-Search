@@ -18,9 +18,6 @@ import evaluation.io.MutationParser;
 
 public class HeuristicsPathGenerator implements IPathGenerator {
 
-	private static final int maxDegree = 6;
-	private static final int initialDegree = 2;
-
 	private final List<FirstOrderMutant> nodes;
 	private final Map<Description, Set<FirstOrderMutant>> testsMap;
 	
@@ -54,17 +51,15 @@ public class HeuristicsPathGenerator implements IPathGenerator {
 		}
 
 		final Collection<Set<FirstOrderMutant>> paths = new HashSet<>();
-		int i = 1;
 		for (Entry<FirstOrderMutant, Set<FirstOrderMutant>> entry : connections.entrySet()) {
-			getHOMCandidates(paths, entry.getKey(), entry.getValue(), initialDegree);
-			System.out.println(i++ + " / " + connections.size() + " (" + paths.size() + ")");
+			getHOMCandidates(paths, entry.getKey(), entry.getValue(), Configuration.initialDegree);
 		}
 		return paths;
 	}
 	
 	@Override
 	public Collection<Set<FirstOrderMutant>> getAllDirektChildren(Set<FirstOrderMutant> nodes) {
-		if (nodes.size() >= maxDegree) {
+		if (nodes.size() >= Configuration.maxDegree) {
 			return Collections.emptyList();
 		}
 		Set<Set<FirstOrderMutant>> children = new HashSet<>();
