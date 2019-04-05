@@ -187,8 +187,8 @@ public class SSHOMChecker {
 			for (Method m : methods) {
 				currentTests.put(m, FeatureExprFactory.False());
 			}
+			tests.put(c, currentTests);
 		}
-
 	}
 	
 	private void loadTestExpressions(Map<Class<?>, Map<Method, FeatureExpr>> tests) throws IOException {
