@@ -34,6 +34,8 @@ public class RunBenchmarks {
       runEvolutionary();
     } else if (whichMode.equalsIgnoreCase("varex")) {
       runVarex();
+    } else if (whichMode.equalsIgnoreCase("smart")) {
+        runSmart();
     } else {
       errAndExit();
     }
@@ -51,6 +53,11 @@ public class RunBenchmarks {
     BenchmarkedNaiveSSHOMFinder naiveSSHOMFinder = new BenchmarkedNaiveSSHOMFinder();
     naiveSSHOMFinder.naiveSSHOMFinder();
   }
+  
+	private static void runSmart() throws NoSuchFieldException, IllegalAccessException {
+		HeuristicsBasedSSHOMFinder naiveSSHOMFinder = new HeuristicsBasedSSHOMFinder();
+		naiveSSHOMFinder.run();
+	}
 
   private static void runEvolutionary()
       throws NoSuchFieldException, IllegalAccessException {

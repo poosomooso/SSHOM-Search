@@ -105,7 +105,7 @@ public class BenchmarkPrograms {
     return true;
   }
 
-  public static boolean homIsValid(String[] hom) {
+  public static boolean homIsValid(String... hom) {
     return homIsValid(Arrays.asList(hom));
   }
 
