@@ -6,12 +6,14 @@ import java.util.Set;
 import org.junit.runner.Description;
 
 public final class FirstOrderMutant {
-	final String mutant;
-	final Set<Description> tests;
+	private final String mutant;
+	private final Set<Description> tests;
+	private final int hash;
 
 	public FirstOrderMutant(String mutant, Set<Description> tests) {
 		this.mutant = mutant;
 		this.tests = Collections.unmodifiableSet(tests);
+		this.hash = mutant.hashCode();
 	}
 	
 	public String getMutant() {
@@ -20,5 +22,15 @@ public final class FirstOrderMutant {
 	
 	public Set<Description> getTests() {
 		return tests;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		return this == other;
+	}
+	
+	@Override
+	public int hashCode() {
+		return hash;
 	}
 }

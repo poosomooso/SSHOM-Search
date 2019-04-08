@@ -24,8 +24,8 @@ import util.SSHOMRunner;
 
 public class HeuristicsBasedSSHOMFinder {
 	private static final int K_DIV = 1;
-	private static final int K_SIZE = 1;
-	private static final int K_N_PLUS_ONE = 30;
+	private static final int K_SIZE = 10;
+	private static final int K_N_PLUS_ONE = 100;
 	
 	private SSHOMRunner runner;
 	private Map<String, Set<Description>> foms;
@@ -107,9 +107,11 @@ public class HeuristicsBasedSSHOMFinder {
 		
 		return candidates;
 	}
-	
+
+	// TODO remove this
 	private Set<Collection<FirstOrderMutant>> isNPlusOne = new HashSet<>();
 	
+	// TODO remove this
 	private int isNPlusOne(Collection<FirstOrderMutant> c1) {
 		if (c1.size() == 2) {
 			return 1;
@@ -242,11 +244,13 @@ public class HeuristicsBasedSSHOMFinder {
 					}
 					candidatesMap.putIfAbsent(newScore, new HashSet<>());
 					candidatesMap.get(newScore).add(child);
+					isNPlusOne.add(child);
 			} else {
 				if (!sshoms.contains(child)) {
 					// TODO duplicate code
 					candidatesMap.putIfAbsent(newScore, new HashSet<>());
 					candidatesMap.get(newScore).add(child);
+					isNPlusOne.add(child);
 				}				
 			}
 		}

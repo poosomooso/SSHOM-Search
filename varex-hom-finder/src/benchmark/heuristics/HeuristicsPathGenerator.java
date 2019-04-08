@@ -37,13 +37,13 @@ public class HeuristicsPathGenerator implements IPathGenerator {
 		for (FirstOrderMutant node : nodes) {
 			connections.putIfAbsent(node, new HashSet<>());
 			Collection<FirstOrderMutant> connectedNodes = connections.get(node);
-			for (Description test : node.tests) {
+			for (Description test : node.getTests()) {
 				Set<FirstOrderMutant> failingNodes = testsMap.get(test);
 				for (FirstOrderMutant other : failingNodes) {
 					if (other == node) {
 						continue;
 					}
-					if (BenchmarkPrograms.homIsValid(other.mutant, node.mutant)) {
+					if (BenchmarkPrograms.homIsValid(other.getMutant(), node.getMutant())) {
 						connectedNodes.add(other);
 					}
 				}
@@ -91,7 +91,7 @@ public class HeuristicsPathGenerator implements IPathGenerator {
 		}
 		Set<FirstOrderMutant> currentSelection = new HashSet<>(order);
 		currentSelection.add(startNode);
-		getHOMCandidates(new HashSet<>(startNode.tests), paths, currentSelection, nodeArray, order - 1, startIndex);
+		getHOMCandidates(new HashSet<>(startNode.getTests()), paths, currentSelection, nodeArray, order - 1, startIndex);
 	}
 	
 	private void getHOMCandidates(Set<Description> tests, Collection<Set<FirstOrderMutant>> paths, Set<FirstOrderMutant> currentSelection, FirstOrderMutant[] nodeArray, int order, int startIndex) {
@@ -113,7 +113,7 @@ public class HeuristicsPathGenerator implements IPathGenerator {
 			currentSelection.add(nodeArray[i]);
 			if (!paths.contains(currentSelection)) {
 				Set<Description> intersectingTests = new HashSet<>(tests);
-				intersectingTests.retainAll(nodeArray[i].tests);
+				intersectingTests.retainAll(nodeArray[i].getTests());
 				getHOMCandidates(intersectingTests, paths, currentSelection, nodeArray, order - 1, i + 1);
 			}
 			currentSelection.remove(nodeArray[i]);
@@ -124,7 +124,7 @@ public class HeuristicsPathGenerator implements IPathGenerator {
 		// TODO rewrite this (do not create new set)
 		Collection<String> config = new HashSet<>(currentSelection.size());
 		for (FirstOrderMutant node : currentSelection) {
-			config.add(node.mutant);
+			config.add(node.getMutant());
 		}
 		if (!BenchmarkPrograms.homIsValid(config)) {
 			return false;

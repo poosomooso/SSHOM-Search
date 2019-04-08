@@ -26,7 +26,7 @@ public final class MutationGraph {
 			nodes.add(node);
 		}
 		for (FirstOrderMutant node : nodes) {
-			for (Description test : node.tests) {
+			for (Description test : node.getTests()) {
 				testsMap.putIfAbsent(test, new HashSet<>());
 				testsMap.get(test).add(node);
 			}

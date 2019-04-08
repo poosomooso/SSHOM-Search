@@ -106,7 +106,7 @@ public class SSHOMChecker {
 		
 		scala.collection.mutable.HashSet<String> selectedFeatures = new scala.collection.mutable.HashSet<>();
 		for (FirstOrderMutant c : candidate) {
-			selectedFeatures.add("CONFIG_" + c.mutant);
+			selectedFeatures.add("CONFIG_" + c.getMutant());
 		}
 		scala.collection.immutable.Set<String> selectedFeatures2 = selectedFeatures.toSet();
 		
