@@ -5,7 +5,7 @@ import java.util.Set;
 
 public interface IPathGenerator {
 
-	Collection<Set<FirstOrderMutant>> getPaths();
+	Collection<HigherOrderMutant> getPaths();
 
 	Collection<Set<FirstOrderMutant>> getAllDirektChildren(Set<FirstOrderMutant> nodes);
 

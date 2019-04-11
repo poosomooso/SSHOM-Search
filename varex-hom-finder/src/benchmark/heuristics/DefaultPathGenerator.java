@@ -19,12 +19,12 @@ public final class DefaultPathGenerator implements IPathGenerator {
 	}
 
 	@Override
-	public Collection<Set<FirstOrderMutant>> getPaths() {// would be nice to have an iterator instead
+	public Collection<HigherOrderMutant> getPaths() {
 		return getOrder(Configuration.maxDegree, 0);
 	}
 
-	private List<Set<FirstOrderMutant>> getOrder(int order, int startIndex) {
-		List<Set<FirstOrderMutant>> allCombinations = new ArrayList<>();
+	private List<HigherOrderMutant> getOrder(int order, int startIndex) {
+		List<HigherOrderMutant> allCombinations = new ArrayList<>();
 		if (order == 0) {
 			return allCombinations;
 		}
@@ -32,17 +32,17 @@ public final class DefaultPathGenerator implements IPathGenerator {
 			for (int i = startIndex; i < nodes.size(); i++) {
 				Set<FirstOrderMutant> selectedMutants = new HashSet<>();
 				selectedMutants.add(nodes.get(i));
-				allCombinations.add(selectedMutants);
+				allCombinations.add(new HigherOrderMutant(selectedMutants));
 			}
 			return allCombinations;
 		}
 
 		for (int i = startIndex; i < nodes.size(); i++) {
-			List<Set<FirstOrderMutant>> selectedMutants = getOrder(order - 1, i + 1);
-			for (Collection<FirstOrderMutant> collection : selectedMutants) {
-				Set<FirstOrderMutant> newCombination = new HashSet<>(collection);
+			List<HigherOrderMutant> selectedMutants = getOrder(order - 1, i + 1);
+			for (HigherOrderMutant hom : selectedMutants) {
+				Set<FirstOrderMutant> newCombination = new HashSet<>(hom.getFoms());
 				newCombination.add(nodes.get(i));
-				allCombinations.add(newCombination);
+				allCombinations.add(new HigherOrderMutant(newCombination));
 			}
 		}
 

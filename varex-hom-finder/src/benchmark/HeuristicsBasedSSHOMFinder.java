@@ -1,31 +1,26 @@
 package benchmark;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.runner.Description;
 
+import benchmark.heuristics.Configuration;
 import benchmark.heuristics.FirstOrderMutant;
+import benchmark.heuristics.HigherOrderMutant;
 import benchmark.heuristics.MutationGraph;
 import benchmark.heuristics.SSHOMChecker;
-import util.CheckStronglySubsuming;
 import util.SSHOMListener;
 import util.SSHOMRunner;
 
 public class HeuristicsBasedSSHOMFinder {
-	private static final int K_DIV = 1;
-	private static final int K_SIZE = 10;
-	private static final int K_N_PLUS_ONE = 100;
 	
 	private SSHOMRunner runner;
 	private Map<String, Set<Description>> foms;
@@ -33,21 +28,9 @@ public class HeuristicsBasedSSHOMFinder {
 	
 	private int[] distribution = new int[10];
 
-	MutationGraph graph;
+	private MutationGraph graph;
 	
 	public void run() throws NoSuchFieldException, IllegalAccessException {
-		System.setErr(new PrintStream(System.err) {
-			@Override
-			public void write(int b) {
-				
-			}
-			@Override
-			public void println(String x) {
-//				// TODO Auto-generated method stub
-//				super.println(x);
-			}
-		});
-		
 		Benchmarker.instance.start();
 
 		Class<?>[] targetClasses = BenchmarkPrograms.getTargetClasses();
@@ -63,25 +46,24 @@ public class HeuristicsBasedSSHOMFinder {
 		
 		Benchmarker.instance.timestamp("create hom candidates");
 		graph = new MutationGraph(foms);
-		Map<Integer, Set<Set<FirstOrderMutant>>> homCandidates = createHOMMap(graph.getHOMPaths());
-		
+		Map<Integer, Set<HigherOrderMutant>> homCandidates = createHOMMap(graph.getHOMPaths());
 		while (!homCandidates.isEmpty()) {
 			int minScore = Integer.MAX_VALUE;
-			for (Entry<Integer, Set<Set<FirstOrderMutant>>> entry : homCandidates.entrySet()) {
+			for (Entry<Integer, Set<HigherOrderMutant>> entry : homCandidates.entrySet()) {
 				if (!entry.getValue().isEmpty()) {
 					minScore = Math.min(minScore, entry.getKey());
 				}
 			}
 			
-			Collection<Set<FirstOrderMutant>> homPaths = homCandidates.get(minScore);
+			Collection<HigherOrderMutant> homPaths = homCandidates.get(minScore);
 			int[] candidateDistribution = new int[10];
-			for (Collection<FirstOrderMutant> j : homPaths) {
+			for (HigherOrderMutant j : homPaths) {
 				candidateDistribution[j.size()]++;
 			}
 			
 			int foundHoms = sshoms.size();
-			for (Iterator<Set<FirstOrderMutant>> iterator = homPaths.iterator(); iterator.hasNext();) {
-				Set<FirstOrderMutant> collection = iterator.next();
+			for (Iterator<HigherOrderMutant> iterator = homPaths.iterator(); iterator.hasNext();) {
+				HigherOrderMutant collection = iterator.next();
 				iterator.remove();
 				run(homCandidates, collection);
 				if (sshoms.size() > foundHoms) {
@@ -95,11 +77,12 @@ public class HeuristicsBasedSSHOMFinder {
 		System.out.println(Arrays.toString(distribution));
 	}
 
-	private Map<Integer, Set<Set<FirstOrderMutant>>> createHOMMap(Collection<Set<FirstOrderMutant>> homPaths) {
-		Map<Integer, Set<Set<FirstOrderMutant>>> candidates = new HashMap<>();
-		for (Iterator<Set<FirstOrderMutant>> iterator = homPaths.iterator(); iterator.hasNext();) {
-			Set<FirstOrderMutant> c = iterator.next();
-			int score = K_DIV * computeDiv(c) + K_SIZE * c.size() - K_N_PLUS_ONE * isNPlusOne(c);
+	// TODO this should be the direct result of the graph
+	private Map<Integer, Set<HigherOrderMutant>> createHOMMap(Collection<HigherOrderMutant> homPaths) {
+		Map<Integer, Set<HigherOrderMutant>> candidates = new HashMap<>();
+		for (Iterator<HigherOrderMutant> iterator = homPaths.iterator(); iterator.hasNext();) {
+			HigherOrderMutant c = iterator.next();
+			int score = Configuration.K_TEST_OVERLAP * computeDiv(c.getFoms()) + Configuration.K_DEGREE * c.size() - Configuration.K_N_PLUS_ONE * (c.size() == 2 ? 1 : 0);
 			candidates.putIfAbsent(score, new HashSet<>());
 			candidates.get(score).add(c);
 			iterator.remove();
@@ -109,35 +92,20 @@ public class HeuristicsBasedSSHOMFinder {
 	}
 
 	// TODO remove this
-	private Set<Collection<FirstOrderMutant>> isNPlusOne = new HashSet<>();
+	private Set<HigherOrderMutant> isNPlusOne = new HashSet<>();
 	
 	// TODO remove this
-	private int isNPlusOne(Collection<FirstOrderMutant> c1) {
+	private int isNPlusOne(HigherOrderMutant c1) {
 		if (c1.size() == 2) {
 			return 1;
 		}
 		if (isNPlusOne.contains(c1)) {
 			return 1;
 		}
-		Set<FirstOrderMutant> c = new HashSet<>(c1);
-		
-		for (FirstOrderMutant node : c1) {
-			c.remove(node);
-			if (sshoms.contains(c)) {
-				isNPlusOne.add(c1);
-				return 1;
-			}
-			c.add(node);
-		}
 		return 0;
 	}
 
-	private Map<Collection<FirstOrderMutant>, Integer> scores = new HashMap<>();
-	
 	private int computeDiv(Collection<FirstOrderMutant> c1) {
-		if (scores.containsKey(c1)) {
-			return scores.get(c1);
-		}
 		Set<Description> tests = new HashSet<>();
 		for (FirstOrderMutant node : c1) {
 			tests.addAll(node.getTests());
@@ -147,10 +115,7 @@ public class HeuristicsBasedSSHOMFinder {
 			tests.retainAll(node.getTests());
 		}
 		int testsSizeIntersection = tests.size();
-		
-		int score = testsSize - testsSizeIntersection;
-		scores.put(c1, score);
-		return score;
+		return testsSize - testsSizeIntersection;
 	}
 
 	private void populateFoms(String[] mutants) throws NoSuchFieldException, IllegalAccessException {
@@ -177,11 +142,11 @@ public class HeuristicsBasedSSHOMFinder {
 	int homsChecked = 0;
 	
 	Set<String> coveredFoms = new HashSet<>();
-	Collection<Set<FirstOrderMutant>> sshoms = new HashSet<>();
+	Collection<HigherOrderMutant> sshoms = new HashSet<>();
 	
 	SSHOMChecker checker = new SSHOMChecker();
 	
-	private void run(Map<Integer, Set<Set<FirstOrderMutant>>> homCandidates, Set<FirstOrderMutant> homCandidate)
+	private void run(Map<Integer, Set<HigherOrderMutant>> homCandidates, HigherOrderMutant homCandidate)
 			throws NoSuchFieldException, IllegalAccessException {
 		// TODO use interface
 		homsChecked++;
@@ -189,7 +154,6 @@ public class HeuristicsBasedSSHOMFinder {
 		for (FirstOrderMutant mutant : homCandidate) {
 			selectedMutants.add(mutant.getMutant());
 		}
-//		System.out.println(homsChecked +  " / " + nrHOMS);
 //		SSHOMListener listener;
 //		if (BenchmarkPrograms.programHasInfLoops()) {
 //			listener = InfLoopTestProcess.getFailedTests(testClasses, selectedMutants.toArray(new String[0]));
@@ -199,58 +163,59 @@ public class HeuristicsBasedSSHOMFinder {
 //		List<Set<Description>> currentFoms = selectedMutants.stream().map(m -> foms.get(m))
 //				.collect(Collectors.toList());
 
-		// TODO 
+		// TODO extract to interface
 //		boolean stronglySubsumingBDDChecker = CheckStronglySubsuming.isStronglySubsuming(listener.getHomTests(), currentFoms);
-		boolean stronglySubsumingBDDChecker = checker.isSSHOM(homCandidate);
+		boolean stronglySubsumingBDDChecker = checker.isSSHOM(homCandidate.getFoms());
 		
 //		if (stronglySubsuming != stronglySubsumingBDDChecker) {
 //			System.out.println(listener.getHomTests());
 //			throw new RuntimeException(selectedMutants.toString());
 //		}
 		if (stronglySubsumingBDDChecker) {
+			if (sshoms.contains(homCandidate)) {
+				throw new RuntimeException("duplicate sshom");
+			}
+			sshoms.add(homCandidate);
 			updateHOMCandidates(homCandidate, homCandidates);
 			
 			foundHoms++;
 			HashSet<String> sshom = new HashSet<>();
 			sshom.addAll(selectedMutants);
-			if (sshoms.contains(homCandidate)) {
-				throw new RuntimeException("duplicate sshom");
-			}
 			distribution[selectedMutants.size()]++;
-			sshoms.add(homCandidate);
 			coveredFoms.addAll(selectedMutants);
 			float efficiency = ((float) foundHoms * 100)/ (float)homsChecked;
-			Benchmarker.instance.timestamp(foundHoms + "(" + homsChecked + "  " + coveredFoms.size()+ ") " + efficiency + "% " + String.join(",", selectedMutants));
-			Benchmarker.instance.timestamp("size: " + homCandidate.size() + " div: " + computeDiv(homCandidate) + " isN+1: " + (isNPlusOne(homCandidate) == 1));
+			Benchmarker.instance.timestamp(foundHoms + "(" + homsChecked + ") "+ efficiency + "% FOMs: " + coveredFoms.size()+ " "  + selectedMutants);
+			Benchmarker.instance.timestamp("size: " + homCandidate.size() + " div: " + computeDiv(homCandidate.getFoms()) + " isN+1: " + (isNPlusOne(homCandidate) == 1));
 			
 //			+ " is_strict_subsuming: "
 //					+ CheckStronglySubsuming.isStrictStronglySubsuming(listener.getHomTests(), currentFoms));
 		}
 	}
 
-	private void updateHOMCandidates(Set<FirstOrderMutant> homCandidate, Map<Integer, Set<Set<FirstOrderMutant>>> candidatesMap) {
-		Collection<Set<FirstOrderMutant>> children = graph.getAllDirektChildren(homCandidate);
+	private void updateHOMCandidates(HigherOrderMutant homCandidate, Map<Integer, Set<HigherOrderMutant>> candidatesMap) {
+		Collection<Set<FirstOrderMutant>> children = graph.getAllDirektChildren(homCandidate.getFoms());
 		for (Set<FirstOrderMutant> child : children) {
 			final int div = computeDiv(child);
 			final int size = child.size();
-			final int score = K_DIV * div + K_SIZE * size;
-			final int newScore = K_DIV * div + K_SIZE * size - K_N_PLUS_ONE * 1;
+			final int oldScore = Configuration.K_TEST_OVERLAP * div + Configuration.K_DEGREE * size;
+			final int newScore = Configuration.K_TEST_OVERLAP * div + Configuration.K_DEGREE * size - Configuration.K_N_PLUS_ONE;
 			
-			Set<Set<FirstOrderMutant>> bucket = candidatesMap.get(score);
-			if (bucket != null && bucket.contains(child)) {
-					bucket.remove(child);
+			Set<HigherOrderMutant> bucket = candidatesMap.get(oldScore);
+			HigherOrderMutant hom = new HigherOrderMutant(child);
+			if (bucket != null && bucket.contains(hom)) {
+					bucket.remove(hom);
 					if (bucket.isEmpty()) {
-						candidatesMap.remove(score);
+						candidatesMap.remove(oldScore);
 					}
 					candidatesMap.putIfAbsent(newScore, new HashSet<>());
-					candidatesMap.get(newScore).add(child);
-					isNPlusOne.add(child);
+					candidatesMap.get(newScore).add(hom);
+					isNPlusOne.add(hom);
 			} else {
-				if (!sshoms.contains(child)) {
+				if (!sshoms.contains(hom)) {
 					// TODO duplicate code
 					candidatesMap.putIfAbsent(newScore, new HashSet<>());
-					candidatesMap.get(newScore).add(child);
-					isNPlusOne.add(child);
+					candidatesMap.get(newScore).add(hom);
+					isNPlusOne.add(hom);
 				}				
 			}
 		}

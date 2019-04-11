@@ -13,8 +13,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -31,11 +31,7 @@ import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDException;
 import net.sf.javabdd.BDDFactory;
-import solver.bdd.BDDSolver;
-import solver.sat.SATSolver;
 import testRunner.RunTests;
-import varex.SATSSHOMExprFactory;
-import varex.SSHOMExprFactory;
 
 public class SSHOMChecker {
 	public static SingleFeatureExpr[] mutantExprs = null;

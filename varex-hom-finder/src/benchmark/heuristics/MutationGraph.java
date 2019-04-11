@@ -33,7 +33,7 @@ public final class MutationGraph {
 		}
 	}
 
-	public Collection<Set<FirstOrderMutant>> getHOMPaths() {
+	public Collection<HigherOrderMutant> getHOMPaths() {
 		return pathGenerator.getPaths();
 	}
 

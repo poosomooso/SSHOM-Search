@@ -99,7 +99,7 @@ public class InfLoopTestProcess {
       }
     }
 
-    for (String[] test : failedTests) {
+    for (String[] test : new ArrayList<>(failedTests)) {
       registerFailure(test[0], test[1]);
     }
   }

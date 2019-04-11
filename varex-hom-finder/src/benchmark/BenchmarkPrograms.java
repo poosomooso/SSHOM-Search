@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import benchmark.heuristics.FirstOrderMutant;
 import mutated.triangleAll.Triangle;
 import mutated.triangleAll.Triangle_ESTest_improved;
 
@@ -104,6 +105,17 @@ public class BenchmarkPrograms {
     }
     return true;
   }
+  
+	public static boolean homIsValidFOM(Collection<FirstOrderMutant> hom) {
+		int numMutantGroups = BenchmarkPrograms.getMakeshiftFeatureModel().size();
+		boolean[] check = new boolean[numMutantGroups];
+		for (FirstOrderMutant mutation : hom) {
+			if (!check(check, mutation.getMutant())) {
+				return false;
+			}
+		}
+		return true;
+	}
 
   public static boolean homIsValid(String... hom) {
     return homIsValid(Arrays.asList(hom));
