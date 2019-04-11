@@ -12,6 +12,16 @@ public final class Configuration {
 	 */
 	public static final int initialDegree = 2;
 	
+	/** 
+	 * Maximum number of methods in SSHOMS.
+	 */
+	public static final int MAX_METHODS = 2;
+	
+	/** 
+	 * Maximum number of classes in SSHOMS.
+	 */
+	public static final int MAX_CLASSES = 1;
+	
 	/*
 	 * Weights for prioritization.
 	 */

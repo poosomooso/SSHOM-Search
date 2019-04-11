@@ -153,7 +153,7 @@ public class HeuristicsPathGenerator implements IPathGenerator {
 		for (FirstOrderMutant mutant : currentSelection) {
 			methods.add(mutations.get(mutant.getMutant()).methodName);
 		}
-		return methods.size() <= 2;
+		return methods.size() <= Configuration.MAX_METHODS;
 	}
 
 	private boolean isSameClass(Collection<FirstOrderMutant> currentSelection) {
@@ -161,7 +161,7 @@ public class HeuristicsPathGenerator implements IPathGenerator {
 		for (FirstOrderMutant mutant : currentSelection) {
 			classes.add(mutations.get(mutant.getMutant()).className);
 		}
-		return classes.size() <= 1;
+		return classes.size() <= Configuration.MAX_CLASSES;
 	}
 
 }
