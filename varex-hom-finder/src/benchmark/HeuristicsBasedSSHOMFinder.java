@@ -15,8 +15,9 @@ import org.junit.runner.Description;
 import benchmark.heuristics.Configuration;
 import benchmark.heuristics.FirstOrderMutant;
 import benchmark.heuristics.HigherOrderMutant;
+import benchmark.heuristics.ISSHOMChecker;
 import benchmark.heuristics.MutationGraph;
-import benchmark.heuristics.SSHOMChecker;
+import benchmark.heuristics.SSHOMJUnitChecker;
 import util.SSHOMListener;
 import util.SSHOMRunner;
 
@@ -30,15 +31,15 @@ public class HeuristicsBasedSSHOMFinder {
 
 	private MutationGraph graph;
 	
+	ISSHOMChecker checker = null;
+	
 	public void run() throws NoSuchFieldException, IllegalAccessException {
 		Benchmarker.instance.start();
-
 		Class<?>[] targetClasses = BenchmarkPrograms.getTargetClasses();
 		this.testClasses = BenchmarkPrograms.getTestClasses();
-
 		foms = new HashMap<>();
-		
 		runner = new SSHOMRunner(targetClasses, testClasses);
+		checker = new SSHOMJUnitChecker(runner, targetClasses, foms);
 		String[] mutants = BenchmarkPrograms.getMutantNames();
 		
 		Benchmarker.instance.timestamp("start homs");
@@ -144,37 +145,14 @@ public class HeuristicsBasedSSHOMFinder {
 	Set<String> coveredFoms = new HashSet<>();
 	Collection<HigherOrderMutant> sshoms = new HashSet<>();
 	
-	SSHOMChecker checker = new SSHOMChecker();
-	
-	private void run(Map<Integer, Set<HigherOrderMutant>> homCandidates, HigherOrderMutant homCandidate)
-			throws NoSuchFieldException, IllegalAccessException {
-		// TODO use interface
+	private void run(Map<Integer, Set<HigherOrderMutant>> homCandidates, HigherOrderMutant homCandidate) {
 		homsChecked++;
 		Collection<String> selectedMutants = new ArrayList<>();
 		for (FirstOrderMutant mutant : homCandidate) {
 			selectedMutants.add(mutant.getMutant());
 		}
-//		SSHOMListener listener;
-//		if (BenchmarkPrograms.programHasInfLoops()) {
-//			listener = InfLoopTestProcess.getFailedTests(testClasses, selectedMutants.toArray(new String[0]));
-//		} else {
-//			listener = runner.runJunitOnHOM(selectedMutants.toArray(new String[0]));
-//		}
-//		List<Set<Description>> currentFoms = selectedMutants.stream().map(m -> foms.get(m))
-//				.collect(Collectors.toList());
-
-		// TODO extract to interface
-//		boolean stronglySubsumingBDDChecker = CheckStronglySubsuming.isStronglySubsuming(listener.getHomTests(), currentFoms);
-		boolean stronglySubsumingBDDChecker = checker.isSSHOM(homCandidate.getFoms());
-		
-//		if (stronglySubsuming != stronglySubsumingBDDChecker) {
-//			System.out.println(listener.getHomTests());
-//			throw new RuntimeException(selectedMutants.toString());
-//		}
-		if (stronglySubsumingBDDChecker) {
-			if (sshoms.contains(homCandidate)) {
-				throw new RuntimeException("duplicate sshom");
-			}
+		boolean isStronglySubsuming = checker.isSSHOM(homCandidate);
+		if (isStronglySubsuming) {
 			sshoms.add(homCandidate);
 			updateHOMCandidates(homCandidate, homCandidates);
 			

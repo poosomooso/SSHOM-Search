@@ -33,7 +33,7 @@ import net.sf.javabdd.BDDException;
 import net.sf.javabdd.BDDFactory;
 import testRunner.RunTests;
 
-public class SSHOMChecker {
+public class SSHOMBDDChecker  implements ISSHOMChecker {
 	public static SingleFeatureExpr[] mutantExprs = null;
 
 	private enum Machine {
@@ -54,7 +54,7 @@ public class SSHOMChecker {
 	private static final String  baseDir = machine.getBaseDir();
 
 	Map<String, FeatureExpr> stringTests = new HashMap<>();
-	public SSHOMChecker() {
+	public SSHOMBDDChecker() {
 		Class<?>[] testClasses = BenchmarkPrograms.getTestClasses();
 		String[] mutants = BenchmarkPrograms.getMutantNames();
 
@@ -86,7 +86,7 @@ public class SSHOMChecker {
 			
 	}
 	
-	public boolean isSSHOM(Collection<FirstOrderMutant> candidate) {
+	public boolean isSSHOM(HigherOrderMutant candidate) {
 		Collection<Description> allFailingTests = new HashSet<>();
 		Set<String> failingTestNames = new HashSet<>();
 		
