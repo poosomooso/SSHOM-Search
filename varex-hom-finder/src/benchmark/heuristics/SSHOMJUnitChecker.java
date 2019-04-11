@@ -22,8 +22,8 @@ import util.SSHOMRunner;
  */
 public class SSHOMJUnitChecker implements ISSHOMChecker {
 
-	private SSHOMRunner runner;
-	private Class<?>[] testClasses;
+	private final SSHOMRunner runner;
+	private final Class<?>[] testClasses;
 	private Map<String, Set<Description>> foms;
 	
 	public SSHOMJUnitChecker(SSHOMRunner runner, Class<?>[] testClasses,Map<String, Set<Description>> foms) {
@@ -40,10 +40,10 @@ public class SSHOMJUnitChecker implements ISSHOMChecker {
 		}
 		final SSHOMListener listener;
 		if (BenchmarkPrograms.programHasInfLoops()) {
-			listener = InfLoopTestProcess.getFailedTests(testClasses, selectedMutants.toArray(new String[0]));
+			listener = InfLoopTestProcess.getFailedTests(testClasses, selectedMutants.toArray(new String[selectedMutants.size()]));
 		} else {
 			try {
-				listener = runner.runJunitOnHOM(selectedMutants.toArray(new String[0]));
+				listener = runner.runJunitOnHOM(selectedMutants.toArray(new String[selectedMutants.size()]));
 			} catch (IllegalAccessException | NoSuchFieldException e) {
 				e.printStackTrace();
 				return false;

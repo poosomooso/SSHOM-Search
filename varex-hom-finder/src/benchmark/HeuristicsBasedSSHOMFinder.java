@@ -39,7 +39,7 @@ public class HeuristicsBasedSSHOMFinder {
 		this.testClasses = BenchmarkPrograms.getTestClasses();
 		foms = new HashMap<>();
 		runner = new SSHOMRunner(targetClasses, testClasses);
-		checker = new SSHOMJUnitChecker(runner, targetClasses, foms);
+		checker = new SSHOMJUnitChecker(runner, testClasses, foms);
 		String[] mutants = BenchmarkPrograms.getMutantNames();
 		
 		Benchmarker.instance.timestamp("start homs");
@@ -57,10 +57,6 @@ public class HeuristicsBasedSSHOMFinder {
 			}
 			
 			Collection<HigherOrderMutant> homPaths = homCandidates.get(minScore);
-			int[] candidateDistribution = new int[10];
-			for (HigherOrderMutant j : homPaths) {
-				candidateDistribution[j.size()]++;
-			}
 			
 			int foundHoms = sshoms.size();
 			for (Iterator<HigherOrderMutant> iterator = homPaths.iterator(); iterator.hasNext();) {
@@ -142,6 +138,7 @@ public class HeuristicsBasedSSHOMFinder {
 	int foundHoms = 0;
 	int homsChecked = 0;
 	
+	// TODO Set<FirstOrderMutant>
 	Set<String> coveredFoms = new HashSet<>();
 	Collection<HigherOrderMutant> sshoms = new HashSet<>();
 	

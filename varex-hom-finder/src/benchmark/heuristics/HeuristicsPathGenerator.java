@@ -23,7 +23,7 @@ import evaluation.io.MutationParser;
  * @author Jens Meinicke
  *
  */
-public class HeuristicsPathGenerator implements IPathGenerator {
+public final class HeuristicsPathGenerator implements IPathGenerator {
 
 	private final List<FirstOrderMutant> nodes;
 	private final Map<Description, Set<FirstOrderMutant>> testsMap;

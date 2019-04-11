@@ -28,6 +28,8 @@ public final class Configuration {
 	public static final int K_TEST_OVERLAP = 1;
 	public static final int K_DEGREE = 5;
 	public static final int K_N_PLUS_ONE = 100;
+	// TODO prioritize based on nr methods
+	// TODO prioritize based on nr classes
 
 	private Configuration() {
 	}
