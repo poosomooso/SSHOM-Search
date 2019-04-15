@@ -1,5 +1,6 @@
 package benchmark;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +11,8 @@ import java.util.stream.Collectors;
 
 import org.junit.runner.Description;
 
+import evaluation.analysis.Mutation;
+import evaluation.io.MutationParser;
 import util.CheckStronglySubsuming;
 import util.SSHOMListener;
 import util.SSHOMRunner;
@@ -19,15 +22,18 @@ public class BenchmarkedHeuristicsSSHOMFinder {
 	//heuristics parameters
 
 	private int maxSSHOMsOrder;
-	private boolean runOverlappedTests;
+	@Deprecated private boolean runOverlappedTests;
 	private boolean runNPlusOne;
 	private boolean runEqualSets;
+	private boolean runSameMethod;
+	private boolean runSameClass;
 
 	//class attributes
 
 	private SSHOMRunner runner;
 	private Map<String, Set<Description>> foms;
 	private Map<Integer, List<Set<String>>> sshomsByOrder; //aux for n + 1 heuristic
+	private Map<String, Mutation> fomCatalogue; //aux for same method/class heuristics
 	
 	private long globalCount = 0;
 	private Class<?>[] testClasses;
@@ -40,9 +46,11 @@ public class BenchmarkedHeuristicsSSHOMFinder {
 
 			BenchmarkedHeuristicsSSHOMFinder heuristics = new BenchmarkedHeuristicsSSHOMFinder();
 			heuristics.maxSSHOMsOrder = 4;
-			heuristics.runOverlappedTests = false;
-			heuristics.runNPlusOne = true;
-			heuristics.runEqualSets = true;
+//			heuristics.runOverlappedTests = false;
+			heuristics.runNPlusOne = false;
+			heuristics.runEqualSets = false;
+			heuristics.runSameMethod = false;
+			heuristics.runSameClass = false;
 			heuristics.heuristicsSSHOMFinder();
 		} catch (IllegalAccessException | NoSuchFieldException e) {
 			e.printStackTrace();
@@ -51,12 +59,17 @@ public class BenchmarkedHeuristicsSSHOMFinder {
 
 	public void heuristicsSSHOMFinder() throws IllegalAccessException, NoSuchFieldException {
 		
-		if (this.runNPlusOne && !this.runEqualSets && !this.runOverlappedTests) {
+/*		if (this.runNPlusOne && !this.runEqualSets && !this.runOverlappedTests) {
 		    System.err.println("N + 1 heuristic requires another heuristic to search for 2nd order HOMs.");
 		    System.exit(0);
 		}
 		if (this.runEqualSets && this.runOverlappedTests) {
 		    System.err.println("Equal Sets heuristic takes high priority over Overlapped Tests.");
+		    System.exit(0);
+		}
+*/
+		if (this.runSameMethod && this.runSameClass) {
+		    System.err.println("Same Method and Same Class heuristics can't be true at same time.");
 		    System.exit(0);
 		}
 
@@ -70,6 +83,11 @@ public class BenchmarkedHeuristicsSSHOMFinder {
 		this.sshomsByOrder = new HashMap<>(); //n + 1 heuristic
 		this.runner = new SSHOMRunner(targetClasses, testClasses);
 		this.populateFoms();
+
+		if (this.runSameMethod || this.runSameClass) {
+			String mappingDir = BenchmarkPrograms.PROGRAM.toString().charAt(0) + BenchmarkPrograms.PROGRAM.toString().substring(1).toLowerCase();
+			this.fomCatalogue = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + mappingDir, "mapping.txt"));
+		}
 
 		Benchmarker.instance.timestamp("start homs");
 		for (int currOrder = 2; currOrder < this.maxSSHOMsOrder; currOrder++) {
@@ -112,33 +130,37 @@ public class BenchmarkedHeuristicsSSHOMFinder {
 			throws IllegalAccessException, NoSuchFieldException {
 
 		if (order <= 0) {
-			SSHOMListener listener = runner.runJunitOnHOM(selectedMutants.toArray(new String[0]));
-			List<Set<Description>> currentFoms = selectedMutants.stream()
-					.map(m -> foms.get(m))
-					.collect(Collectors.toList());
-
-			System.out.println(this.globalCount++);
-
-			if (CheckStronglySubsuming.isStronglySubsuming(listener.getHomTests(), currentFoms)) {
-				
-				if (this.runNPlusOne) {
-					this.sshomsByOrder.get(selectedMutants.size()).add(new HashSet<>(selectedMutants));
+			if ((this.runEqualSets && this.checkEqualSets(selectedMutants) ||
+					this.checkOverlappedTests(selectedMutants)) && 
+					(this.runNPlusOne && this.checkNPlusOne(selectedMutants) || !this.runNPlusOne) &&
+					(this.runSameMethod && this.checkSameMethod(selectedMutants) || !this.runSameMethod) &&
+					(this.runSameClass && this.checkSameClass(selectedMutants) || !this.runSameClass)
+			) {
+				SSHOMListener listener = runner.runJunitOnHOM(selectedMutants.toArray(new String[0]));
+				List<Set<Description>> currentFoms = selectedMutants.stream()
+						.map(m -> foms.get(m))
+						.collect(Collectors.toList());
+	
+				System.out.println(this.globalCount++);
+	
+				if (CheckStronglySubsuming.isStronglySubsuming(listener.getHomTests(), currentFoms)) {
+					
+					if (this.runNPlusOne) {
+						this.sshomsByOrder.get(selectedMutants.size()).add(new HashSet<>(selectedMutants));
+					}
+					
+					Benchmarker.instance.timestamp(
+							String.join(",", selectedMutants) + " is_strict_subsuming: "
+									+ CheckStronglySubsuming.isStrictStronglySubsuming(listener.getHomTests(), currentFoms));
 				}
-				
-				Benchmarker.instance.timestamp(
-						String.join(",", selectedMutants) + " is_strict_subsuming: "
-								+ CheckStronglySubsuming.isStrictStronglySubsuming(listener.getHomTests(), currentFoms));
 			}
 		}
 		else if (mutantStart < allMutants.length) {
 			for (int i = mutantStart; i < allMutants.length; i++) {
 				List<String> newSelected = new ArrayList<>(selectedMutants);
 				newSelected.add(allMutants[i]);
-				if (BenchmarkPrograms.homIsValid(newSelected) &&
-						(this.runEqualSets && this.checkEqualSets(newSelected) ||
-						this.runOverlappedTests && this.checkOverlappedTests(newSelected)) && 
-						this.runNPlusOne && this.checkNPlusOne(newSelected)) {
-
+				
+				if (BenchmarkPrograms.homIsValid(newSelected)) {
 					searchWithHeuristics(order - 1, newSelected, i + 1);
 				}
 			}
@@ -187,4 +209,28 @@ public class BenchmarkedHeuristicsSSHOMFinder {
 		}
 		return true;
 	}
+
+	private boolean checkSameMethod(List<String> hom) {
+
+		String methodName = this.fomCatalogue.get(hom.get(0)).methodName;
+		
+		for (int i=1; i<hom.size(); i++) {
+			if (!methodName.equals(this.fomCatalogue.get(hom.get(i)).methodName)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean checkSameClass(List<String> hom) {
+
+		String className = this.fomCatalogue.get(hom.get(0)).className;
+
+		for (int i=1; i<hom.size(); i++) {
+			if (!className.equals(this.fomCatalogue.get(hom.get(i)).className)) {
+				return false;
+			}
+		}
+		return true;
+	}	
 }
