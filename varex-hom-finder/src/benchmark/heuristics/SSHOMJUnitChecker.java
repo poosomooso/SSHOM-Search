@@ -16,6 +16,7 @@ import util.SSHOMListener;
 import util.SSHOMRunner;
 
 /**
+ * TODO description
  * 
  * @author Jens Meinicke
  *
@@ -33,14 +34,14 @@ public class SSHOMJUnitChecker implements ISSHOMChecker {
 	}
 	
 	@Override
-	public boolean isSSHOM(HigherOrderMutant homCandidate) {
+	public boolean isSSHOM(Map<String, Set<String>> testMap, HigherOrderMutant homCandidate) {
 		Collection<String> selectedMutants = new ArrayList<>();
 		for (FirstOrderMutant mutant : homCandidate) {
 			selectedMutants.add(mutant.getMutant());
 		}
 		final SSHOMListener listener;
 		if (BenchmarkPrograms.programHasInfLoops()) {
-			listener = InfLoopTestProcess.getFailedTests(testClasses, selectedMutants.toArray(new String[selectedMutants.size()]));
+			listener = InfLoopTestProcess.getFailedTests(testClasses, testMap, selectedMutants.toArray(new String[selectedMutants.size()]));
 		} else {
 			try {
 				listener = runner.runJunitOnHOM(selectedMutants.toArray(new String[selectedMutants.size()]));

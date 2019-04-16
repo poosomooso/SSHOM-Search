@@ -22,7 +22,9 @@
 	<classpathentry kind="lib" path="code-ut/jars/commons-validator.jar"/>
 	<classpathentry kind="lib" path="code-ut/jars/monopoli100.jar"/>
 	<classpathentry kind="lib" path="code-ut/jars/mutated-cli.jar"/>
-	<classpathentry kind="lib" path="lib/sat4j-1.5.jar"/>
+	<classpathentry kind="lib" path="code-ut/jars/mutated-chess.jar"/>
+	<classpathentry kind="lib" path="lib/sqljdbc4.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/VarexJ"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

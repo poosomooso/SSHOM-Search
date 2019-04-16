@@ -14,6 +14,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import br.ufmg.labsoft.mutvariants.schematalib.SchemataLibMethods;
+
 public class RunTests {
 
 	public static boolean print = true;

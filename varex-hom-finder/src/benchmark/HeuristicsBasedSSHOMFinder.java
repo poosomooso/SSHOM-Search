@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -18,6 +19,9 @@ import benchmark.heuristics.HigherOrderMutant;
 import benchmark.heuristics.ISSHOMChecker;
 import benchmark.heuristics.MutationGraph;
 import benchmark.heuristics.SSHOMJUnitChecker;
+import benchmark.heuristics.TestRunListener;
+import br.ufmg.labsoft.mutvariants.schematalib.ISchemataLibMethodsListener;
+import br.ufmg.labsoft.mutvariants.schematalib.SchemataLibMethods;
 import util.SSHOMListener;
 import util.SSHOMRunner;
 
@@ -115,19 +119,46 @@ public class HeuristicsBasedSSHOMFinder {
 		return testsSize - testsSizeIntersection;
 	}
 
+	Map<String, Set<String>> testMap = new LinkedHashMap<>();
+	
 	private void populateFoms(String[] mutants) throws NoSuchFieldException, IllegalAccessException {
 		{
+			TestRunListener testRunListener = new TestRunListener(testMap);
+			
+			SchemataLibMethods.listener = new ISchemataLibMethodsListener() {
+				@Override
+				public void listen() {
+					StackTraceElement method = Thread.currentThread().getStackTrace()[3];
+					testRunListener.methodExecuted(method);
+				}
+			};
+			
+			InfLoopTestProcess.listener.testRunListener = testRunListener;
+			
 			SSHOMListener listener = InfLoopTestProcess.getFailedTests(testClasses, new String[] {});
 			Set<Description> failingTests = listener.getHomTests();
 			if (!failingTests.isEmpty()) {
 				failingTests.forEach(System.out::println);
 				throw new RuntimeException();
 			}
+			
+			
+			InfLoopTestProcess.listener.testRunListener = null;
+			SchemataLibMethods.listener = new ISchemataLibMethodsListener() {
+				@Override
+				public void listen() {
+					// nothing
+				}
+			};
+			
+			for (Entry<String, Set<String>> description : testMap.entrySet()) {
+				System.out.println(description.getValue().size() + " " + description.getKey());
+			}
 		}
 		for (String m : mutants) {
 			SSHOMListener listener;
 			if (BenchmarkPrograms.programHasInfLoops()) {
-				listener = InfLoopTestProcess.getFailedTests(testClasses, new String[] { m });
+				listener = InfLoopTestProcess.getFailedTests(testClasses, testMap, new String[] { m });
 			} else {
 				listener = runner.runJunitOnHOM(m);
 			}
@@ -148,7 +179,7 @@ public class HeuristicsBasedSSHOMFinder {
 		for (FirstOrderMutant mutant : homCandidate) {
 			selectedMutants.add(mutant.getMutant());
 		}
-		boolean isStronglySubsuming = checker.isSSHOM(homCandidate);
+		boolean isStronglySubsuming = checker.isSSHOM(testMap, homCandidate);
 		if (isStronglySubsuming) {
 			sshoms.add(homCandidate);
 			updateHOMCandidates(homCandidate, homCandidates);
@@ -160,7 +191,7 @@ public class HeuristicsBasedSSHOMFinder {
 			coveredFoms.addAll(selectedMutants);
 			float efficiency = ((float) foundHoms * 100)/ (float)homsChecked;
 			Benchmarker.instance.timestamp(foundHoms + "(" + homsChecked + ") "+ efficiency + "% FOMs: " + coveredFoms.size()+ " "  + selectedMutants);
-			Benchmarker.instance.timestamp("size: " + homCandidate.size() + " div: " + computeDiv(homCandidate.getFoms()) + " isN+1: " + (isNPlusOne(homCandidate) == 1));
+//			Benchmarker.instance.timestamp("size: " + homCandidate.size() + " div: " + computeDiv(homCandidate.getFoms()) + " isN+1: " + (isNPlusOne(homCandidate) == 1));
 			
 //			+ " is_strict_subsuming: "
 //					+ CheckStronglySubsuming.isStrictStronglySubsuming(listener.getHomTests(), currentFoms));

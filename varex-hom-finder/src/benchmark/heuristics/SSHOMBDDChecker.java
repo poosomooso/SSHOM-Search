@@ -86,7 +86,8 @@ public class SSHOMBDDChecker  implements ISSHOMChecker {
 			
 	}
 	
-	public boolean isSSHOM(HigherOrderMutant candidate) {
+	@Override
+	public boolean isSSHOM(Map<String, Set<String>> testMap, HigherOrderMutant candidate) {
 		Collection<Description> allFailingTests = new HashSet<>();
 		Set<String> failingTestNames = new HashSet<>();
 		

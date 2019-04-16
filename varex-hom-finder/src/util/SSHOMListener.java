@@ -11,12 +11,29 @@ import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+import benchmark.heuristics.TestRunListener;
+
 public class SSHOMListener extends RunListener {
   Set<Description> homTests;
   List<Set<Description>> fomTests = new LinkedList<>();
   Set<Description> currentTests;
   int numTests = 0;
-
+  
+  public TestRunListener testRunListener = null;
+  
+  	@Override
+	public void testStarted(Description description) throws Exception {
+		if (testRunListener != null) {
+			testRunListener.testStarted(description);
+		}
+	}
+  	
+  	public void testStarted(String tClass, String testName) {
+  		if (testRunListener != null) {
+			testRunListener.testStarted(tClass, testName);
+		}
+  	}
+  
   public void signalHOMBegin() {
     currentTests = new HashSet<>();
   }

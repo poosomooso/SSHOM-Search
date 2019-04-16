@@ -1,13 +1,17 @@
 package benchmark;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 
+import evaluation.analysis.Mutation;
+import evaluation.io.MutationParser;
 import testRunner.RunTests;
 import util.ConditionalMutationWrapper;
 import util.SSHOMListener;
@@ -118,6 +122,7 @@ public class InfLoopTestProcess {
 			cmw.setMutant(mutants[i]);
 		}
 		RunTests.print = false;
+		listener.testStarted(testClass, testName);
     Optional<Boolean> testPassed = RunTests.runTest(tClass, testName);
 		if (testPassed.isPresent() && !testPassed.get()) {
 		  return false;
@@ -139,12 +144,10 @@ public class InfLoopTestProcess {
   }
 
 
-  private static SSHOMListener      listener = new SSHOMListener();
+  static SSHOMListener listener = new SSHOMListener();
 
   private static InfLoopTestProcess process  = new InfLoopTestProcess(listener);
   private static final Deque<String[]> testCases = new ArrayDeque<>();
-
-
 
   public static SSHOMListener getFailedTests(Class<?>[] testClasses,
       String[] mutants) {
@@ -170,4 +173,47 @@ public class InfLoopTestProcess {
     listener.signalHOMEnd();
     return listener;
   }
+  
+  private static Map<String, Mutation> mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
+
+	public static SSHOMListener getFailedTests(Class<?>[] testClasses, Map<String, Set<String>> testMap, String[] mutants) {
+		//very jank check to use another class for chess
+	    //since chess leaks memory
+	    if (BenchmarkPrograms.PROGRAM == BenchmarkPrograms.PROGRAM.CHESS) {
+	      SSHOMListener l = ChessInfLoopTestProcess.runTests(testClasses, mutants);
+	      return l;
+	    }
+	
+	    listener.signalHOMBegin();
+	
+	    // testname, methodName
+	    Set<String> testsToRun = new HashSet<>();
+	    for (String mName : mutants) {
+			Mutation mutation = mutations.get(mName);
+			for (Entry<String, Set<String>> entry : testMap.entrySet()) {
+				if (entry.getValue().contains(mutation.className + "." + mutation.methodName)) {
+					testsToRun.add(entry.getKey());
+				}
+			}
+		}
+	    
+	    int ignoredTests = 0;
+	    for (Class<?> c : testClasses) {
+	      for (Method m : c.getMethods()) {
+	        if (m.getAnnotation(Test.class) != null) {
+	        	if (testsToRun.contains(c.getName() + "." + m.getName())) {
+	        		testCases.add(new String[]{c.getName(), m.getName()});
+	        	} else {
+	        		ignoredTests++;
+	        	}
+	        }
+	      }
+	    }
+	    System.out.println(ignoredTests + " ignored " + testCases.size() + " run");
+	    
+	    process.runTests(mutants, testCases);
+	
+	    listener.signalHOMEnd();
+	    return listener;
+	}
 }
