@@ -2,13 +2,29 @@ package benchmark;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.evosuite.shaded.javassist.Modifier;
 import org.junit.Test;
+import org.junit.experimental.ParallelComputer;
+import org.junit.runner.Computer;
 import org.junit.runner.Description;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Request;
+import org.junit.runner.manipulation.Filter;
 import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunListener;
 
 import evaluation.analysis.Mutation;
 import evaluation.io.MutationParser;
@@ -20,7 +36,7 @@ public class InfLoopTestProcess {
 
   private              long                startTime = Integer.MAX_VALUE;
   private final        List<SSHOMListener> listeners = new ArrayList<>();
-  private static final int                 TIMEOUT   = 2000;
+  private static final int                 TIMEOUT   = 2 * 60 * 1000;
   private static final int WAIT_FOR_KILL = 500;
 
 
@@ -115,13 +131,16 @@ public class InfLoopTestProcess {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+		if (Modifier.isAbstract(tClass.getModifiers()) || tClass.getAnnotation(Deprecated.class) != null) {
+			return true;
+		}
+		
 		String testName = testMethod;
 		ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(BenchmarkPrograms.getTargetClasses());
 		cmw.resetMutants();
 		for (int i = 0; i < mutants.length; i++) {
 			cmw.setMutant(mutants[i]);
 		}
-		RunTests.print = false;
 		listener.testStarted(testClass, testName);
     Optional<Boolean> testPassed = RunTests.runTest(tClass, testName);
 		if (testPassed.isPresent() && !testPassed.get()) {
@@ -149,70 +168,121 @@ public class InfLoopTestProcess {
   private static InfLoopTestProcess process  = new InfLoopTestProcess(listener);
   private static final Deque<String[]> testCases = new ArrayDeque<>();
 
-  public static SSHOMListener getFailedTests(Class<?>[] testClasses,
-      String[] mutants) {
-    //very jank check to use another class for chess
-    //since chess leaks memory
-    if (BenchmarkPrograms.PROGRAM == BenchmarkPrograms.PROGRAM.CHESS) {
-      SSHOMListener l = ChessInfLoopTestProcess.runTests(testClasses, mutants);
-      return l;
-    }
+	public static SSHOMListener getFailedTests(Class<?>[] testClasses, String[] mutants) {
+		listener.signalHOMBegin();
+		if (Flags.JUNIT_CORE) {
+			JUnitCore junitCore = new JUnitCore();
+			junitCore.addListener(listener);
+			junitCore.addListener(new RunListener() {
+				int i = 0;
+				long time = 0;
 
-    listener.signalHOMBegin();
+				@Override
+				public void testFinished(Description description) throws Exception {
+					System.out.println(System.currentTimeMillis() - time + "ms");
+				}
 
-    for (Class<?> c : testClasses) {
-      for (Method m : c.getMethods()) {
-        if (m.getAnnotation(Test.class) != null) {
-        	testCases.add(new String[]{c.getName(), m.getName()});
-        }
-      }
-    }
+				@Override
+				public void testStarted(Description description) throws Exception {
+					time = System.currentTimeMillis();
+					System.out.print(i++ + " " + description.getDisplayName());
+					System.out.flush();
+				}
+			});
+			Request request = Request.classes(Computer.serial(), testClasses);
+			junitCore.run(request);
+		} else {
+			// very jank check to use another class for chess
+			// since chess leaks memory
+			if (BenchmarkPrograms.PROGRAM == BenchmarkPrograms.PROGRAM.CHESS) {
+				SSHOMListener l = ChessInfLoopTestProcess.runTests(testClasses, mutants);
+				return l;
+			}
+			for (Class<?> c : testClasses) {
+				for (Method m : c.getMethods()) {
+					if (m.getAnnotation(Test.class) != null) {
+						testCases.add(new String[] { c.getName(), m.getName() });
+					}
+				}
+			}
+			process.runTests(mutants, testCases);
+		}
 
-    process.runTests(mutants, testCases);
-
-    listener.signalHOMEnd();
-    return listener;
-  }
+		listener.signalHOMEnd();
+		return listener;
+	}
   
-  private static Map<String, Mutation> mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
+  private static final Map<String, Mutation> mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
 
-	public static SSHOMListener getFailedTests(Class<?>[] testClasses, Map<String, Set<String>> testMap, String[] mutants) {
-		//very jank check to use another class for chess
-	    //since chess leaks memory
-	    if (BenchmarkPrograms.PROGRAM == BenchmarkPrograms.PROGRAM.CHESS) {
-	      SSHOMListener l = ChessInfLoopTestProcess.runTests(testClasses, mutants);
-	      return l;
-	    }
-	
-	    listener.signalHOMBegin();
-	
-	    // testname, methodName
-	    Set<String> testsToRun = new HashSet<>();
-	    for (String mName : mutants) {
+	public static SSHOMListener getFailedTests(Class<?>[] testClasses, Map<String, Set<String>> testMap,
+			String[] mutants) {
+		listener.signalHOMBegin();
+		final Set<String> testsClassesToRun = new HashSet<>();
+		final Set<String> testsToRun = new HashSet<>();
+		for (String mName : mutants) {
 			Mutation mutation = mutations.get(mName);
 			for (Entry<String, Set<String>> entry : testMap.entrySet()) {
 				if (entry.getValue().contains(mutation.className + "." + mutation.methodName)) {
 					testsToRun.add(entry.getKey());
+					testsClassesToRun.add(entry.getKey().substring(0, entry.getKey().lastIndexOf(".")));
 				}
 			}
 		}
-	    
-	    int ignoredTests = 0;
-	    for (Class<?> c : testClasses) {
-	      for (Method m : c.getMethods()) {
-	        if (m.getAnnotation(Test.class) != null) {
-	        	if (testsToRun.contains(c.getName() + "." + m.getName())) {
-	        		testCases.add(new String[]{c.getName(), m.getName()});
-	        	} else {
-	        		ignoredTests++;
-	        	}
-	        }
-	      }
-	    }
-	    System.out.println(ignoredTests + " ignored " + testCases.size() + " run");
-	    
-	    process.runTests(mutants, testCases);
-	
+		
+		if (Flags.JUNIT_CORE) {
+			if (!testsToRun.isEmpty()) {
+		    	System.out.println(Arrays.toString(mutants));
+		    	ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(BenchmarkPrograms.getTargetClasses());
+				cmw.resetMutants();
+				for (int i = 0; i < mutants.length; i++) {
+					cmw.setMutant(mutants[i]);
+				}
+			    JUnitCore junitCore = new JUnitCore();
+			    
+			    junitCore.addListener(listener);
+			    Request request = Request.classes(new ParallelComputer(true, true), testClasses)
+			    	.filterWith(new Filter() {
+		
+					@Override
+					public boolean shouldRun(Description description) {
+						if (description.getMethodName() == null) {
+							return testsClassesToRun.contains(description.getClassName());
+						}
+						return testsToRun.contains(description.getClassName() + "." + description.getMethodName());
+					}
+		
+					@Override
+					public String describe() {
+						return "HOM filter";
+					}
+				});
+			    junitCore.run(request);
+		    }
+		} else {
+			// very jank check to use another class for chess
+			// since chess leaks memory
+			if (BenchmarkPrograms.PROGRAM == BenchmarkPrograms.PROGRAM.CHESS) {
+				SSHOMListener l = ChessInfLoopTestProcess.runTests(testClasses, mutants);
+				return l;
+			}
+		    // testname, methodName
+		    int ignoredTests = 0;
+		    for (Class<?> c : testClasses) {
+		      for (Method m : c.getMethods()) {
+		        if (m.getAnnotation(Test.class) != null) {
+		        	if (testsToRun.contains(c.getName() + "." + m.getName())) {
+		        		testCases.add(new String[]{c.getName(), m.getName()});
+		        	} else {
+		        		ignoredTests++;
+		        	}
+		        }
+		      }
+		    }
+		    if (!testCases.isEmpty()) {
+			    System.out.println(ignoredTests + " ignored " + testCases.size() + " run");
+			    process.runTests(mutants, testCases);
+		    }
+		}
 	    listener.signalHOMEnd();
 	    return listener;
 	}

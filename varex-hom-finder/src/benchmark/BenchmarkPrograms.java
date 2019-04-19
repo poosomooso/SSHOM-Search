@@ -18,7 +18,7 @@ import mutated.triangleAll.Triangle_ESTest_improved;
 
 public class BenchmarkPrograms {
   public enum Program {
-    TRIANGLE, MONOPOLY, VALIDATOR, CLI, CHESS
+    TRIANGLE, MONOPOLY, VALIDATOR, CLI, CHESS, MATH
   }
   public static Program PROGRAM = Program.CHESS;
   private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
@@ -54,7 +54,6 @@ public class BenchmarkPrograms {
   public static boolean programHasInfLoops() {
     switch (PROGRAM) {
     case TRIANGLE: return false;
-    case MONOPOLY:
     default: return true;
     }
   }
@@ -263,8 +262,11 @@ public class BenchmarkPrograms {
       return "classes/cli-src.txt";
     case CHESS:
       return "classes/chess-src.txt";
+	case MATH:
+		return "classes/math-src.txt";
+	default:
+		throw new RuntimeException("case missing for: " + PROGRAM);
     }
-    return "";
   }
 
   private static String getTestResource() {
@@ -279,8 +281,11 @@ public class BenchmarkPrograms {
       return "classes/cli-test.txt";
     case CHESS:
       return "classes/chess-test.txt";
+    case MATH:
+		return "classes/math-test.txt";
+	default:
+		throw new RuntimeException("case missing for: " + PROGRAM);
     }
-    return "";
   }
 
   public static String getFeatureModelResource() {
@@ -295,8 +300,11 @@ public class BenchmarkPrograms {
       return "mutantgroups/cli.txt";
     case CHESS:
       return "mutantgroups/chess.txt";
+    case MATH:
+		return "mutantgroups/math.txt";
+	default:
+		throw new RuntimeException("case missing for: " + PROGRAM);
     }
-    return "";
   }
 
   private static List<Class<?>> getAllJavaFilesInDir(String dirStr,

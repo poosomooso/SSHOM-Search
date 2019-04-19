@@ -1,5 +1,6 @@
 package benchmark;
 
+import java.lang.StackWalker.StackFrame;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,7 +21,6 @@ import benchmark.heuristics.ISSHOMChecker;
 import benchmark.heuristics.MutationGraph;
 import benchmark.heuristics.SSHOMJUnitChecker;
 import benchmark.heuristics.TestRunListener;
-import br.ufmg.labsoft.mutvariants.schematalib.ISchemataLibMethodsListener;
 import br.ufmg.labsoft.mutvariants.schematalib.SchemataLibMethods;
 import util.SSHOMListener;
 import util.SSHOMRunner;
@@ -29,6 +29,7 @@ public class HeuristicsBasedSSHOMFinder {
 	
 	private SSHOMRunner runner;
 	private Map<String, Set<Description>> foms;
+	private Map<String, Set<String>> testMap = new LinkedHashMap<>();
 	private Class<?>[] testClasses;
 	
 	private int[] distribution = new int[10];
@@ -38,6 +39,7 @@ public class HeuristicsBasedSSHOMFinder {
 	ISSHOMChecker checker = null;
 	
 	public void run() throws NoSuchFieldException, IllegalAccessException {
+		System.setProperty("line.separator", "\n");
 		Benchmarker.instance.start();
 		Class<?>[] targetClasses = BenchmarkPrograms.getTargetClasses();
 		this.testClasses = BenchmarkPrograms.getTestClasses();
@@ -47,6 +49,7 @@ public class HeuristicsBasedSSHOMFinder {
 		String[] mutants = BenchmarkPrograms.getMutantNames();
 		
 		Benchmarker.instance.timestamp("start homs");
+		createTestMap();
 		populateFoms(mutants);
 		
 		Benchmarker.instance.timestamp("create hom candidates");
@@ -95,17 +98,6 @@ public class HeuristicsBasedSSHOMFinder {
 	// TODO remove this
 	private Set<HigherOrderMutant> isNPlusOne = new HashSet<>();
 	
-	// TODO remove this
-	private int isNPlusOne(HigherOrderMutant c1) {
-		if (c1.size() == 2) {
-			return 1;
-		}
-		if (isNPlusOne.contains(c1)) {
-			return 1;
-		}
-		return 0;
-	}
-
 	private int computeDiv(Collection<FirstOrderMutant> c1) {
 		Set<Description> tests = new HashSet<>();
 		for (FirstOrderMutant node : c1) {
@@ -119,42 +111,7 @@ public class HeuristicsBasedSSHOMFinder {
 		return testsSize - testsSizeIntersection;
 	}
 
-	Map<String, Set<String>> testMap = new LinkedHashMap<>();
-	
 	private void populateFoms(String[] mutants) throws NoSuchFieldException, IllegalAccessException {
-		{
-			TestRunListener testRunListener = new TestRunListener(testMap);
-			
-			SchemataLibMethods.listener = new ISchemataLibMethodsListener() {
-				@Override
-				public void listen() {
-					StackTraceElement method = Thread.currentThread().getStackTrace()[3];
-					testRunListener.methodExecuted(method);
-				}
-			};
-			
-			InfLoopTestProcess.listener.testRunListener = testRunListener;
-			
-			SSHOMListener listener = InfLoopTestProcess.getFailedTests(testClasses, new String[] {});
-			Set<Description> failingTests = listener.getHomTests();
-			if (!failingTests.isEmpty()) {
-				failingTests.forEach(System.out::println);
-				throw new RuntimeException();
-			}
-			
-			
-			InfLoopTestProcess.listener.testRunListener = null;
-			SchemataLibMethods.listener = new ISchemataLibMethodsListener() {
-				@Override
-				public void listen() {
-					// nothing
-				}
-			};
-			
-			for (Entry<String, Set<String>> description : testMap.entrySet()) {
-				System.out.println(description.getValue().size() + " " + description.getKey());
-			}
-		}
 		for (String m : mutants) {
 			SSHOMListener listener;
 			if (BenchmarkPrograms.programHasInfLoops()) {
@@ -164,6 +121,26 @@ public class HeuristicsBasedSSHOMFinder {
 			}
 			foms.put(m, listener.getHomTests());
 		}
+	}
+
+	private void createTestMap() {
+		TestRunListener testRunListener = new TestRunListener(testMap);
+		SchemataLibMethods.listener = () -> {
+			StackFrame stack = StackWalker.getInstance().walk(s -> s.skip(2).findFirst()).get();
+			testRunListener.methodExecuted(stack.getClassName(), stack.getMethodName());
+		};
+
+		InfLoopTestProcess.listener.testRunListener = testRunListener;
+
+		SSHOMListener listener = InfLoopTestProcess.getFailedTests(testClasses, new String[] {});
+		Set<Description> failingTests = listener.getHomTests();
+		if (!failingTests.isEmpty()) {
+			failingTests.forEach(System.out::println);
+			// throw new RuntimeException();
+		}
+
+		InfLoopTestProcess.listener.testRunListener = null;
+		SchemataLibMethods.listener = () -> {};
 	}
 
 	int foundHoms = 0;

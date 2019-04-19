@@ -17,9 +17,6 @@ public final class TestRunListener {
 		this.testMap.put(null, currentEntry);
 	}
 	
-	public void methodExecuted(StackTraceElement method) {
-		currentEntry.add(method.getClassName() + "." + method.getMethodName());
-	}
 
 	public void testStarted(Description description) {
 		testStarted(description.getClassName(), description.getMethodName());
@@ -28,6 +25,18 @@ public final class TestRunListener {
 	public void testStarted(String testClass, String testName) {
 		currentEntry = new HashSet<>();
 		this.testMap.put(testClass + "." + testName, currentEntry);
+	}
+
+	public void methodExecuted(String className, String methodName) {
+		currentEntry.add(className + "." + methodName);
+	}
+	
+	public void methodExecuted(StackTraceElement method) {
+		currentEntry.add(method.getClassName() + "." + method.getMethodName());
+	}
+	
+	public void methodExecuted(String className) {
+		currentEntry.add(className);
 	}
 
 }
