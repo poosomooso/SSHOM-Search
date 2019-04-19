@@ -6,6 +6,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.evosuite.shaded.javassist.Modifier;
 import org.junit.Test;
-import org.junit.experimental.ParallelComputer;
 import org.junit.runner.Computer;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
@@ -34,7 +34,8 @@ import util.SSHOMListener;
 
 public class InfLoopTestProcess {
 
-  private              long                startTime = Integer.MAX_VALUE;
+  private static final int TIME_OUT_MULTIPLIER = 10;
+private              long                startTime = Integer.MAX_VALUE;
   private final        List<SSHOMListener> listeners = new ArrayList<>();
   private static final int                 TIMEOUT   = 2 * 60 * 1000;
   private static final int WAIT_FOR_KILL = 500;
@@ -168,6 +169,8 @@ public class InfLoopTestProcess {
   private static InfLoopTestProcess process  = new InfLoopTestProcess(listener);
   private static final Deque<String[]> testCases = new ArrayDeque<>();
 
+  private static Map<Description, Long> testTimes = new HashMap<>();
+  
 	public static SSHOMListener getFailedTests(Class<?>[] testClasses, String[] mutants) {
 		listener.signalHOMBegin();
 		if (Flags.JUNIT_CORE) {
@@ -179,18 +182,22 @@ public class InfLoopTestProcess {
 
 				@Override
 				public void testFinished(Description description) throws Exception {
-					System.out.println(System.currentTimeMillis() - time + "ms");
+					long runtime = System.currentTimeMillis() - time;
+					System.out.println(" " + runtime + "ms");
+					testTimes.put(description, runtime + 1);
 				}
 
 				@Override
 				public void testStarted(Description description) throws Exception {
 					time = System.currentTimeMillis();
-					System.out.print(i++ + " " + description.getDisplayName());
-					System.out.flush();
+					System.out.print(i++ + " " + description.getClassName() + " " + description.getMethodName());
+				}
+				
+				public void testFailure(Failure failure) throws Exception {
+					failure.getException().printStackTrace(System.out);
 				}
 			});
-			Request request = Request.classes(Computer.serial(), testClasses);
-			junitCore.run(request);
+			junitCore.run(Request.classes(Computer.serial(), testClasses));
 		} else {
 			// very jank check to use another class for chess
 			// since chess leaks memory
@@ -212,6 +219,7 @@ public class InfLoopTestProcess {
 		return listener;
 	}
   
+	public static boolean timedOut = false;
   private static final Map<String, Mutation> mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
 
 	public static SSHOMListener getFailedTests(Class<?>[] testClasses, Map<String, Set<String>> testMap,
@@ -231,16 +239,50 @@ public class InfLoopTestProcess {
 		
 		if (Flags.JUNIT_CORE) {
 			if (!testsToRun.isEmpty()) {
-		    	System.out.println(Arrays.toString(mutants));
+		    	System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
+		    	System.out.flush();
 		    	ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(BenchmarkPrograms.getTargetClasses());
 				cmw.resetMutants();
 				for (int i = 0; i < mutants.length; i++) {
 					cmw.setMutant(mutants[i]);
 				}
 			    JUnitCore junitCore = new JUnitCore();
-			    
 			    junitCore.addListener(listener);
-			    Request request = Request.classes(new ParallelComputer(true, true), testClasses)
+			    junitCore.addListener(new RunListener() {
+			    	private Thread timer;
+
+					@Override
+			    	public void testStarted(Description description) throws Exception {
+			    		timedOut = false;
+			    		timer = new Thread() {
+			    			public void run() {
+			    				try {
+									Thread.sleep(testTimes.get(description) * TIME_OUT_MULTIPLIER);
+									timedOut = true;
+								} catch (InterruptedException e) {
+									Thread.currentThread().interrupt();
+								}
+			    			}
+			    		};
+			    		timer.start();
+			    	}
+					
+					@Override
+					public void testFailure(Failure failure) throws Exception {
+						timer.interrupt();
+						timedOut = false;
+					}
+					
+					@Override
+					public void testFinished(Description description) throws Exception {
+						timer.interrupt();
+						timedOut = false;
+					}
+			    	
+			    	
+			    });
+			    
+			    Request request = Request.classes(Computer.serial(), testClasses)
 			    	.filterWith(new Filter() {
 		
 					@Override
@@ -255,9 +297,13 @@ public class InfLoopTestProcess {
 					public String describe() {
 						return "HOM filter";
 					}
+					
 				});
+			    long start = System.currentTimeMillis();
 			    junitCore.run(request);
-		    }
+			    long end = System.currentTimeMillis();
+			    System.out.println(end - start + "ms");
+			}
 		} else {
 			// very jank check to use another class for chess
 			// since chess leaks memory

@@ -1,6 +1,5 @@
 package benchmark;
 
-import java.lang.StackWalker.StackFrame;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -125,9 +124,8 @@ public class HeuristicsBasedSSHOMFinder {
 
 	private void createTestMap() {
 		TestRunListener testRunListener = new TestRunListener(testMap);
-		SchemataLibMethods.listener = () -> {
-			StackFrame stack = StackWalker.getInstance().walk(s -> s.skip(2).findFirst()).get();
-			testRunListener.methodExecuted(stack.getClassName(), stack.getMethodName());
+		SchemataLibMethods.listener = (String methodName) -> {
+			testRunListener.methodExecuted(methodName);
 		};
 
 		InfLoopTestProcess.listener.testRunListener = testRunListener;
@@ -136,11 +134,15 @@ public class HeuristicsBasedSSHOMFinder {
 		Set<Description> failingTests = listener.getHomTests();
 		if (!failingTests.isEmpty()) {
 			failingTests.forEach(System.out::println);
-			// throw new RuntimeException();
+			 throw new RuntimeException("test suite failed without mutants");
 		}
 
 		InfLoopTestProcess.listener.testRunListener = null;
-		SchemataLibMethods.listener = () -> {};
+		SchemataLibMethods.listener = (String methodName) -> {
+			if (InfLoopTestProcess.timedOut) {
+				throw new RuntimeException();
+			}
+		};
 	}
 
 	int foundHoms = 0;
@@ -194,7 +196,7 @@ public class HeuristicsBasedSSHOMFinder {
 					candidatesMap.get(newScore).add(hom);
 					isNPlusOne.add(hom);
 			} else {
-				if (!sshoms.contains(hom)) {
+				if (!sshoms.contains(hom)) {// TODO should be all HOMStested
 					// TODO duplicate code
 					candidatesMap.putIfAbsent(newScore, new HashSet<>());
 					candidatesMap.get(newScore).add(hom);
