@@ -30,10 +30,12 @@ public final class HeuristicsPathGenerator implements IPathGenerator {
 	
 	private Map<FirstOrderMutant, Set<FirstOrderMutant>> connections = new HashMap<>();
 	private final Map<String, Mutation> mutations;
+	private Map<String, Set<String>> testCoverage;
 
-	public HeuristicsPathGenerator(List<FirstOrderMutant> nodes, Map<Description, Set<FirstOrderMutant>> testsMap) {
+	public HeuristicsPathGenerator(List<FirstOrderMutant> nodes, Map<Description, Set<FirstOrderMutant>> testsMap, Map<String, Set<String>> testCoverage) {
 		this.nodes = nodes;
 		this.testsMap = testsMap;
+		this.testCoverage = testCoverage;
 		// TODO change lookup
 		mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
 	}
@@ -145,8 +147,55 @@ public final class HeuristicsPathGenerator implements IPathGenerator {
 		if (!isSameMethod(currentSelection)) {
 			return false;
 		}
+		if (hasInvalidCovereage(currentSelection)) {
+			return false;
+		}
 		return true;
 	}
+
+	/**
+	 * Checks whether the candidate can be strongly subsuming by checking if the mutants can interact (i.e., are covered by the test case) such that the test case does not fail anymore.
+	 * That is, a test case must at least e covering two mutants. 
+	 */
+	private boolean hasInvalidCovereage(Collection<FirstOrderMutant> currentSelection) {
+		Map<String, Integer> methods = new HashMap<>();
+		for (FirstOrderMutant mutant : currentSelection) {
+			Mutation mutation = mutations.get(mutant.getMutant());
+			String methodName = mutation.className + "." + mutation.methodName;
+			methods.compute(methodName, (k, v) -> v == null ? 1 : v + 1);
+		}
+		if (methods.size() < 2) {
+			return false;
+		}
+		
+		Map<Description, Integer> testCounter = new HashMap<>();
+		for (FirstOrderMutant node : currentSelection) {
+			Set<Description> tests = node.getTests();
+			for (Description t : tests) {
+				testCounter.compute(t, (k, v) -> v == null ? 1 : v + 1);
+			}
+		}
+		
+		for (Entry<Description, Integer> testEntry : testCounter.entrySet()) {
+			if (testEntry.getValue() < 2) {
+				Description description = testEntry.getKey();					
+				String testName = description.getClassName() + "." + description.getMethodName();
+				Set<String> coverage = testCoverage.get(testName);
+				int count = 0;
+				for (Entry<String, Integer> entry : methods.entrySet()) {
+					if (coverage.contains(entry.getKey())) {
+						count += entry.getValue();
+					}
+				}
+				if (count == 1) {
+					return true;
+				}
+				assert count > 1;
+			}
+		}
+		return false;
+	}
+
 
 	private boolean isSameMethod(Collection<FirstOrderMutant> currentSelection) {
 		Set<String> methods = new HashSet<>();

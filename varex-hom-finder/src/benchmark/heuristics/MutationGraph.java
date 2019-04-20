@@ -17,9 +17,9 @@ public final class MutationGraph {
 	
 	private final Map<Description, Set<FirstOrderMutant>> testsMap = new HashMap<>();
 	
-	private IPathGenerator pathGenerator = PathGeneratorFactory.create(nodes, testsMap);
+	private IPathGenerator pathGenerator;
 
-	public MutationGraph(Map<String, Set<Description>> fomTestResults) {
+	public MutationGraph(Map<String, Set<Description>> fomTestResults, Map<String, Set<String>> testCoverage) {
 		for (Entry<String, Set<Description>> entry : fomTestResults.entrySet()) {
 			Set<Description> tests = entry.getValue();
 			FirstOrderMutant node = new FirstOrderMutant(entry.getKey(), tests);
@@ -31,6 +31,8 @@ public final class MutationGraph {
 				testsMap.get(test).add(node);
 			}
 		}
+		
+		 pathGenerator = PathGeneratorFactory.create(nodes, testsMap, testCoverage);
 	}
 
 	public Collection<HigherOrderMutant> getHOMPaths() {

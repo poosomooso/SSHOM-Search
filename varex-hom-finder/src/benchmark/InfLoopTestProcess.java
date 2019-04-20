@@ -184,7 +184,7 @@ private              long                startTime = Integer.MAX_VALUE;
 				public void testFinished(Description description) throws Exception {
 					long runtime = System.currentTimeMillis() - time;
 					System.out.println(" " + runtime + "ms");
-					testTimes.put(description, runtime + 1);
+					testTimes.put(description, runtime + 1000);
 				}
 
 				@Override

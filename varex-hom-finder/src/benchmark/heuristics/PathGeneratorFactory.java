@@ -14,12 +14,12 @@ public class PathGeneratorFactory {
 	
 	public static PATH_GENERATOR selectedGenrator = PATH_GENERATOR.SMART;
 	
-	public static IPathGenerator create(List<FirstOrderMutant> nodes, Map<Description, Set<FirstOrderMutant>> testsMap) {
+	public static IPathGenerator create(List<FirstOrderMutant> nodes, Map<Description, Set<FirstOrderMutant>> testsMap, Map<String, Set<String>> testCoverage) {
 		switch (selectedGenrator) {
 		case DEFAULT:
 			return new DefaultPathGenerator(nodes, testsMap);
 		case SMART:
-			return new HeuristicsPathGenerator(nodes, testsMap);
+			return new HeuristicsPathGenerator(nodes, testsMap, testCoverage);
 		default:
 			throw new RuntimeException("case missing: " + selectedGenrator);
 		}

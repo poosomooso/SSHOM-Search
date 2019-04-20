@@ -1,5 +1,6 @@
 package benchmark;
 
+import java.lang.StackWalker.StackFrame;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,7 +29,7 @@ public class HeuristicsBasedSSHOMFinder {
 	
 	private SSHOMRunner runner;
 	private Map<String, Set<Description>> foms;
-	private Map<String, Set<String>> testMap = new LinkedHashMap<>();
+	private Map<String, Set<String>> testMap = new HashMap<>();
 	private Class<?>[] testClasses;
 	
 	private int[] distribution = new int[10];
@@ -52,7 +53,7 @@ public class HeuristicsBasedSSHOMFinder {
 		populateFoms(mutants);
 		
 		Benchmarker.instance.timestamp("create hom candidates");
-		graph = new MutationGraph(foms);
+		graph = new MutationGraph(foms, testMap);
 		Map<Integer, Set<HigherOrderMutant>> homCandidates = createHOMMap(graph.getHOMPaths());
 		while (!homCandidates.isEmpty()) {
 			int minScore = Integer.MAX_VALUE;
@@ -124,9 +125,14 @@ public class HeuristicsBasedSSHOMFinder {
 
 	private void createTestMap() {
 		TestRunListener testRunListener = new TestRunListener(testMap);
-		SchemataLibMethods.listener = (String methodName) -> {
-			testRunListener.methodExecuted(methodName);
-		};
+//		SchemataLibMethods.listener = (String methodName) -> {
+//			testRunListener.methodExecuted(methodName);
+//		};
+		
+		SchemataLibMethods.listener = () -> {
+            StackFrame stack = StackWalker.getInstance().walk(s -> s.skip(2).findFirst()).get();
+            testRunListener.methodExecuted(stack.getClassName(), stack.getMethodName());
+        };
 
 		InfLoopTestProcess.listener.testRunListener = testRunListener;
 
@@ -138,7 +144,7 @@ public class HeuristicsBasedSSHOMFinder {
 		}
 
 		InfLoopTestProcess.listener.testRunListener = null;
-		SchemataLibMethods.listener = (String methodName) -> {
+		SchemataLibMethods.listener = () -> {
 			if (InfLoopTestProcess.timedOut) {
 				throw new RuntimeException();
 			}
