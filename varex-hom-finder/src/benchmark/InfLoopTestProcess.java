@@ -2,6 +2,7 @@ package benchmark;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +17,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.evosuite.shaded.javassist.Modifier;
 import org.junit.Test;
 import org.junit.runner.Computer;
 import org.junit.runner.Description;

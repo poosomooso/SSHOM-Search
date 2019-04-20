@@ -1,13 +1,11 @@
 package benchmark;
 
-import java.lang.StackWalker.StackFrame;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -125,14 +123,12 @@ public class HeuristicsBasedSSHOMFinder {
 
 	private void createTestMap() {
 		TestRunListener testRunListener = new TestRunListener(testMap);
-//		SchemataLibMethods.listener = (String methodName) -> {
-//			testRunListener.methodExecuted(methodName);
-//		};
+		SchemataLibMethods.listener = testRunListener::methodExecuted;
 		
-		SchemataLibMethods.listener = () -> {
-            StackFrame stack = StackWalker.getInstance().walk(s -> s.skip(2).findFirst()).get();
-            testRunListener.methodExecuted(stack.getClassName(), stack.getMethodName());
-        };
+//		SchemataLibMethods.listener = () -> {
+//            StackFrame stack = StackWalker.getInstance().walk(s -> s.skip(2).findFirst()).get();
+//            testRunListener.methodExecuted(stack.getClassName(), stack.getMethodName());
+//        };
 
 		InfLoopTestProcess.listener.testRunListener = testRunListener;
 
@@ -144,9 +140,9 @@ public class HeuristicsBasedSSHOMFinder {
 		}
 
 		InfLoopTestProcess.listener.testRunListener = null;
-		SchemataLibMethods.listener = () -> {
+		SchemataLibMethods.listener = (String method) -> {
 			if (InfLoopTestProcess.timedOut) {
-				throw new RuntimeException();
+				throw new RuntimeException("TIMEOUT");
 			}
 		};
 	}
