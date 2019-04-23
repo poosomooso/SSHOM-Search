@@ -8,7 +8,6 @@ public class RunBenchmarks {
       throws NoSuchFieldException, IOException, IllegalAccessException {
     if (args.length < 2) {
       errAndExit();
-      errAndExit();
     }
 
     String whichProgram = args[0];
