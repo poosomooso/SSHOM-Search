@@ -123,7 +123,7 @@ public class HeuristicsBasedSSHOMFinder {
 
 	private void createTestMap() {
 		TestRunListener testRunListener = new TestRunListener(testMap);
-		SchemataLibMethods.listener = testRunListener::methodExecuted;
+//		SchemataLibMethods.listener = testRunListener::methodExecuted;
 		
 //		SchemataLibMethods.listener = () -> {
 //            StackFrame stack = StackWalker.getInstance().walk(s -> s.skip(2).findFirst()).get();
@@ -140,9 +140,9 @@ public class HeuristicsBasedSSHOMFinder {
 		}
 
 		InfLoopTestProcess.listener.testRunListener = null;
-		SchemataLibMethods.listener = (String method) -> {
+		SchemataLibMethods.listener = () -> {
 			if (InfLoopTestProcess.timedOut) {
-				throw new RuntimeException("TIMEOUT");
+				throw new Error("TIMEOUT");
 			}
 		};
 	}

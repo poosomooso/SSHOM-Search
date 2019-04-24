@@ -14,6 +14,7 @@ import java.util.Set;
 import org.junit.runner.Description;
 
 import benchmark.BenchmarkPrograms;
+import benchmark.Flags;
 import evaluation.analysis.Mutation;
 import evaluation.io.MutationParser;
 
@@ -158,6 +159,9 @@ public final class HeuristicsPathGenerator implements IPathGenerator {
 	 * That is, a test case must at least e covering two mutants. 
 	 */
 	private boolean hasInvalidCovereage(Collection<FirstOrderMutant> currentSelection) {
+		if (!Flags.COVERAGE) {
+			return false;
+		}
 		Map<String, Integer> methods = new HashMap<>();
 		for (FirstOrderMutant mutant : currentSelection) {
 			Mutation mutation = mutations.get(mutant.getMutant());

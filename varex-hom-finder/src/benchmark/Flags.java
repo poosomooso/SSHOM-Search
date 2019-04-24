@@ -8,7 +8,8 @@ package benchmark;
  */
 public class Flags {
 
-	public static boolean JUNIT_CORE = true;
+	public static final boolean COVERAGE = false;
+	public static final boolean JUNIT_CORE = false;
 	
 	private Flags() {}
 	

@@ -37,7 +37,7 @@ public class InfLoopTestProcess {
   private static final int TIME_OUT_MULTIPLIER = 10;
 private              long                startTime = Integer.MAX_VALUE;
   private final        List<SSHOMListener> listeners = new ArrayList<>();
-  private static final int                 TIMEOUT   = 2 * 60 * 1000;
+  private static final int                 TIMEOUT   = 30 * 1000;
   private static final int WAIT_FOR_KILL = 500;
 
 
@@ -62,7 +62,7 @@ private              long                startTime = Integer.MAX_VALUE;
             try {
               boolean passed = process.runSingleTest(next[0], next[1], mutants);
               if (testUnderExecution.size() > 0 && !passed) {
-                // System.out.println("f");
+//                 System.out.println("f");
                 failedTests.add(next);
               }
               if (testUnderExecution.size() > 0 && testUnderExecution.peek() == testCases.peek()) {
@@ -82,7 +82,6 @@ private              long                startTime = Integer.MAX_VALUE;
       };
       t.start();
       Thread kill = new Thread("kill " + t.getName()) {
-        @SuppressWarnings("deprecation")
         @Override
         public void run() {
           try {
@@ -90,11 +89,12 @@ private              long                startTime = Integer.MAX_VALUE;
               String[] last = testCases.peek();
               while (System.currentTimeMillis() - startTime < TIMEOUT) {
                 sleep(TIMEOUT);
+                InfLoopTestProcess.timedOut = true;
               }
               if (t.isAlive()) {
                 String[] current = testCases.peek();
                 if (last != null && current != null && current[0].equals(last[0]) && current[1].equals(last[1])) {
-                  t.stop();
+                  t.interrupt();
                   failedTests.add(testCases.peek()); // avoiding the case where it pops twice; should be ok if it registers as a failure twice
                   System.out.println("t");
                   String[] killed = testCases.pop();
@@ -108,7 +108,11 @@ private              long                startTime = Integer.MAX_VALUE;
             }
           } catch (InterruptedException e) {
             // nothing here
-          } catch (NoSuchElementException e) {}
+          } catch (NoSuchElementException e) {
+              // nothing here
+          } finally {
+        	  InfLoopTestProcess.timedOut = false;
+		}
         }
       };
       kill.start();
@@ -219,26 +223,28 @@ private              long                startTime = Integer.MAX_VALUE;
 		return listener;
 	}
   
-	public static boolean timedOut = false;
-  private static final Map<String, Mutation> mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
+	public static volatile boolean timedOut = false;
+	private static final Map<String, Mutation> mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
 
 	public static SSHOMListener getFailedTests(Class<?>[] testClasses, Map<String, Set<String>> testMap,
 			String[] mutants) {
 		listener.signalHOMBegin();
 		final Set<String> testsClassesToRun = new HashSet<>();
 		final Set<String> testsToRun = new HashSet<>();
-		for (String mName : mutants) {
-			Mutation mutation = mutations.get(mName);
-			for (Entry<String, Set<String>> entry : testMap.entrySet()) {
-				if (entry.getValue().contains(mutation.className + "." + mutation.methodName)) {
-					testsToRun.add(entry.getKey());
-					testsClassesToRun.add(entry.getKey().substring(0, entry.getKey().lastIndexOf(".")));
+		if (Flags.COVERAGE) {
+			for (String mName : mutants) {
+				Mutation mutation = mutations.get(mName);
+				for (Entry<String, Set<String>> entry : testMap.entrySet()) {
+					if (entry.getValue().contains(mutation.className + "." + mutation.methodName)) {
+						testsToRun.add(entry.getKey());
+						testsClassesToRun.add(entry.getKey().substring(0, entry.getKey().lastIndexOf(".")));
+					}
 				}
 			}
 		}
 		
 		if (Flags.JUNIT_CORE) {
-			if (!testsToRun.isEmpty()) {
+			if (!Flags.COVERAGE || !testsToRun.isEmpty()) {
 		    	System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
 		    	System.out.flush();
 		    	ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(BenchmarkPrograms.getTargetClasses());
@@ -254,10 +260,12 @@ private              long                startTime = Integer.MAX_VALUE;
 					@Override
 			    	public void testStarted(Description description) throws Exception {
 			    		timedOut = false;
-			    		timer = new Thread() {
+			    		timer = new Thread("Timeout " + description.getDisplayName()) {
 			    			public void run() {
 			    				try {
-									Thread.sleep(testTimes.get(description) * TIME_OUT_MULTIPLIER);
+									final long t = testTimes.get(description) * TIME_OUT_MULTIPLIER;
+									Thread.sleep(t);
+									System.out.println("test timed out: " + description.getDisplayName() + " " + t + "ms");
 									timedOut = true;
 								} catch (InterruptedException e) {
 									Thread.currentThread().interrupt();
@@ -287,6 +295,9 @@ private              long                startTime = Integer.MAX_VALUE;
 		
 					@Override
 					public boolean shouldRun(Description description) {
+						if (!Flags.COVERAGE) {
+							return true;
+						}
 						if (description.getMethodName() == null) {
 							return testsClassesToRun.contains(description.getClassName());
 						}
