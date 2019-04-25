@@ -1,16 +1,26 @@
 package benchmark;
 
-import org.junit.Test;
-import org.junit.runner.Description;
-import org.junit.runner.notification.Failure;
-import util.SSHOMListener;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.junit.Test;
+import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
+
+import br.ufmg.labsoft.mutvariants.schematalib.SchemataLibMethods;
+import util.SSHOMListener;
 
 public class ChessInfLoopTestProcess {
 
@@ -20,16 +30,15 @@ public class ChessInfLoopTestProcess {
 
   public ChessInfLoopTestProcess(SSHOMListener... listeners) {
     this.listeners.addAll(Arrays.asList(listeners));
-
   }
 
-  public void process(Class[] tests, String... mutants) {
+  public void process(Class<?>[] tests, String... mutants) {
     String mutantStr =
         String.join(",", mutants);
     String testClassStr = String.join(",",
-        Arrays.asList(tests).stream().map(c -> c.getName())
+        Arrays.asList(tests).stream().map(Class::getName)
             .collect(Collectors.toList()));
-    String[] commands = { "java", "-cp",
+    String[] commands = { "java", "-noverify", "-cp",
         System.getProperty("java.class.path"), this.getClass().getName(),
         mutantStr, testClassStr };
 
@@ -47,6 +56,11 @@ public class ChessInfLoopTestProcess {
         e.printStackTrace();
       }
     }
+    try {
+		t.join();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
   }
 
   private void removeFinishedThreads() throws InterruptedException {
@@ -134,8 +148,14 @@ public class ChessInfLoopTestProcess {
 
   public static void main(String[] args) throws ClassNotFoundException {
     BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.CHESS;
-    String[] mutants = args[0].split(",");
-    String[] classStr = args[1].split(",");
+    SchemataLibMethods.listener = () -> {
+		if (InfLoopTestProcess.timedOut) {
+			throw new Error("TIMEOUT");
+		}
+	};
+
+    String[] mutants = args[0].length() == 0 ? new String[0] : args[0].split(",");
+   	String[] classStr = args[1].split(",");
 
     Deque<String[]> testCases = new ArrayDeque<>();
 

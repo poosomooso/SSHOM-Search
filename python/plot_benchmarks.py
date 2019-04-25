@@ -8,18 +8,20 @@ import benchmark_util as bk
 import naive
 import varex
 import ga
+import mttkinter
+import smart
 
 ###############
 ## please set
 ## parameters
 ###############
 
-program = bk.VALIDATOR
-output_fname = '/home/serena/reuse/paper_figs/ase/validator.pdf'
+program = bk.TRIANGLE
+output_fname = '../triangle.pdf'
 output_format = 'pdf'
 linewidth = 5.0
 # ymax = 1000
-ymax = bk.VALIDATOR_ALL + 100
+ymax = bk.TRIANGLE_ALL + 100
 
 sns.set_style("white")
 sns.set_context("poster")
@@ -63,17 +65,19 @@ elif program == bk.CHESS:
 naive_times, naive_avg  = naive.get_naive_avg(path, START_TIME, END_TIME)
 ga_times, ga_avg        = ga.get_ga_avg(path, START_TIME, END_TIME)
 varex_times, varex_avg  = varex.get_varex_avg(path, START_TIME, END_TIME)
+smart_times, smart_avg  = smart.get_smart_avg(path, START_TIME, END_TIME)
 
 # naive_times, naive_avg  = naive.triangle_get_naive_avg(path, START_TIME, END_TIME)
 # ga_times, ga_avg        = ga.triangle_get_ga_avg(path, START_TIME, END_TIME)
 # varex_times, varex_avg  = varex.triangle_get_varex_avg(path, START_TIME, END_TIME)
 
 
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(20, 10))
 plt.title(title, fontsize=36)
 
 
 plt.plot(naive_times, naive_avg, ':', label="Brute Force", linewidth=linewidth)
+plt.plot(smart_times, smart_avg, ':', label="SMART", linewidth=linewidth)
 
 plt.plot(ga_times, ga_avg, '--', label="Genetic Algorithm")#, markevery=list(range(len(ga_nums)-1)))
 print(ga_avg[-1])
@@ -92,8 +96,8 @@ plt.ylim(ymin=0, ymax=ymax)
 
 sns.despine()
 plt.hlines(all_muts, START_TIME, END_TIME,linestyles='dotted', label="all SSHOMs")
-plt.legend(loc="upper left", fontsize='large',numpoints=1)
+plt.legend(loc="upper left", fontsize='small',numpoints=1)
 plt.xlabel("Time (s)")
 plt.ylabel("SSHOMs Found")
-plt.savefig(output_fname, format=output_format, dpi=400)
-# plt.show()
+plt.savefig(output_fname, format=output_format, dpi=800)
+plt.show()
