@@ -34,8 +34,11 @@ import util.SSHOMListener;
 
 public class InfLoopTestProcess {
 
-  private static final int TIME_OUT_MULTIPLIER = 10;
-private              long                startTime = Integer.MAX_VALUE;
+  private static final long TEST_INIT_TIMEOUT = 100;
+  private static final int TIME_OUT_MULTIPLIER = 2;
+  private static final long MIN_TIMEOUT = 100;
+  
+  private              long                startTime = Integer.MAX_VALUE;
   private final        List<SSHOMListener> listeners = new ArrayList<>();
   private static final int                 TIMEOUT   = 30 * 1000;
   private static final int WAIT_FOR_KILL = 500;
@@ -173,34 +176,14 @@ private              long                startTime = Integer.MAX_VALUE;
   private static InfLoopTestProcess process  = new InfLoopTestProcess(listener);
   private static final Deque<String[]> testCases = new ArrayDeque<>();
 
-  private static Map<Description, Long> testTimes = new HashMap<>();
+  private static final Map<Description, Long> testTimes = new HashMap<>();
   
 	public static SSHOMListener getFailedTests(Class<?>[] testClasses, String[] mutants) {
 		listener.signalHOMBegin();
 		if (Flags.JUNIT_CORE) {
 			JUnitCore junitCore = new JUnitCore();
 			junitCore.addListener(listener);
-			junitCore.addListener(new RunListener() {
-				int i = 0;
-				long time = 0;
-
-				@Override
-				public void testFinished(Description description) throws Exception {
-					long runtime = System.currentTimeMillis() - time;
-					System.out.println(" " + runtime + "ms");
-					testTimes.put(description, runtime + 1000);
-				}
-
-				@Override
-				public void testStarted(Description description) throws Exception {
-					time = System.currentTimeMillis();
-					System.out.print(i++ + " " + description.getClassName() + " " + description.getMethodName());
-				}
-				
-				public void testFailure(Failure failure) throws Exception {
-					failure.getException().printStackTrace(System.out);
-				}
-			});
+			junitCore.addListener(timeRecorder(testTimes));
 			junitCore.run(Request.classes(Computer.serial(), testClasses));
 		} else {
 			// very jank check to use another class for chess
@@ -222,10 +205,31 @@ private              long                startTime = Integer.MAX_VALUE;
 		listener.signalHOMEnd();
 		return listener;
 	}
+
+	private static RunListener timeRecorder(Map<Description, Long> times) {
+		return new RunListener() {
+			int testCount = 0;
+			long startTime = 0;
+
+			@Override
+			public void testFinished(Description description) throws Exception {
+				long runtime = System.currentTimeMillis() - startTime;
+				System.out.println(" " + runtime + "ms");
+				times.put(description, runtime);
+			}
+
+			@Override
+			public void testStarted(Description description) throws Exception {
+				startTime = System.currentTimeMillis();
+				System.out.print(testCount++ + " " + description.getClassName() + " " + description.getMethodName());
+			}
+			
+		};
+	}
   
 	public static volatile boolean timedOut = false;
 	private static final Map<String, Mutation> mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
-
+	
 	public static SSHOMListener getFailedTests(Class<?>[] testClasses, Map<String, Set<String>> testMap,
 			String[] mutants) {
 		listener.signalHOMBegin();
@@ -235,7 +239,7 @@ private              long                startTime = Integer.MAX_VALUE;
 			for (String mName : mutants) {
 				Mutation mutation = mutations.get(mName);
 				for (Entry<String, Set<String>> entry : testMap.entrySet()) {
-					if (entry.getValue().contains(mutation.className + "." + mutation.methodName)) {
+					if (entry.getKey() != null && entry.getValue().contains(mutation.className + "." + mutation.methodName)) {
 						testsToRun.add(entry.getKey());
 						testsClassesToRun.add(entry.getKey().substring(0, entry.getKey().lastIndexOf(".")));
 					}
@@ -244,77 +248,7 @@ private              long                startTime = Integer.MAX_VALUE;
 		}
 		
 		if (Flags.JUNIT_CORE) {
-			if (!Flags.COVERAGE || !testsToRun.isEmpty()) {
-		    	System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
-		    	System.out.flush();
-		    	ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(BenchmarkPrograms.getTargetClasses());
-				cmw.resetMutants();
-				for (int i = 0; i < mutants.length; i++) {
-					cmw.setMutant(mutants[i]);
-				}
-			    JUnitCore junitCore = new JUnitCore();
-			    junitCore.addListener(listener);
-			    junitCore.addListener(new RunListener() {
-			    	private Thread timer;
-
-					@Override
-			    	public void testStarted(Description description) throws Exception {
-			    		timedOut = false;
-			    		timer = new Thread("Timeout " + description.getDisplayName()) {
-			    			public void run() {
-			    				try {
-									final long t = testTimes.get(description) * TIME_OUT_MULTIPLIER;
-									Thread.sleep(t);
-									System.out.println("test timed out: " + description.getDisplayName() + " " + t + "ms");
-									timedOut = true;
-								} catch (InterruptedException e) {
-									Thread.currentThread().interrupt();
-								}
-			    			}
-			    		};
-			    		timer.start();
-			    	}
-					
-					@Override
-					public void testFailure(Failure failure) throws Exception {
-						timer.interrupt();
-						timedOut = false;
-					}
-					
-					@Override
-					public void testFinished(Description description) throws Exception {
-						timer.interrupt();
-						timedOut = false;
-					}
-			    	
-			    	
-			    });
-			    
-			    Request request = Request.classes(Computer.serial(), testClasses)
-			    	.filterWith(new Filter() {
-		
-					@Override
-					public boolean shouldRun(Description description) {
-						if (!Flags.COVERAGE) {
-							return true;
-						}
-						if (description.getMethodName() == null) {
-							return testsClassesToRun.contains(description.getClassName());
-						}
-						return testsToRun.contains(description.getClassName() + "." + description.getMethodName());
-					}
-		
-					@Override
-					public String describe() {
-						return "HOM filter";
-					}
-					
-				});
-			    long start = System.currentTimeMillis();
-			    junitCore.run(request);
-			    long end = System.currentTimeMillis();
-			    System.out.println(end - start + "ms");
-			}
+			runJWithUnit(testClasses, mutants, testsClassesToRun, testsToRun);
 		} else {
 			// very jank check to use another class for chess
 			// since chess leaks memory
@@ -342,5 +276,120 @@ private              long                startTime = Integer.MAX_VALUE;
 		}
 	    listener.signalHOMEnd();
 	    return listener;
+	}
+	
+	private static Thread mainThread;
+	private static Thread timeoutThread;
+	
+	private static void runJWithUnit(Class<?>[] testClasses, String[] mutants, final Set<String> testsClassesToRun,
+			final Set<String> testsToRun) {
+		if (!Flags.COVERAGE || !testsToRun.isEmpty()) {
+			System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
+			System.out.flush();
+			ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(BenchmarkPrograms.getTargetClasses());
+			cmw.resetMutants();
+			for (int i = 0; i < mutants.length; i++) {
+				cmw.setMutant(mutants[i]);
+			}
+			mainThread = Thread.currentThread();
+		    JUnitCore junitCore = new JUnitCore();
+		    junitCore.addListener(listener);
+			junitCore.addListener(new TimeOutListener(testTimes));
+		    
+		    Request request = Request.classes(Computer.serial(), testClasses).filterWith(new Filter() {
+
+				@Override
+				public boolean shouldRun(Description description) {
+					if (!Flags.COVERAGE) {
+						return true;
+					}
+					if (description.getMethodName() == null) {
+						return testsClassesToRun.contains(description.getClassName());
+					}
+					return testsToRun.contains(description.getClassName() + "." + description.getMethodName());
+				}
+
+				@Override
+				public String describe() {
+					return "HOM filter";
+				}
+				
+			});
+		    
+		    long start = System.currentTimeMillis();
+		    junitCore.run(request);
+		    timeoutThread.interrupt();
+		    try {
+				timeoutThread.join();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		    timeoutThread = null;
+		    long end = System.currentTimeMillis();
+		    System.out.println(end - start + "ms");
+		}
+	}
+	
+	 private static class TimeOutListener extends RunListener {
+	    	private final Map<Description, Long> testTimes;
+
+			public TimeOutListener(Map<Description, Long> testTimes) {
+				this.testTimes = testTimes;
+			}
+
+			@Override
+	    	public void testRunStarted(Description description) throws Exception {
+	    		if (timeoutThread == null) {
+	    			timedOut = false;
+		    		timeoutThread = new TimeOutThread(TEST_INIT_TIMEOUT);
+					timeoutThread.start();
+	    		}
+	    	}
+	    	
+			@Override
+			public void testStarted(Description description) throws Exception {
+				timeoutThread.interrupt();
+				timedOut = false;
+				timeoutThread = new TimeOutThread(computeTimeout(description));
+				timeoutThread.start();
+			}
+			
+			@Override
+			public void testFailure(Failure failure) throws Exception {
+				timeoutThread.interrupt();
+				timedOut = false;
+			}
+			
+			@Override
+			public void testFinished(Description description) throws Exception {
+				timeoutThread.interrupt();
+				timedOut = false;
+				timeoutThread = new TimeOutThread(TEST_INIT_TIMEOUT);
+	    		timeoutThread.start();
+			}
+	    	
+			private long computeTimeout(Description description) {
+				return testTimes.get(description) * TIME_OUT_MULTIPLIER + MIN_TIMEOUT;
+			}
+	    }
+	
+	private static class TimeOutThread extends Thread {
+
+		private final long timeout;
+
+		public TimeOutThread(long timeout) {
+			this.timeout = timeout;
+		}
+
+		@Override
+		public void run() {
+			try {
+				Thread.sleep(timeout);
+				timedOut = true;
+				mainThread.interrupt();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
 	}
 }
