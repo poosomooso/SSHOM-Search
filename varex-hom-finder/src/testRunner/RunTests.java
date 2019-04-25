@@ -94,12 +94,15 @@ public class RunTests {
 					} catch (IllegalAccessException e) {
 						e.printStackTrace();
 					} catch (Throwable e) {
-						InvocationTargetException invokedException = (InvocationTargetException) e;
-						Class<? extends Throwable> actual = invokedException.getTargetException().getClass();
-						if (expected.isAssignableFrom(actual)) {
-							break;
+						if (e instanceof InvocationTargetException) {
+							InvocationTargetException invokedException = (InvocationTargetException) e;
+							Class<? extends Throwable> actual = invokedException.getTargetException().getClass();
+							if (expected.isAssignableFrom(actual)) {
+								System.out.println("EXPECTED 2");
+								break;
+							}
+							if (print) System.out.println(getTestDesc(method));
 						}
-						if (print) System.out.println(getTestDesc(method));
 						passed = false;
 					}
 					break;
