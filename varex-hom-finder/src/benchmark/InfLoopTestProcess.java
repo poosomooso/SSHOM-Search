@@ -69,12 +69,10 @@ public class InfLoopTestProcess {
 			try {
 				t.start();
 				t.join(TIMEOUT);
-				System.out.println("FINISH: " + Arrays.toString(test));
 				if (t.isAlive()) {
 					failedTests.add(test);
 					InfLoopTestProcess.timedOut = true;
 					t.join(WAIT_FOR_KILL);
-					System.out.println("TIMEOUT");
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
