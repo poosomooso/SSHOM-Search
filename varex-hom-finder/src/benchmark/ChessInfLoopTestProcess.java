@@ -1,17 +1,16 @@
 package benchmark;
 
+import org.junit.Test;
+import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
+import util.SSHOMListener;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import org.junit.Test;
-import org.junit.runner.Description;
-import org.junit.runner.notification.Failure;
-
-import util.SSHOMListener;
 
 public class ChessInfLoopTestProcess {
 
@@ -72,7 +71,7 @@ public class ChessInfLoopTestProcess {
     for (SSHOMListener listener : this.listeners) {
       try {
         listener.testFailure(new Failure(
-            Description.createTestDescription(testClass, testMethod), null));
+            Description.createTestDescription(Class.forName(testClass), testMethod), null));
         System.out.println(testClass+" "+testMethod);
       } catch (Exception e) {
         e.printStackTrace();

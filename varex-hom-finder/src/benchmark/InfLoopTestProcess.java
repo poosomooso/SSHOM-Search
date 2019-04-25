@@ -1,16 +1,15 @@
 package benchmark;
 
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
-
 import testRunner.RunTests;
 import util.ConditionalMutationWrapper;
 import util.SSHOMListener;
+
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class InfLoopTestProcess {
 
@@ -129,7 +128,7 @@ public class InfLoopTestProcess {
     for (SSHOMListener listener : this.listeners) {
       try {
         Failure failure = new Failure(
-            Description.createTestDescription(testClass, testMethod), null);
+            Description.createTestDescription(Class.forName(testClass), testMethod), null);
         listener.testFailure(failure);
       } catch (Exception e) {
         e.printStackTrace();
