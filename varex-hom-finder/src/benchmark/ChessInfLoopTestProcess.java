@@ -147,7 +147,6 @@ public class ChessInfLoopTestProcess {
   }
 
   public static void main(String[] args) throws ClassNotFoundException {
-	  System.out.println(Arrays.toString(args));
     BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.CHESS;
     SchemataLibMethods.listener = () -> {
 		if (InfLoopTestProcess.timedOut) {
@@ -155,15 +154,8 @@ public class ChessInfLoopTestProcess {
 		}
 	};
     
-    String[] classStr;
-    String[] mutants;
-    if (args.length == 1) {
-    	mutants = new String[0];
-    	classStr = args[0].split(",");
-    } else {
-    	mutants = args[0].split(",");
-    	classStr = args[1].split(",");    	
-    }
+    String[] mutants = args[0].length() == 0 ? new String[0] : args[0].split(",");
+   	String[] classStr = args[1].split(",");    	
 
     Deque<String[]> testCases = new ArrayDeque<>();
 
