@@ -98,7 +98,6 @@ public class RunTests {
 							InvocationTargetException invokedException = (InvocationTargetException) e;
 							Class<? extends Throwable> actual = invokedException.getTargetException().getClass();
 							if (expected.isAssignableFrom(actual)) {
-								System.out.println("EXPECTED 2");
 								break;
 							}
 							if (print) System.out.println(getTestDesc(method));
