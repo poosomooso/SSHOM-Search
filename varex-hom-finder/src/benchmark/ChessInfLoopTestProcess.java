@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 
+import br.ufmg.labsoft.mutvariants.schematalib.ISchemataLibMethodsListener;
 import br.ufmg.labsoft.mutvariants.schematalib.SchemataLibMethods;
 import util.SSHOMListener;
 
@@ -148,12 +149,23 @@ public class ChessInfLoopTestProcess {
 
   public static void main(String[] args) throws ClassNotFoundException {
     BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.CHESS;
-    SchemataLibMethods.listener = () -> {
-		if (InfLoopTestProcess.timedOut) {
-			throw new Error("TIMEOUT");
+    SchemataLibMethods.listener = new ISchemataLibMethodsListener() {
+
+		@Override
+		public void listen() {
+			if (InfLoopTestProcess.timedOut) {
+				throw new Error("TIMEOUT");
+			}
 		}
-	};
-    
+
+		@Override
+		public void listen(String methodName) {
+			if (InfLoopTestProcess.timedOut) {
+				throw new Error("TIMEOUT");
+			}
+		}
+		
+	};    
     String[] mutants = args[0].length() == 0 ? new String[0] : args[0].split(",");
    	String[] classStr = args[1].split(",");    	
 

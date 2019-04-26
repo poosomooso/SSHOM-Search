@@ -19,6 +19,7 @@ import benchmark.heuristics.ISSHOMChecker;
 import benchmark.heuristics.MutationGraph;
 import benchmark.heuristics.SSHOMJUnitChecker;
 import benchmark.heuristics.TestRunListener;
+import br.ufmg.labsoft.mutvariants.schematalib.ISchemataLibMethodsListener;
 import br.ufmg.labsoft.mutvariants.schematalib.SchemataLibMethods;
 import util.SSHOMListener;
 import util.SSHOMRunner;
@@ -123,16 +124,24 @@ public class HeuristicsBasedSSHOMFinder {
 
 	private void createTestMap() {
 		TestRunListener testRunListener = new TestRunListener(testMap);
-//		SchemataLibMethods.listener = testRunListener::methodExecuted;
+		SchemataLibMethods.listener = new ISchemataLibMethodsListener() {
+			
+			@Override
+			public void listen(String methodName) {
+				testRunListener.methodExecuted(methodName);
+			}
+			
+			@Override
+			public void listen() {
+				if (Flags.COVERAGE) {
+					throw new RuntimeException("Coverage not supported");
+				}
+			}
+		};
 		
-//		SchemataLibMethods.listener = () -> {
-//            StackFrame stack = StackWalker.getInstance().walk(s -> s.skip(2).findFirst()).get();
-//            testRunListener.methodExecuted(stack.getClassName(), stack.getMethodName());
-//        };
-
 		InfLoopTestProcess.listener.testRunListener = testRunListener;
 
-		SSHOMListener listener = InfLoopTestProcess.getFailedTests(testClasses, new String[] {});
+		SSHOMListener listener = InfLoopTestProcess.getFailedTests(testClasses);
 		Set<Description> failingTests = listener.getHomTests();
 		if (!failingTests.isEmpty()) {
 			failingTests.forEach(System.out::println);
@@ -140,9 +149,20 @@ public class HeuristicsBasedSSHOMFinder {
 		}
 
 		InfLoopTestProcess.listener.testRunListener = null;
-		SchemataLibMethods.listener = () -> {
-			if (InfLoopTestProcess.timedOut) {
-				throw new Error("TIMEOUT");
+		SchemataLibMethods.listener = new ISchemataLibMethodsListener() {
+
+			@Override
+			public void listen() {
+				if (InfLoopTestProcess.timedOut) {
+					throw new Error("TIMEOUT");
+				}
+			}
+
+			@Override
+			public void listen(String methodName) {
+				if (InfLoopTestProcess.timedOut) {
+					throw new Error("TIMEOUT");
+				}
 			}
 		};
 	}

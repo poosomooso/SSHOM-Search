@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -134,7 +135,7 @@ public class InfLoopTestProcess {
 
   private static final Map<Description, Long> testTimes = new HashMap<>();
   
-	public static SSHOMListener getFailedTests(Class<?>[] testClasses, String[] mutants) {
+	public static SSHOMListener getFailedTests(Class<?>[] testClasses) {
 		listener.signalHOMBegin();
 		if (Flags.JUNIT_CORE) {
 			JUnitCore junitCore = new JUnitCore();
@@ -145,7 +146,7 @@ public class InfLoopTestProcess {
 			// very jank check to use another class for chess
 			// since chess leaks memory
 			if (BenchmarkPrograms.PROGRAM == BenchmarkPrograms.PROGRAM.CHESS) {
-				SSHOMListener l = ChessInfLoopTestProcess.runTests(testClasses, mutants);
+				SSHOMListener l = ChessInfLoopTestProcess.runTests(testClasses, new String[0]);
 				return l;
 			}
 			for (Class<?> c : testClasses) {
@@ -155,13 +156,12 @@ public class InfLoopTestProcess {
 					}
 				}
 			}
-			process.runTests(mutants, testCases);
+			process.runTests(new String[0], testCases);
 		}
-
 		listener.signalHOMEnd();
 		return listener;
 	}
-
+  
 	private static RunListener timeRecorder(Map<Description, Long> times) {
 		return new RunListener() {
 			int testCount = 0;
@@ -185,6 +185,10 @@ public class InfLoopTestProcess {
   
 	public static volatile boolean timedOut = false;
 	private static final Map<String, Mutation> mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
+	
+	public static SSHOMListener getFailedTests(Class<?>[] testClasses, String[] mutants) {
+		return getFailedTests(testClasses, Collections.emptyMap(), mutants);
+	}
 	
 	public static SSHOMListener getFailedTests(Class<?>[] testClasses, Map<String, Set<String>> testMap,
 			String[] mutants) {
@@ -325,7 +329,11 @@ public class InfLoopTestProcess {
 			}
 	    	
 			private long computeTimeout(Description description) {
-				return testTimes.get(description) * TIME_OUT_MULTIPLIER + MIN_TIMEOUT;
+				if (testTimes.containsKey(description)) {
+					return testTimes.get(description) * TIME_OUT_MULTIPLIER + MIN_TIMEOUT;
+				} else {
+					return TIMEOUT;
+				}
 			}
 	    }
 	
@@ -334,6 +342,7 @@ public class InfLoopTestProcess {
 		private final long timeout;
 
 		public TimeOutThread(long timeout) {
+			setName("TIMEOUT: " + timeout + "ms");
 			this.timeout = timeout;
 		}
 

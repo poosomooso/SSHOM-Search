@@ -32,8 +32,10 @@ public class RunBenchmarks {
     }
 
     if (whichMode.equalsIgnoreCase("naive")) {
+    	setFlags(whichMode);
       runNaive();
     } else if (whichMode.equalsIgnoreCase("ga")) {
+    	setFlags(whichMode);
       runEvolutionary();
     } else if (whichMode.equalsIgnoreCase("varex")) {
       runVarex();
@@ -44,7 +46,14 @@ public class RunBenchmarks {
     }
   }
 
-  private static void errAndExit() {
+	private static void setFlags(String mode) {
+		if (Flags.COVERAGE) {
+			System.err.println("Coverage not supported for: " + mode);
+			Flags.COVERAGE = false;
+		}
+	}
+
+private static void errAndExit() {
     System.err.println("A program and a mode must be specified, in that order.");
     System.err.println("Programs : triangle, monopoly, validator, cli, or chess");
     System.err.println("Modes : naive, ga, or varex");
