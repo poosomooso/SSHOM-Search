@@ -1,20 +1,7 @@
 package benchmark;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-
+import evaluation.analysis.Mutation;
+import evaluation.io.MutationParser;
 import org.junit.Test;
 import org.junit.runner.Computer;
 import org.junit.runner.Description;
@@ -23,16 +10,15 @@ import org.junit.runner.Request;
 import org.junit.runner.manipulation.Filter;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
-
-import evaluation.analysis.Mutation;
-import evaluation.io.MutationParser;
 import testRunner.RunTests;
 import util.ConditionalMutationWrapper;
 import util.SSHOMListener;
 
+import java.io.File;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Map.Entry;
 
 public class InfLoopTestProcess {
 
@@ -103,7 +89,7 @@ private              long                startTime = Integer.MAX_VALUE;
 		cmw.resetMutants();
 
 		for (int i = 0; i < mutants.length; i++) {
-			System.out.println(mutants[i]);
+//			System.out.println(mutants[i]);
 			cmw.setMutant(mutants[i]);
 		}
 		listener.testStarted(testClass, testName);
@@ -184,7 +170,7 @@ private              long                startTime = Integer.MAX_VALUE;
 	}
 
 	public static volatile boolean timedOut = false;
-	private static final Map<String, Mutation> mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
+	private static final Map<String, Mutation> mutations = MutationParser.instance.getMutations(new File("evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
 
 	public static SSHOMListener getFailedTests(Class<?>[] testClasses, Map<String, Set<String>> testMap,
 			String[] mutants) {
