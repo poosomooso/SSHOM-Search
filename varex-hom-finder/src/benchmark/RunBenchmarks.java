@@ -3,6 +3,8 @@ package benchmark;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
+import benchmark.BenchmarkPrograms.Program;
+
 public class RunBenchmarks {
 
   public static void main(String[] args)
@@ -16,23 +18,7 @@ public class RunBenchmarks {
     String whichProgram = args[0];
     String whichMode = args[1];
 
-    
-    // TODO revise this
-    if (whichProgram.equalsIgnoreCase(BenchmarkPrograms.Program.TRIANGLE.name())) {
-      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.TRIANGLE;
-    } else if (whichProgram.equalsIgnoreCase(BenchmarkPrograms.Program.MONOPOLY.name())) {
-      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.MONOPOLY;
-    } else if (whichProgram.equalsIgnoreCase(BenchmarkPrograms.Program.CLI.name())) {
-      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.CLI;
-    } else if (whichProgram.equalsIgnoreCase(BenchmarkPrograms.Program.VALIDATOR.name())) {
-      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.VALIDATOR;
-    } else if (whichProgram.equalsIgnoreCase(BenchmarkPrograms.Program.CHESS.name())) {
-      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.CHESS;
-    } else if (whichProgram.equalsIgnoreCase(BenchmarkPrograms.Program.MATH.name())) {
-        BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.MATH;
-    } else {
-      errAndExit();
-    }
+    setProgram(whichProgram);
 
     if (whichMode.equalsIgnoreCase("naive")) {
       runNaive();
@@ -46,6 +32,22 @@ public class RunBenchmarks {
       errAndExit();
     }
   }
+
+	private static void setProgram(String whichProgram) {
+		Program selectedProgram = null;
+		for (Program program : BenchmarkPrograms.Program.values()) {
+			if (whichProgram.equalsIgnoreCase(program.name())) {
+				selectedProgram = program;
+				break;
+			}
+		}
+		if (selectedProgram == null) {
+			System.err.println("Program not supported: " + selectedProgram);
+			System.exit(-1);
+		} else {
+			BenchmarkPrograms.PROGRAM = selectedProgram;
+		}
+	}
 
 	private static void initializeFlags() {
 		System.out.println("### initialize: " + Flags.class.getName());
