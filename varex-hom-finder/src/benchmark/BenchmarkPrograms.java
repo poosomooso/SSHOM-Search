@@ -3,6 +3,8 @@ package benchmark;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
+import org.junit.Test;
 
 import benchmark.heuristics.FirstOrderMutant;
 import mutated.triangleAll.Triangle;
@@ -32,7 +36,7 @@ public class BenchmarkPrograms {
       if (PROGRAM == Program.TRIANGLE) {
         targetClasses = new Class[] { Triangle.class };
       } else {
-        targetClasses = loadClasses(getSrcResource(), getSrcDir(), getSrcPackage());
+        targetClasses = loadClasses(getSrcResource(), getSrcDir(), getSrcPackage(), false);
       }
       System.out.println("TARGET CLASSES : " + Arrays.toString(targetClasses));
     }
@@ -44,7 +48,7 @@ public class BenchmarkPrograms {
       if (PROGRAM == Program.TRIANGLE) {
         testClasses = new Class[] { Triangle_ESTest_improved.class };
       } else {
-        testClasses = loadClasses(getTestResource(), getTestDir(), getTestPackage());
+        testClasses = loadClasses(getTestResource(), getTestDir(), getTestPackage(), true);
       }
       System.out.println("TEST CLASSES : " + Arrays.toString(testClasses));
     }
@@ -130,7 +134,7 @@ public class BenchmarkPrograms {
     return true;
   }
 
-  private static Class<?>[] loadClasses(String resourceStr, String classDir, String classPackage) {
+  private static Class<?>[] loadClasses(String resourceStr, String classDir, String classPackage, boolean filterTestClasses) {
     ArrayList<Class<?>> classes = new ArrayList<>();
     URL u = RunBenchmarks.class.getClassLoader()
         .getResource(resourceStr);
@@ -156,7 +160,13 @@ public class BenchmarkPrograms {
       } else {
         try (Scanner in = new Scanner(RunBenchmarks.class.getClassLoader().getResourceAsStream(resourceStr))) {
 	        while (in.hasNextLine()) {
-	          classes.add(Class.forName(in.nextLine()));
+	          Class<?> klass = Class.forName(in.nextLine());
+	          if (filterTestClasses) {
+	        	  if (isTestClass(klass)) {
+	        		  classes.add(klass);  
+	        	  }
+	          } else 
+	        	  classes.add(klass);
 	        }
         }
         return classes.toArray(new Class[0]);
@@ -166,7 +176,20 @@ public class BenchmarkPrograms {
     }
   }
 
-  // abs paths because these should only be needed once
+  private static boolean isTestClass(Class<?> klass) {
+	if (Modifier.isAbstract(klass.getModifiers())) {
+		return false;
+	}
+	Method[] methods = klass.getDeclaredMethods();
+	for (Method method : methods) {
+		if (Modifier.isPublic(method.getModifiers()) && method.isAnnotationPresent(Test.class)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+// abs paths because these should only be needed once
   private static String localMonopolyTestDir     = "/home/serena/reuse/mutated-monopoly/src/edu/uclm/esi/iso5/juegos/monopoly/dominio/tests";
   private static String localMonopolyDir         = "/home/serena/reuse/mutated-monopoly/src/edu/uclm/esi/iso5/juegos/monopoly/dominio";
   private static String localMonopolyPackage     = "edu.uclm.esi.iso5.juegos.monopoly.dominio";
