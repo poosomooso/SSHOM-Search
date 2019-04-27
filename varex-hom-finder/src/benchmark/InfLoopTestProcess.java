@@ -137,7 +137,7 @@ public class InfLoopTestProcess {
   
 	public static SSHOMListener getFailedTests(Class<?>[] testClasses) {
 		listener.signalHOMBegin();
-		if (Flags.JUNIT_CORE) {
+		if (Flags.JUNIT) {
 			JUnitCore junitCore = new JUnitCore();
 			junitCore.addListener(listener);
 			junitCore.addListener(timeRecorder(testTimes));
@@ -207,7 +207,7 @@ public class InfLoopTestProcess {
 			}
 		}
 		
-		if (Flags.JUNIT_CORE) {
+		if (Flags.JUNIT) {
 			runJWithUnit(testClasses, mutants, testsClassesToRun, testsToRun);
 		} else {
 			// very jank check to use another class for chess

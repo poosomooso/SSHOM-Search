@@ -64,12 +64,12 @@ public class HeuristicsBasedSSHOMFinder {
 			
 			Collection<HigherOrderMutant> homPaths = homCandidates.get(minScore);
 			
-			int foundHoms = sshoms.size();
+			int foundHoms = homsTried.size();
 			for (Iterator<HigherOrderMutant> iterator = homPaths.iterator(); iterator.hasNext();) {
 				HigherOrderMutant collection = iterator.next();
 				iterator.remove();
 				run(homCandidates, collection);
-				if (sshoms.size() > foundHoms) {
+				if (homsTried.size() > foundHoms) {
 					break;
 				}
 			}
@@ -172,9 +172,10 @@ public class HeuristicsBasedSSHOMFinder {
 	
 	// TODO Set<FirstOrderMutant>
 	Set<String> coveredFoms = new HashSet<>();
-	Collection<HigherOrderMutant> sshoms = new HashSet<>();
+	Collection<HigherOrderMutant> homsTried = new HashSet<>();
 	
 	private void run(Map<Integer, Set<HigherOrderMutant>> homCandidates, HigherOrderMutant homCandidate) {
+		homsTried.add(homCandidate);
 		homsChecked++;
 		Collection<String> selectedMutants = new ArrayList<>();
 		for (FirstOrderMutant mutant : homCandidate) {
@@ -182,7 +183,6 @@ public class HeuristicsBasedSSHOMFinder {
 		}
 		boolean isStronglySubsuming = checker.isSSHOM(testMap, homCandidate);
 		if (isStronglySubsuming) {
-			sshoms.add(homCandidate);
 			updateHOMCandidates(homCandidate, homCandidates);
 			
 			foundHoms++;
@@ -218,7 +218,7 @@ public class HeuristicsBasedSSHOMFinder {
 					candidatesMap.get(newScore).add(hom);
 					isNPlusOne.add(hom);
 			} else {
-				if (!sshoms.contains(hom)) {// TODO should be all HOMStested
+				if (!homsTried.contains(hom)) {
 					// TODO duplicate code
 					candidatesMap.putIfAbsent(newScore, new HashSet<>());
 					candidatesMap.get(newScore).add(hom);

@@ -1,6 +1,7 @@
 package benchmark;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 public class RunBenchmarks {
 
@@ -9,6 +10,8 @@ public class RunBenchmarks {
     if (args.length < 2) {
       errAndExit();
     }
+    
+    initializeFlags();
 
     String whichProgram = args[0];
     String whichMode = args[1];
@@ -32,10 +35,8 @@ public class RunBenchmarks {
     }
 
     if (whichMode.equalsIgnoreCase("naive")) {
-    	setFlags(whichMode);
       runNaive();
     } else if (whichMode.equalsIgnoreCase("ga")) {
-    	setFlags(whichMode);
       runEvolutionary();
     } else if (whichMode.equalsIgnoreCase("varex")) {
       runVarex();
@@ -46,17 +47,24 @@ public class RunBenchmarks {
     }
   }
 
-	private static void setFlags(String mode) {
-		if (Flags.COVERAGE) {
-			System.err.println("Coverage not supported for: " + mode);
-			Flags.COVERAGE = false;
+	private static void initializeFlags() {
+		System.out.println("### initialize: " + Flags.class.getName());
+		try {
+			Field[] flags = Flags.class.getFields();
+			for (Field flag : flags) {
+				String value = System.getProperty(flag.getName(), Boolean.toString(flag.getBoolean(null)));
+				flag.setBoolean(null, Boolean.parseBoolean(value));
+				System.out.println("### " + flag.getName() + ": " + value);
+			}
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 private static void errAndExit() {
     System.err.println("A program and a mode must be specified, in that order.");
     System.err.println("Programs : triangle, monopoly, validator, cli, or chess");
-    System.err.println("Modes : naive, ga, or varex");
+    System.err.println("Modes : naive, ga, smart, or varex");
     System.exit(0);
   }
 

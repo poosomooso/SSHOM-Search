@@ -9,7 +9,7 @@ package benchmark;
 public class Flags {
 
 	public static boolean COVERAGE = false;
-	public static boolean JUNIT_CORE = false;
+	public static boolean JUNIT = false;
 	
 	private Flags() {}
 	
