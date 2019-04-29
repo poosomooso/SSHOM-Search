@@ -167,12 +167,11 @@ public class HeuristicsBasedSSHOMFinder {
 		};
 	}
 
-	int foundHoms = 0;
-	int homsChecked = 0;
+	private int foundHoms = 0;
+	private int homsChecked = 0;
 	
-	// TODO Set<FirstOrderMutant>
-	Set<String> coveredFoms = new HashSet<>();
-	Collection<HigherOrderMutant> homsTried = new HashSet<>();
+	private final Set<FirstOrderMutant> coveredFoms = new HashSet<>();
+	private final Collection<HigherOrderMutant> homsTried = new HashSet<>();
 	
 	private void run(Map<Integer, Set<HigherOrderMutant>> homCandidates, HigherOrderMutant homCandidate) {
 		homsTried.add(homCandidate);
@@ -189,11 +188,11 @@ public class HeuristicsBasedSSHOMFinder {
 			HashSet<String> sshom = new HashSet<>();
 			sshom.addAll(selectedMutants);
 			distribution[selectedMutants.size()]++;
-			coveredFoms.addAll(selectedMutants);
+			coveredFoms.addAll(homCandidate.getFoms());
 			float efficiency = ((float) foundHoms * 100)/ (float)homsChecked;
 			Benchmarker.instance.timestamp(foundHoms + "(" + homsChecked + ") "+ efficiency + "% FOMs: " + coveredFoms.size()+ " "  + selectedMutants);
 //			Benchmarker.instance.timestamp("size: " + homCandidate.size() + " div: " + computeDiv(homCandidate.getFoms()) + " isN+1: " + (isNPlusOne(homCandidate) == 1));
-			
+//			Benchmarker.instance.timestamp(
 //			+ " is_strict_subsuming: "
 //					+ CheckStronglySubsuming.isStrictStronglySubsuming(listener.getHomTests(), currentFoms));
 		}
