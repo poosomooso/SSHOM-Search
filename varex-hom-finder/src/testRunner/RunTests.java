@@ -1,5 +1,7 @@
 package testRunner;
 
+import org.junit.*;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -7,13 +9,6 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
 
 public class RunTests {
 
@@ -103,6 +98,7 @@ public class RunTests {
 							}
 							if (print) System.out.println(getTestDesc(method));
 						}
+						e.printStackTrace(System.out);
 						passed = false;
 					}
 					break;

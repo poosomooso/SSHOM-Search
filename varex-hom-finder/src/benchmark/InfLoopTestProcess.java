@@ -25,7 +25,7 @@ public class InfLoopTestProcess {
   private static final int TIME_OUT_MULTIPLIER = 10;
 private              long                startTime = Integer.MAX_VALUE;
   private final        List<SSHOMListener> listeners = new ArrayList<>();
-  private static final int                 TIMEOUT   = 5 * 60 * 1000;
+  private static final int                 TIMEOUT   = 30 * 1000;
   private static final int WAIT_FOR_KILL = 500;
 
 
