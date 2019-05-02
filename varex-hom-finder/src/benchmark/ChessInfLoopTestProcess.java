@@ -48,7 +48,6 @@ public class ChessInfLoopTestProcess {
     t.start();
     testMap.put(mutantStr, tr);
     threadStart.put(t, System.currentTimeMillis());
-    System.out.println(mutantStr);
 
     while (threadStart.size() > 0) {
       try {

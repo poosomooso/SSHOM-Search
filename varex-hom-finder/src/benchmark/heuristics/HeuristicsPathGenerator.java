@@ -159,7 +159,7 @@ public final class HeuristicsPathGenerator implements IPathGenerator {
 	 * That is, a test case must at least e covering two mutants. 
 	 */
 	private boolean hasInvalidCovereage(Collection<FirstOrderMutant> currentSelection) {
-		if (!Flags.COVERAGE) {
+		if (!Flags.isCoverage()) {
 			return false;
 		}
 		Map<String, Integer> methods = new HashMap<>();

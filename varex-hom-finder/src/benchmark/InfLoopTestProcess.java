@@ -1,6 +1,8 @@
 package benchmark;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
@@ -25,11 +27,15 @@ import org.junit.runner.manipulation.Filter;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+import br.ufmg.labsoft.mutvariants.schematalib.ISchemataLibMethodsListener;
+import br.ufmg.labsoft.mutvariants.schematalib.SchemataLibMethods;
 import evaluation.analysis.Mutation;
 import evaluation.io.MutationParser;
 import testRunner.RunTests;
 import util.ConditionalMutationWrapper;
 import util.SSHOMListener;
+import util.io.ObjectReader;
+import util.io.ObjectWriter;
 
 public class InfLoopTestProcess {
 
@@ -103,7 +109,6 @@ public class InfLoopTestProcess {
 		cmw.resetMutants();
 		
 		for (int i = 0; i < mutants.length; i++) {
-			System.out.println(mutants[i]);
 			cmw.setMutant(mutants[i]);
 		}
 		listener.testStarted(testClass, testName);
@@ -137,7 +142,15 @@ public class InfLoopTestProcess {
   
 	public static SSHOMListener getFailedTests(Class<?>[] testClasses) {
 		listener.signalHOMBegin();
-		if (Flags.JUNIT) {
+		
+		if (Flags.saveTestResults()) {
+			boolean resultsRead = readTestTimes();
+			if (resultsRead) {
+				listener.signalHOMEnd();
+				return listener;
+			}
+		}
+		if (Flags.isJunit()) {
 			JUnitCore junitCore = new JUnitCore();
 			junitCore.addListener(listener);
 			junitCore.addListener(timeRecorder(testTimes));
@@ -159,9 +172,42 @@ public class InfLoopTestProcess {
 			process.runTests(new String[0], testCases);
 		}
 		listener.signalHOMEnd();
+		
+		if (Flags.saveTestResults()) {
+			writeTestResults();
+		}
+		
 		return listener;
 	}
+
+	private static void writeTestResults() {
+		try {
+			File timesFile = new File("times_" + BenchmarkPrograms.PROGRAM + ".serial");
+			ObjectWriter.writeObject((Serializable)testTimes, timesFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
   
+	@SuppressWarnings("unchecked")
+	static boolean readTestTimes() {
+		File timesFile = new File("times_" + BenchmarkPrograms.PROGRAM + ".serial");
+		if (timesFile.exists()) {
+			try {
+				Object readTestTimes = ObjectReader.readObject(timesFile);
+				if (readTestTimes instanceof Map) {
+					testTimes.putAll((Map<Description, Long>) readTestTimes);
+					return true;
+				} else {
+					throw new IOException("type does not match: " + readTestTimes.getClass());
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
 	private static RunListener timeRecorder(Map<Description, Long> times) {
 		return new RunListener() {
 			int testCount = 0;
@@ -195,7 +241,7 @@ public class InfLoopTestProcess {
 		listener.signalHOMBegin();
 		final Set<String> testsClassesToRun = new HashSet<>();
 		final Set<String> testsToRun = new HashSet<>();
-		if (Flags.COVERAGE) {
+		if (Flags.isCoverage()) {
 			for (String mName : mutants) {
 				Mutation mutation = mutations.get(mName);
 				for (Entry<String, Set<String>> entry : testMap.entrySet()) {
@@ -207,7 +253,7 @@ public class InfLoopTestProcess {
 			}
 		}
 		
-		if (Flags.JUNIT) {
+		if (Flags.isJunit()) {
 			runJWithUnit(testClasses, mutants, testsClassesToRun, testsToRun);
 		} else {
 			// very jank check to use another class for chess
@@ -243,7 +289,7 @@ public class InfLoopTestProcess {
 	
 	private static void runJWithUnit(Class<?>[] testClasses, String[] mutants, final Set<String> testsClassesToRun,
 			final Set<String> testsToRun) {
-		if (!Flags.COVERAGE || !testsToRun.isEmpty()) {
+		if (!Flags.isCoverage() || !testsToRun.isEmpty()) {
 			System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
 			System.out.flush();
 			ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(BenchmarkPrograms.getTargetClasses());
@@ -260,7 +306,7 @@ public class InfLoopTestProcess {
 
 				@Override
 				public boolean shouldRun(Description description) {
-					if (!Flags.COVERAGE) {
+					if (!Flags.isCoverage()) {
 						return true;
 					}
 					if (description.getMethodName() == null) {
@@ -336,6 +382,25 @@ public class InfLoopTestProcess {
 				}
 			}
 	    }
+	 
+	public static void setTimeOutListener() {
+		SchemataLibMethods.listener = new ISchemataLibMethodsListener() {
+
+			@Override
+			public void listen() {
+				if (InfLoopTestProcess.timedOut) {
+					throw new Error("TIMEOUT");
+				}
+			}
+
+			@Override
+			public void listen(String methodName) {
+				if (InfLoopTestProcess.timedOut) {
+					throw new Error("TIMEOUT");
+				}
+			}
+		};
+	}
 	
 	private static class TimeOutThread extends Thread {
 

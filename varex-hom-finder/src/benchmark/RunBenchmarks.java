@@ -1,7 +1,6 @@
 package benchmark;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 
 import benchmark.BenchmarkPrograms.Program;
 
@@ -13,7 +12,7 @@ public class RunBenchmarks {
       errAndExit();
     }
     
-    initializeFlags();
+    Flags.initialize();
 
     String whichProgram = args[0];
     String whichMode = args[1];
@@ -49,21 +48,7 @@ public class RunBenchmarks {
 		}
 	}
 
-	private static void initializeFlags() {
-		System.out.println("### initialize: " + Flags.class.getName());
-		try {
-			Field[] flags = Flags.class.getFields();
-			for (Field flag : flags) {
-				String value = System.getProperty(flag.getName(), Boolean.toString(flag.getBoolean(null)));
-				flag.setBoolean(null, Boolean.parseBoolean(value));
-				System.out.println("### " + flag.getName() + ": " + value);
-			}
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-private static void errAndExit() {
+  private static void errAndExit() {
     System.err.println("A program and a mode must be specified, in that order.");
     System.err.println("Programs : triangle, monopoly, validator, cli, or chess");
     System.err.println("Modes : naive, ga, smart, or varex");

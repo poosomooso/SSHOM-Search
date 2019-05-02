@@ -87,7 +87,7 @@ public class SSHOMBDDChecker  implements ISSHOMChecker {
 	}
 	
 	@Override
-	public boolean isSSHOM(Map<String, Set<String>> testMap, HigherOrderMutant candidate) {
+	public HOM_TYPE getHOMType(Map<String, Set<String>> testMap, HigherOrderMutant candidate) {
 		Collection<Description> allFailingTests = new HashSet<>();
 		Set<String> failingTestNames = new HashSet<>();
 		
@@ -121,7 +121,7 @@ public class SSHOMBDDChecker  implements ISSHOMChecker {
 			}
 		}
 		if (failingTests == 0) {
-			return false;
+			return HOM_TYPE.NONE;
 		}
 		
 		
@@ -132,7 +132,7 @@ public class SSHOMBDDChecker  implements ISSHOMChecker {
 			FeatureExpr testCase = stringTests.get(name);
 			boolean result = testCase.evaluate(selectedFeatures2);
 			if (result) {
-				return false;
+				return HOM_TYPE.NONE;
 			}
 		}
 		
@@ -143,11 +143,14 @@ public class SSHOMBDDChecker  implements ISSHOMChecker {
 			}
 			boolean result = test.getValue().evaluate(selectedFeatures2);
 			if (result) {
-				return false;
+				return HOM_TYPE.NONE;
 			}
 		}
-		
-		return true;
+		if (failingTests < failingTestsIntersection.size()) {
+			return HOM_TYPE.STRICT_STRONGLY_SUBSUMING;
+		} else {
+			return HOM_TYPE.STRONGLY_SUBSUMING;
+		}
 	}
 	
 	private void filterTests(Map<Class<?>, Map<Method, FeatureExpr>> tests) {

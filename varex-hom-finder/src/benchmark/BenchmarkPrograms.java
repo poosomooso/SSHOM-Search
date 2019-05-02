@@ -8,6 +8,7 @@ import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -109,11 +110,12 @@ public class BenchmarkPrograms {
     return true;
   }
   
-	public static boolean homIsValidFOM(Collection<FirstOrderMutant> hom) {
-		int numMutantGroups = BenchmarkPrograms.getMakeshiftFeatureModel().size();
-		boolean[] check = new boolean[numMutantGroups];
+	private static final BitSet bitSet = new BitSet();
+	
+	public static synchronized boolean homIsValidFOM(Collection<FirstOrderMutant> hom) {
+		bitSet.clear();
 		for (FirstOrderMutant mutation : hom) {
-			if (!check(check, mutation.getMutant())) {
+			if (!check(bitSet, mutation.getMutant())) {
 				return false;
 			}
 		}
@@ -123,7 +125,17 @@ public class BenchmarkPrograms {
   public static boolean homIsValid(String... hom) {
     return homIsValid(Arrays.asList(hom));
   }
-
+  
+	private static boolean check(BitSet check, String mutant) {
+		int id = BenchmarkPrograms.getMakeshiftFeatureModel().get(mutant);
+		if (check.get(id)) {
+			return false;
+		} else {
+			check.set(id);
+		}
+		return true;
+	}
+	
   private static boolean check(boolean[] check, String mutant) {
     int id = BenchmarkPrograms.getMakeshiftFeatureModel().get(mutant);
     if (check[id]) {

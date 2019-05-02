@@ -34,7 +34,7 @@ public class SSHOMJUnitChecker implements ISSHOMChecker {
 	}
 	
 	@Override
-	public boolean isSSHOM(Map<String, Set<String>> testMap, HigherOrderMutant homCandidate) {
+	public HOM_TYPE getHOMType(Map<String, Set<String>> testMap, HigherOrderMutant homCandidate) {
 		Collection<String> selectedMutants = new ArrayList<>();
 		for (FirstOrderMutant mutant : homCandidate) {
 			selectedMutants.add(mutant.getMutant());
@@ -47,13 +47,22 @@ public class SSHOMJUnitChecker implements ISSHOMChecker {
 				listener = runner.runJunitOnHOM(selectedMutants.toArray(new String[selectedMutants.size()]));
 			} catch (IllegalAccessException | NoSuchFieldException e) {
 				e.printStackTrace();
-				return false;
+				return ISSHOMChecker.HOM_TYPE.NONE;
 			}
 		}
 		List<Set<Description>> currentFoms = selectedMutants.stream().map(m -> foms.get(m))
 				.collect(Collectors.toList());
 
-		return CheckStronglySubsuming.isStronglySubsuming(listener.getHomTests(), currentFoms);
+		boolean isStronglySubsuming = CheckStronglySubsuming.isStronglySubsuming(listener.getHomTests(), currentFoms);
+		boolean isStrict =  CheckStronglySubsuming.isStrictStronglySubsuming(listener.getHomTests(), currentFoms);
+		if (isStronglySubsuming) {
+			if (isStrict) {
+				return HOM_TYPE.STRICT_STRONGLY_SUBSUMING;
+			} else {
+				return HOM_TYPE.STRONGLY_SUBSUMING;
+			}
+		} 
+		return HOM_TYPE.NONE;
 	}
 
 }

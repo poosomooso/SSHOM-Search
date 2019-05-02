@@ -15,19 +15,19 @@ public final class Configuration {
 	/** 
 	 * Maximum number of methods in SSHOMS.
 	 */
-	public static final int MAX_METHODS = 2;
+	public static final int MAX_METHODS = 4;
 	
 	/** 
 	 * Maximum number of classes in SSHOMS.
 	 */
-	public static final int MAX_CLASSES = 1;
+	public static final int MAX_CLASSES = 3;
 	
 	/*
 	 * Weights for prioritization.
 	 */
 	public static final int K_TEST_OVERLAP = 1;
 	public static final int K_DEGREE = 5;
-	public static final int K_N_PLUS_ONE = 100;
+	public static final int K_N_PLUS_ONE = 15;
 	// TODO prioritize based on nr methods
 	// TODO prioritize based on nr classes
 

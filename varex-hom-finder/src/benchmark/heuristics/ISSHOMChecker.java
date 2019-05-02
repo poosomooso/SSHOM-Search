@@ -5,6 +5,10 @@ import java.util.Set;
 
 public interface ISSHOMChecker {
 	
-	boolean isSSHOM(Map<String, Set<String>> testMap, HigherOrderMutant homCandidate);
+	public enum HOM_TYPE {
+		NONE, STRONGLY_SUBSUMING, STRICT_STRONGLY_SUBSUMING
+	}
+
+	HOM_TYPE getHOMType(Map<String, Set<String>> testMap, HigherOrderMutant homCandidate);
 
 }
