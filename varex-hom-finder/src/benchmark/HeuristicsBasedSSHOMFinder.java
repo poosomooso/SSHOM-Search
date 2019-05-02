@@ -1,15 +1,11 @@
 package benchmark;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -23,24 +19,22 @@ import benchmark.heuristics.ISSHOMChecker;
 import benchmark.heuristics.ISSHOMChecker.HOM_TYPE;
 import benchmark.heuristics.MutationGraph;
 import benchmark.heuristics.SSHOMJUnitChecker;
-import benchmark.heuristics.TestRunListener;
-import br.ufmg.labsoft.mutvariants.schematalib.ISchemataLibMethodsListener;
-import br.ufmg.labsoft.mutvariants.schematalib.SchemataLibMethods;
-import evaluation.analysis.Mutation;
-import evaluation.io.MutationParser;
 import util.SSHOMListener;
 import util.SSHOMRunner;
-import util.io.ObjectReader;
-import util.io.ObjectWriter;
 
+/**
+ * TODO description
+ * 
+ * @author Jens Meinicke
+ *
+ */
 public class HeuristicsBasedSSHOMFinder {
 	
 	private final long TIME_FOMS = Flags.getMaxGroupTime() / 2;
-	private final long TIME_HOMS = Flags.getMaxGroupTime() / 2;
 	
 	private SSHOMRunner runner;
 	private final Map<String, Set<Description>> foms = new HashMap<>();
-	private final Map<String, Set<String>> testMap = new HashMap<>();
+	
 	private Class<?>[] testClasses;
 	
 	private int[] distribution = new int[10];
@@ -57,24 +51,25 @@ public class HeuristicsBasedSSHOMFinder {
 		runner = new SSHOMRunner(targetClasses, testClasses);
 		checker = new SSHOMJUnitChecker(runner, testClasses, foms);
 		Benchmarker.instance.timestamp("createTestMap");
-		createTestMap();
+		InfLoopTestProcess.createTestCovereage(testClasses);
 		InfLoopTestProcess.setTimeOutListener();
 	}
 	
 	public void run() throws NoSuchFieldException, IllegalAccessException {
 		Benchmarker.instance.timestamp("start homs");
 		Map<String, Set<String>> groupMutants = BenchmarkPrograms.createMutationGroups();
+		
 		groupLoop: for (Entry<String, Set<String>> groupEntry : groupMutants.entrySet()) {
+			long start = System.currentTimeMillis();
 			System.out.println("group: " + groupEntry.getKey());
 			System.out.println("nr mutatns: " + groupEntry.getValue().size());
 			foms.clear();
-			populateFoms(groupEntry.getValue());
+			populateFoms(groupEntry.getValue(), start);
 			Benchmarker.instance.timestamp("create hom candidates");
-			graph = new MutationGraph(foms, testMap);
+			graph = new MutationGraph(foms, InfLoopTestProcess.testCoverageMap);
 
 			// Map<package, Graph>
 			// merge hom candidates?
-			long start = System.currentTimeMillis();
 			Map<Integer, Set<HigherOrderMutant>> homCandidates = createHOMMap(graph.getHOMPaths());
 			while (!homCandidates.isEmpty()) {
 				int minScore = Integer.MAX_VALUE;
@@ -92,7 +87,7 @@ public class HeuristicsBasedSSHOMFinder {
 					iterator.remove();
 					run(homCandidates, collection);
 					long time = System.currentTimeMillis();
-					if (time - start > TIME_HOMS) {
+					if (time - start > Flags.getMaxGroupTime()) {
 						continue groupLoop;
 					}
 					if (homsTried.size() > foundHoms) {
@@ -137,13 +132,12 @@ public class HeuristicsBasedSSHOMFinder {
 		return testsSize - testsSizeIntersection;
 	}
 
-	private void populateFoms(Collection<String> mutants) throws NoSuchFieldException, IllegalAccessException {
+	private void populateFoms(Collection<String> mutants, long start) throws NoSuchFieldException, IllegalAccessException {
 		Benchmarker.instance.timestamp("populateFoms");
-		long start = System.currentTimeMillis();
 		for (String m : mutants) {
 			SSHOMListener listener;
 			if (BenchmarkPrograms.programHasInfLoops()) {
-				listener = InfLoopTestProcess.getFailedTests(testClasses, testMap, new String[] { m });
+				listener = InfLoopTestProcess.getFailedTests(testClasses, new String[] { m });
 			} else {
 				listener = runner.runJunitOnHOM(m);
 			}
@@ -153,76 +147,6 @@ public class HeuristicsBasedSSHOMFinder {
 				break;
 			}
 		}
-	}
-
-	private void createTestMap() {
-		if (Flags.saveTestResults()) {
-			boolean resultsRead = readTestResults();
-			if (resultsRead) {
-				boolean timesRead = InfLoopTestProcess.readTestTimes();
-				if (timesRead) {
-					return;
-				}
-			}
-		}		
-		
-		TestRunListener testRunListener = new TestRunListener(testMap);
-		SchemataLibMethods.listener = new ISchemataLibMethodsListener() {
-			
-			@Override
-			public void listen(String methodName) {
-				testRunListener.methodExecuted(methodName);
-			}
-			
-			@Override
-			public void listen() {
-				if (Flags.isCoverage()) {
-					testRunListener.methodExecuted(Thread.currentThread().getStackTrace()[3]);
-				}
-			}
-		};
-		
-		InfLoopTestProcess.listener.testRunListener = testRunListener;
-
-		SSHOMListener listener = InfLoopTestProcess.getFailedTests(testClasses);
-		Set<Description> failingTests = listener.getHomTests();
-		if (!failingTests.isEmpty()) {
-			failingTests.forEach(System.out::println);
-			 throw new RuntimeException("test suite failed without mutants");
-		}
-
-		InfLoopTestProcess.listener.testRunListener = null;
-		
-		if (Flags.saveTestResults()) {
-			writeTestResults();
-		}
-	}
-	
-	private void writeTestResults() {
-		try {
-			File testsMapFile = new File("testMap_" + BenchmarkPrograms.PROGRAM + ".serial");
-			ObjectWriter.writeObject((Serializable)testMap, testsMapFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private boolean readTestResults() {
-		File testsMapFile = new File("testMap_" + BenchmarkPrograms.PROGRAM + ".serial");
-		if (testsMapFile.exists()) {
-			try {
-				Object readTestCoverage = ObjectReader.readObject(testsMapFile);
-				if (readTestCoverage instanceof Map) {
-					testMap.putAll((Map)readTestCoverage);
-					return true;
-				} else {
-					throw new IOException("type does not match: " + readTestCoverage.getClass());
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return false;
 	}
 
 	private int foundHoms = 0;
@@ -240,7 +164,7 @@ public class HeuristicsBasedSSHOMFinder {
 		for (FirstOrderMutant mutant : homCandidate) {
 			selectedMutants.add(mutant.getMutant());
 		}
-		HOM_TYPE homType = checker.getHOMType(testMap, homCandidate);
+		HOM_TYPE homType = checker.getHOMType(InfLoopTestProcess.testCoverageMap, homCandidate);
 		if (homType != HOM_TYPE.NONE) {
 			updateHOMCandidates(homCandidate, homCandidates);
 			

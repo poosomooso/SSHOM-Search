@@ -27,6 +27,7 @@ import org.junit.runner.manipulation.Filter;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+import benchmark.heuristics.TestRunListener;
 import br.ufmg.labsoft.mutvariants.schematalib.ISchemataLibMethodsListener;
 import br.ufmg.labsoft.mutvariants.schematalib.SchemataLibMethods;
 import evaluation.analysis.Mutation;
@@ -140,6 +141,11 @@ public class InfLoopTestProcess {
 
   private static final Map<Description, Long> testTimes = new HashMap<>();
   
+  /**
+   * A mapping from test case to methods that it covers.
+   */
+  public static final Map<String, Set<String>> testCoverageMap = new HashMap<>();
+  
 	public static SSHOMListener getFailedTests(Class<?>[] testClasses) {
 		listener.signalHOMBegin();
 		
@@ -232,19 +238,87 @@ public class InfLoopTestProcess {
 	public static volatile boolean timedOut = false;
 	private static final Map<String, Mutation> mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
 	
-	public static SSHOMListener getFailedTests(Class<?>[] testClasses, String[] mutants) {
-		return getFailedTests(testClasses, Collections.emptyMap(), mutants);
+	public static void createTestCovereage(Class<?>[] testClasses) {
+		if (!Flags.isCoverage()) {
+			return;
+		}
+		if (Flags.saveTestResults()) {
+			boolean resultsRead = readTestResults();
+			if (resultsRead) {
+				boolean timesRead = InfLoopTestProcess.readTestTimes();
+				if (timesRead) {
+					return;
+				}
+			}
+		}		
+		
+		TestRunListener testRunListener = new TestRunListener(testCoverageMap);
+		SchemataLibMethods.listener = new ISchemataLibMethodsListener() {
+			
+			@Override
+			public void listen(String methodName) {
+				testRunListener.methodExecuted(methodName);
+			}
+			
+			@Override
+			public void listen() {
+				if (Flags.isCoverage()) {
+					testRunListener.methodExecuted(Thread.currentThread().getStackTrace()[3]);
+				}
+			}
+		};
+		
+		InfLoopTestProcess.listener.testRunListener = testRunListener;
+
+		SSHOMListener listener = InfLoopTestProcess.getFailedTests(testClasses);
+		Set<Description> failingTests = listener.getHomTests();
+		if (!failingTests.isEmpty()) {
+			failingTests.forEach(System.out::println);
+			 throw new RuntimeException("test suite failed without mutants");
+		}
+
+		InfLoopTestProcess.listener.testRunListener = null;
+		
+		if (Flags.saveTestResults()) {
+			writeTestResults();
+		}
 	}
 	
-	public static SSHOMListener getFailedTests(Class<?>[] testClasses, Map<String, Set<String>> testMap,
-			String[] mutants) {
+	private static void writeTestResults() {
+		try {
+			File testsMapFile = new File("testMap_" + BenchmarkPrograms.PROGRAM + ".serial");
+			ObjectWriter.writeObject((Serializable)testCoverageMap, testsMapFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static boolean readTestResults() {
+		File testsMapFile = new File("testMap_" + BenchmarkPrograms.PROGRAM + ".serial");
+		if (testsMapFile.exists()) {
+			try {
+				Object readTestCoverage = ObjectReader.readObject(testsMapFile);
+				if (readTestCoverage instanceof Map) {
+					testCoverageMap.putAll((Map)readTestCoverage);
+					return true;
+				} else {
+					throw new IOException("type does not match: " + readTestCoverage.getClass());
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+	
+	public static SSHOMListener getFailedTests(Class<?>[] testClasses, String[] mutants) {
 		listener.signalHOMBegin();
 		final Set<String> testsClassesToRun = new HashSet<>();
 		final Set<String> testsToRun = new HashSet<>();
 		if (Flags.isCoverage()) {
 			for (String mName : mutants) {
 				Mutation mutation = mutations.get(mName);
-				for (Entry<String, Set<String>> entry : testMap.entrySet()) {
+				for (Entry<String, Set<String>> entry : testCoverageMap.entrySet()) {
 					if (entry.getKey() != null && entry.getValue().contains(mutation.className + "." + mutation.methodName)) {
 						testsToRun.add(entry.getKey());
 						testsClassesToRun.add(entry.getKey().substring(0, entry.getKey().lastIndexOf(".")));

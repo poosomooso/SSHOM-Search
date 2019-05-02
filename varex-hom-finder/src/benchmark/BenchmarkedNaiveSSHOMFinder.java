@@ -27,6 +27,9 @@ public class BenchmarkedNaiveSSHOMFinder {
 		Class<?>[] targetClasses = BenchmarkPrograms.getTargetClasses();
 		this.testClasses = BenchmarkPrograms.getTestClasses();
 
+		InfLoopTestProcess.createTestCovereage(testClasses);
+		InfLoopTestProcess.setTimeOutListener();
+
 		runner = new SSHOMRunner(targetClasses, testClasses);
 
 		Map<String, Set<String>> groupMutants = BenchmarkPrograms.createMutationGroups();

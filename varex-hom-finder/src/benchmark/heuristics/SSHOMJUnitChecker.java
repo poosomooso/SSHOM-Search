@@ -41,7 +41,7 @@ public class SSHOMJUnitChecker implements ISSHOMChecker {
 		}
 		final SSHOMListener listener;
 		if (BenchmarkPrograms.programHasInfLoops()) {
-			listener = InfLoopTestProcess.getFailedTests(testClasses, testMap, selectedMutants.toArray(new String[selectedMutants.size()]));
+			listener = InfLoopTestProcess.getFailedTests(testClasses, selectedMutants.toArray(new String[selectedMutants.size()]));
 		} else {
 			try {
 				listener = runner.runJunitOnHOM(selectedMutants.toArray(new String[selectedMutants.size()]));
