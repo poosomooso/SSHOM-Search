@@ -174,13 +174,13 @@ public class InfLoopTestProcess {
 		listener.signalHOMEnd();
 		
 		if (Flags.saveTestResults()) {
-			writeTestResults();
+			writeTestTimes();
 		}
 		
 		return listener;
 	}
 
-	private static void writeTestResults() {
+	private static void writeTestTimes() {
 		try {
 			File timesFile = new File("times_" + BenchmarkPrograms.PROGRAM + ".serial");
 			ObjectWriter.writeObject((Serializable)testTimes, timesFile);
@@ -263,18 +263,30 @@ public class InfLoopTestProcess {
 				return l;
 			}
 		    // testname, methodName
-		    int ignoredTests = 0;
-		    for (Class<?> c : testClasses) {
-		      for (Method m : c.getMethods()) {
-		        if (m.getAnnotation(Test.class) != null) {
-		        	if (testsToRun.contains(c.getName() + "." + m.getName())) {
-		        		testCases.add(new String[]{c.getName(), m.getName()});
-		        	} else {
-		        		ignoredTests++;
-		        	}
-		        }
-		      }
-		    }
+			int ignoredTests = 0;
+			if (Flags.isCoverage()) {
+			    for (Class<?> c : testClasses) {
+			      for (Method m : c.getMethods()) {
+			        if (m.getAnnotation(Test.class) != null) {
+			        	if (testsToRun.contains(c.getName() + "." + m.getName())) {
+			        		testCases.add(new String[]{c.getName(), m.getName()});
+			        	} else {
+			        		ignoredTests++;
+			        	}
+			        }
+			      }
+			    }
+			} else {
+				for (Class<?> c : testClasses) {
+					for (Method m : c.getMethods()) {
+						if (m.getAnnotation(Test.class) != null) {
+							testCases.add(new String[] { c.getName(), m.getName() });
+						}
+					}
+				}
+			}
+		    
+		    
 		    if (!testCases.isEmpty()) {
 			    System.out.println(ignoredTests + " ignored " + testCases.size() + " run");
 			    process.runTests(mutants, testCases);

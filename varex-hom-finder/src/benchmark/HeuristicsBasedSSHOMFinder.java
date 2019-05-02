@@ -62,26 +62,13 @@ public class HeuristicsBasedSSHOMFinder {
 	}
 	
 	public void run() throws NoSuchFieldException, IllegalAccessException {
-		String[] mutants = BenchmarkPrograms.getMutantNames();
-		Map<String, Mutation> mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
-		
-		// group mutations
-		Map<String, Set<String>> groupMutants = new LinkedHashMap<>();
-		for (String m : mutants) {
-			Mutation mutation = mutations.get(m);
-			if (mutation == null) {
-				throw new RuntimeException("Mutation not found: " + m);
-			}
-			final String groupIdenntifyer = getGroupIdentifyer(mutation);
-			groupMutants.putIfAbsent(groupIdenntifyer, new HashSet<>());
-			groupMutants.get(groupIdenntifyer).add(m);
-		}
 		Benchmarker.instance.timestamp("start homs");
-		groupLoop: for (Entry<String, Set<String>> packageEntry : groupMutants.entrySet()) {
-			System.out.println("group: " + packageEntry.getKey());
-			System.out.println("nr mutatns: " + packageEntry.getValue().size());
+		Map<String, Set<String>> groupMutants = BenchmarkPrograms.createMutationGroups();
+		groupLoop: for (Entry<String, Set<String>> groupEntry : groupMutants.entrySet()) {
+			System.out.println("group: " + groupEntry.getKey());
+			System.out.println("nr mutatns: " + groupEntry.getValue().size());
 			foms.clear();
-			populateFoms(packageEntry.getValue());
+			populateFoms(groupEntry.getValue());
 			Benchmarker.instance.timestamp("create hom candidates");
 			graph = new MutationGraph(foms, testMap);
 
@@ -118,28 +105,6 @@ public class HeuristicsBasedSSHOMFinder {
 			}
 			System.out.println(Arrays.toString(distribution));
 		}
-	}
-
-	private String getGroupIdentifyer(Mutation mutation) {
-		final  String groupIdenntifyer;
-		
-		switch (Flags.getGranularity()) {
-		case ALL:
-			groupIdenntifyer = "";
-			break;
-		case PACKAGE:
-			groupIdenntifyer = mutation.className.substring(0, mutation.className.lastIndexOf('.'));
-			break;
-		case CLASS:
-			groupIdenntifyer = mutation.className;
-			break;
-		case METHOD:
-			groupIdenntifyer = mutation.className + "." + mutation.methodName;
-			break;
-		default:
-			throw new RuntimeException("granularity not implemented: " + Flags.getGranularity());
-		}
-		return groupIdenntifyer;
 	}
 
 	// TODO this should be the direct result of the graph

@@ -11,13 +11,18 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.junit.Test;
 
 import benchmark.heuristics.FirstOrderMutant;
+import evaluation.analysis.Mutation;
+import evaluation.io.MutationParser;
 import mutated.triangleAll.Triangle;
 import mutated.triangleAll.Triangle_ESTest_improved;
 
@@ -376,4 +381,45 @@ public class BenchmarkPrograms {
     }
     return allJavaFiles;
   }
+  
+	public static Map<String, Set<String>> createMutationGroups() {
+		String[] mutants = BenchmarkPrograms.getMutantNames();
+
+		Map<String, Mutation> mutations = MutationParser.instance.getMutations(
+				new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
+		// group mutations
+		Map<String, Set<String>> groupMutants = new LinkedHashMap<>();
+		for (String m : mutants) {
+			Mutation mutation = mutations.get(m);
+			if (mutation == null) {
+				throw new RuntimeException("Mutation not found: " + m);
+			}
+			final String groupIdenntifyer = getGroupIdentifyer(mutation);
+			groupMutants.putIfAbsent(groupIdenntifyer, new HashSet<>());
+			groupMutants.get(groupIdenntifyer).add(m);
+		}
+		return groupMutants;
+	}
+	
+	private static String getGroupIdentifyer(Mutation mutation) {
+		final  String groupIdenntifyer;
+		
+		switch (Flags.getGranularity()) {
+		case ALL:
+			groupIdenntifyer = "";
+			break;
+		case PACKAGE:
+			groupIdenntifyer = mutation.className.substring(0, mutation.className.lastIndexOf('.'));
+			break;
+		case CLASS:
+			groupIdenntifyer = mutation.className;
+			break;
+		case METHOD:
+			groupIdenntifyer = mutation.className + "." + mutation.methodName;
+			break;
+		default:
+			throw new RuntimeException("granularity not implemented: " + Flags.getGranularity());
+		}
+		return groupIdenntifyer;
+	}
 }
