@@ -376,8 +376,8 @@ public class InfLoopTestProcess {
 	private static void runJWithUnit(Class<?>[] testClasses, String[] mutants, final Set<String> testsClassesToRun,
 			final Set<String> testsToRun) {
 		if (!Flags.isCoverage() || !testsToRun.isEmpty()) {
-			System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
-			System.out.flush();
+//			System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
+//			System.out.flush();
 			ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(BenchmarkPrograms.getTargetClasses());
 			cmw.resetMutants();
 			for (int i = 0; i < mutants.length; i++) {
@@ -418,7 +418,7 @@ public class InfLoopTestProcess {
 			}
 		    timeoutThread = null;
 		    long end = System.currentTimeMillis();
-		    System.out.println(end - start + "ms");
+//		    System.out.println(end - start + "ms");
 		}
 	}
 	
