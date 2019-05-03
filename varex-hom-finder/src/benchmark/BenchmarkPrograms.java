@@ -45,7 +45,7 @@ public class BenchmarkPrograms {
       } else {
         targetClasses = loadClasses(getSrcResource(), getSrcDir(), getSrcPackage(), false);
       }
-      System.out.println("TARGET CLASSES : " + Arrays.toString(targetClasses));
+//      System.out.println("TARGET CLASSES : " + Arrays.toString(targetClasses));
     }
     return targetClasses;
   }
@@ -57,7 +57,7 @@ public class BenchmarkPrograms {
       } else {
         testClasses = loadClasses(getTestResource(), getTestDir(), getTestPackage(), true);
       }
-      System.out.println("TEST CLASSES : " + Arrays.toString(testClasses));
+//      System.out.println("TEST CLASSES : " + Arrays.toString(testClasses));
     }
     return testClasses;
   }
