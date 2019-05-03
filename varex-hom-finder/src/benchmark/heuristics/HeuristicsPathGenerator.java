@@ -38,7 +38,7 @@ public final class HeuristicsPathGenerator implements IPathGenerator {
 		this.testsMap = testsMap;
 		this.testCoverage = testCoverage;
 		// TODO change lookup
-		mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
+		mutations = BenchmarkPrograms.getMuationInfo();
 	}
 
 	

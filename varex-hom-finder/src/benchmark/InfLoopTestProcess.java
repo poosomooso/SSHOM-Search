@@ -236,7 +236,7 @@ public class InfLoopTestProcess {
 	}
   
 	public static volatile boolean timedOut = false;
-	private static final Map<String, Mutation> mutations = MutationParser.instance.getMutations(new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
+	private static final Map<String, Mutation> mutations = BenchmarkPrograms.getMuationInfo();
 	
 	public static void createTestCovereage(Class<?>[] testClasses) {
 		if (!Flags.isCoverage()) {

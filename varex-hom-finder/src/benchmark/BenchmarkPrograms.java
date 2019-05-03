@@ -2,6 +2,7 @@ package benchmark;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -382,13 +383,30 @@ public class BenchmarkPrograms {
     return allJavaFiles;
   }
   
+  	private static Map<String, Mutation> mutationsInfos = null;
+  
+	public static Map<String, Mutation> getMuationInfo() {
+		if (mutationsInfos == null) {
+			InputStream resourceURL = RunBenchmarks.class.getClassLoader().getResourceAsStream("evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase() + "/mapping.txt");
+			mutationsInfos = MutationParser.instance.getMutations(resourceURL);
+		}
+		return mutationsInfos;
+	}
+  
 	public static Map<String, Set<String>> createMutationGroups() {
-		String[] mutants = BenchmarkPrograms.getMutantNames();
-
-		Map<String, Mutation> mutations = MutationParser.instance.getMutations(
-				new File("bin/evaluationfiles/" + BenchmarkPrograms.PROGRAM.toString().toLowerCase(), "mapping.txt"));
-		// group mutations
 		Map<String, Set<String>> groupMutants = new LinkedHashMap<>();
+		String[] mutants = BenchmarkPrograms.getMutantNames();
+		if (Flags.getGranularity() == Flags.GRANULARITY.ALL) {
+			Set<String> allMutants = new HashSet<>();
+			for (String m : mutants) {
+				allMutants.add(m);
+			}
+			groupMutants.put("", allMutants);
+			return groupMutants;
+		}
+		
+		// group mutations
+		Map<String, Mutation> mutations = getMuationInfo();
 		for (String m : mutants) {
 			Mutation mutation = mutations.get(m);
 			if (mutation == null) {

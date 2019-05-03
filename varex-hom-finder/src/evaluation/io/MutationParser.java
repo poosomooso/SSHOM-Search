@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +18,22 @@ public class MutationParser {
 	public Map<String, Mutation> getMutations(File file) {
 		Map<String, Mutation> mutations = new HashMap<>();
 		readWords(file, mutations);
+		return mutations;
+	}
+	
+	// TODO revise duplicate code
+	public Map<String, Mutation> getMutations(InputStream in) {
+		Map<String, Mutation> mutations = new HashMap<>();
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				addMutation(line, mutations);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return mutations;
 	}
 	

@@ -1,6 +1,7 @@
 package benchmark;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import benchmark.BenchmarkPrograms.Program;
 
@@ -41,7 +42,9 @@ public class RunBenchmarks {
 			}
 		}
 		if (selectedProgram == null) {
-			System.err.println("Program not supported: " + selectedProgram);
+			System.err.println("Program not supported: " + whichProgram);
+			System.err.println("Use one of: " + Arrays.toString(BenchmarkPrograms.Program.values()));
+			
 			System.exit(-1);
 		} else {
 			BenchmarkPrograms.PROGRAM = selectedProgram;
