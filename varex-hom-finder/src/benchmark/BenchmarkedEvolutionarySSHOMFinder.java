@@ -14,13 +14,37 @@ public class BenchmarkedEvolutionarySSHOMFinder {
     private static final int MIN_ORDER = 2;
     private static final int MAX_ORDER = 40; //max mutations
 
-    public static final boolean DEBUG_GA = true;
+    public static final boolean DEBUG_GA = false;
 
     private Set<MutationContainer> seenMutations = new HashSet<>();
     private Set<MutationContainer> recordedSSHOMs = new HashSet<>();
     private String[]                       allFOMs;
     private SSHOMRunner                    testRunner;
-    private Map<String, MutationContainer> fomFitness;
+    @SuppressWarnings("serial")
+	private Map<String, MutationContainer> fomFitness = new HashMap<String, MutationContainer>() {
+
+    	/**
+    	 * Lazy initialization of FOMS.
+    	 */
+		@Override
+    	public MutationContainer get(Object o) {
+			if (!(o instanceof String)) {
+				throw new RuntimeException(o.toString());
+			}
+			String m = (String) o;
+    		MutationContainer fomEntry = super.get(m);
+    		if (fomEntry == null) {
+    			try {
+    				fomEntry = new MutationContainer(new String[] { m }, testRunner, null, testClasses);
+					put((String) m, fomEntry);
+				} catch (NoSuchFieldException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+    		}
+    		return fomEntry;
+    	};
+    	
+    };
     private Class<?>[] testClasses;
 
 
@@ -30,17 +54,12 @@ public class BenchmarkedEvolutionarySSHOMFinder {
 
         Class<?>[] targetClasses = BenchmarkPrograms.getTargetClasses();
         Class<?>[] testClasses = BenchmarkPrograms.getTestClasses();
-        this.testClasses = testClasses;
 
+		this.testClasses = testClasses;
         this.testRunner = new SSHOMRunner(targetClasses, testClasses);
         this.allFOMs = BenchmarkPrograms.getMutantNames();
-
-        // doing this because I can't get stream to work?
-        this.fomFitness = new HashMap<>();
-        for (String m : this.allFOMs) {
-            this.fomFitness.put(m,
-                new MutationContainer(new String[] { m }, testRunner, null, testClasses));
-        }
+        InfLoopTestProcess.createTestCovereage(testClasses);
+        InfLoopTestProcess.setTimeOutListener();
 
         Benchmarker.instance.timestamp("Generated FOMs");
 
@@ -51,7 +70,6 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         int numIters = 100;
 
         geneticAlgorithm(populationSize, percentDiscarded, numIters);
-
     }
 
     private int geneticAlgorithm(int populationSize, double percentDiscarded,
@@ -254,7 +272,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
 
                 if (homsSet.add(container)) {
                     i++;
-                    System.out.println(i);
+//                    System.out.println(i);
                 } else if (DEBUG_GA) {
                     System.out.println("init: Generated duplicate mutant");
                 }
