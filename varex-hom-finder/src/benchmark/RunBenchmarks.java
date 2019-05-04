@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import benchmark.BenchmarkPrograms.Program;
 import benchmark.heuristics.Configuration;
+import util.ConfigLoader;
 
 public class RunBenchmarks {
 
