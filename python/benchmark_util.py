@@ -15,11 +15,14 @@ GA3 = "-ga3.txt"
 VAREX1 = "-varex1.txt"
 VAREX2 = "-varex2.txt"
 VAREX3 = "-varex3.txt"
+SMART1 = "-smart1.txt"
+SMART2 = "-smart1.txt"
+SMART3 = "-smart1.txt"
 
-CLI_PATH = "data/benchmarks/ase-submission/cli/cli"
+CLI_PATH = "data/benchmarks/issta-submission/cli/cli"
 VALIDATOR_PATH = "data/benchmarks/ase-submission/validator/validator"
-MONOPOLY_PATH = "data/benchmarks/ase-submission/monopoly/monopoly"
-CHESS_PATH = "data/benchmarks/ase-submission/chess/chess"
+MONOPOLY_PATH = "data/benchmarks/issta-submission/monopoly/monopoly"
+CHESS_PATH = "data/benchmarks/issta-submission/chess/chess"
 TRIANGLE_PATH = "data/benchmarks/ase-submission/allTriangle/triangle"
 
 CLI_ALL = 376
