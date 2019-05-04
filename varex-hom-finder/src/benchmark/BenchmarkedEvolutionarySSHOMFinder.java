@@ -65,7 +65,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         // actual algorithm
         int populationSize = 5000;
         double percentDiscarded = 1.0 / 3.0; // TODO: properties file
-        int numIters = 100;
+        int numIters = 10000;
         
         Map<String, Set<String>> groupMutants = BenchmarkPrograms.createMutationGroups();
         for (Entry<String, Set<String>> groupEntry : groupMutants.entrySet()) {

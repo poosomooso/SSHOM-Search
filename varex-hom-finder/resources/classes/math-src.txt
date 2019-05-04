@@ -87,6 +87,7 @@ org.apache.commons.math3.analysis.integration.TrapezoidIntegrator
 org.apache.commons.math3.analysis.integration.UnivariateIntegrator
 org.apache.commons.math3.analysis.interpolation.AkimaSplineInterpolator
 org.apache.commons.math3.analysis.interpolation.BicubicInterpolatingFunction
+org.apache.commons.math3.analysis.interpolation.BicubicFunction
 org.apache.commons.math3.analysis.interpolation.BicubicInterpolator
 org.apache.commons.math3.analysis.interpolation.BicubicSplineInterpolatingFunction
 org.apache.commons.math3.analysis.interpolation.BicubicSplineInterpolator
@@ -110,10 +111,13 @@ org.apache.commons.math3.analysis.interpolation.SmoothingPolynomialBicubicSpline
 org.apache.commons.math3.analysis.interpolation.SplineInterpolator
 org.apache.commons.math3.analysis.interpolation.TricubicInterpolatingFunction
 org.apache.commons.math3.analysis.interpolation.TricubicInterpolator
+org.apache.commons.math3.analysis.interpolation.TricubicFunction
 org.apache.commons.math3.analysis.interpolation.TricubicSplineInterpolatingFunction
 org.apache.commons.math3.analysis.interpolation.TricubicSplineInterpolator
+org.apache.commons.math3.analysis.interpolation.TricubicSplineFunction
 org.apache.commons.math3.analysis.interpolation.TrivariateGridInterpolator
 org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator
+org.apache.commons.math3.analysis.interpolation.BicubicSplineFunction
 org.apache.commons.math3.analysis.interpolation.UnivariatePeriodicInterpolator
 org.apache.commons.math3.analysis.MultivariateFunction
 org.apache.commons.math3.analysis.MultivariateMatrixFunction

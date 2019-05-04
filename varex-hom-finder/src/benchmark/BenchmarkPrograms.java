@@ -183,8 +183,9 @@ public class BenchmarkPrograms {
 	        	  if (isTestClass(klass)) {
 	        		  classes.add(klass);  
 	        	  }
-	          } else 
+	          } else {
 	        	  classes.add(klass);
+	          }
 	        }
         }
         return classes.toArray(new Class[0]);
