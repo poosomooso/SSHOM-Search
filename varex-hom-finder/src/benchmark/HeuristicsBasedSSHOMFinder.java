@@ -107,7 +107,7 @@ public class HeuristicsBasedSSHOMFinder {
 		Map<Integer, Set<HigherOrderMutant>> candidates = new HashMap<>();
 		for (Iterator<HigherOrderMutant> iterator = homPaths.iterator(); iterator.hasNext();) {
 			HigherOrderMutant c = iterator.next();
-			int score = Configuration.K_TEST_OVERLAP * computeDiv(c.getFoms()) + Configuration.K_DEGREE * c.size() - Configuration.K_N_PLUS_ONE * (c.size() == 2 ? 1 : 0);
+			int score = Configuration.getK_TEST_OVERLAP() * computeDiv(c.getFoms()) + Configuration.getK_DEGREE() * c.size() - Configuration.getK_N_PLUS_ONE() * (c.size() == 2 ? 1 : 0);
 			candidates.putIfAbsent(score, new HashSet<>());
 			candidates.get(score).add(c);
 			iterator.remove();
@@ -192,8 +192,8 @@ public class HeuristicsBasedSSHOMFinder {
 		for (Set<FirstOrderMutant> child : children) {
 			final int div = computeDiv(child);
 			final int size = child.size();
-			final int oldScore = Configuration.K_TEST_OVERLAP * div + Configuration.K_DEGREE * size;
-			final int newScore = Configuration.K_TEST_OVERLAP * div + Configuration.K_DEGREE * size - Configuration.K_N_PLUS_ONE;
+			final int oldScore = Configuration.getK_TEST_OVERLAP() * div + Configuration.getK_DEGREE() * size;
+			final int newScore = Configuration.getK_TEST_OVERLAP() * div + Configuration.getK_DEGREE() * size - Configuration.getK_N_PLUS_ONE();
 			
 			Set<HigherOrderMutant> bucket = candidatesMap.get(oldScore);
 			HigherOrderMutant hom = new HigherOrderMutant(child);

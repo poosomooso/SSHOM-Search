@@ -1,7 +1,5 @@
 package benchmark;
 
-import java.lang.reflect.Field;
-
 /**
  * Flags to enable alternative implementations. 
  * 

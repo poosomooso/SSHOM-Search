@@ -1,6 +1,5 @@
 package benchmark.heuristics;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,7 +15,6 @@ import org.junit.runner.Description;
 import benchmark.BenchmarkPrograms;
 import benchmark.Flags;
 import evaluation.analysis.Mutation;
-import evaluation.io.MutationParser;
 
 /**
  * TODO description 
@@ -67,7 +65,7 @@ public final class HeuristicsPathGenerator implements IPathGenerator {
 		for (Entry<FirstOrderMutant, Set<FirstOrderMutant>> entry : connections.entrySet()) {
 			Set<FirstOrderMutant> conndectedNodes = new HashSet<>(entry.getValue());
 			conndectedNodes.removeAll(coveredStartingNodes);
-			getHOMCandidates(paths, entry.getKey(), conndectedNodes, Configuration.initialDegree);
+			getHOMCandidates(paths, entry.getKey(), conndectedNodes, Configuration.getInitialDegree());
 			coveredStartingNodes.add(entry.getKey());
 		}
 		coveredStartingNodes.clear();
@@ -79,7 +77,7 @@ public final class HeuristicsPathGenerator implements IPathGenerator {
 	
 	@Override
 	public Collection<Set<FirstOrderMutant>> getAllDirektChildren(Set<FirstOrderMutant> nodes) {
-		if (nodes.size() >= Configuration.maxDegree) {
+		if (nodes.size() >= Configuration.getMaxDegree()) {
 			return Collections.emptyList();
 		}
 		Set<Set<FirstOrderMutant>> children = new HashSet<>();
@@ -206,7 +204,7 @@ public final class HeuristicsPathGenerator implements IPathGenerator {
 		for (FirstOrderMutant mutant : currentSelection) {
 			methods.add(mutations.get(mutant.getMutant()).methodName);
 		}
-		return methods.size() <= Configuration.MAX_METHODS;
+		return methods.size() <= Configuration.getMAX_METHODS();
 	}
 
 	private boolean isSameClass(Collection<FirstOrderMutant> currentSelection) {
@@ -214,7 +212,7 @@ public final class HeuristicsPathGenerator implements IPathGenerator {
 		for (FirstOrderMutant mutant : currentSelection) {
 			classes.add(mutations.get(mutant.getMutant()).className);
 		}
-		return classes.size() <= Configuration.MAX_CLASSES;
+		return classes.size() <= Configuration.getMAX_CLASSES();
 	}
 
 }

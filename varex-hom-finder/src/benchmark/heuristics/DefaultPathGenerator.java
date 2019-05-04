@@ -20,7 +20,7 @@ public final class DefaultPathGenerator implements IPathGenerator {
 
 	@Override
 	public Collection<HigherOrderMutant> getPaths() {
-		return getOrder(Configuration.maxDegree, 0);
+		return getOrder(Configuration.getMaxDegree(), 0);
 	}
 
 	private List<HigherOrderMutant> getOrder(int order, int startIndex) {
@@ -51,7 +51,7 @@ public final class DefaultPathGenerator implements IPathGenerator {
 
 	@Override
 	public Collection<Set<FirstOrderMutant>> getAllDirektChildren(Set<FirstOrderMutant> nodes) {
-		if (nodes.size() >= Configuration.maxDegree) {
+		if (nodes.size() >= Configuration.getMaxDegree()) {
 			return Collections.emptySet();
 		}
 		final Collection<Set<FirstOrderMutant>> children = new HashSet<>();
