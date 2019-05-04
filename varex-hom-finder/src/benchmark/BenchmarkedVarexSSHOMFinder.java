@@ -86,10 +86,20 @@ public class BenchmarkedVarexSSHOMFinder {
 //			}
 //		}
 		/* VarexC */
-//		runMonopolyVarexC();
-//        runCLIVarexC();
-//        runValidatorVarexC();
-        runTriangleVarexC();
+		switch (BenchmarkPrograms.PROGRAM) {
+			case TRIANGLE:
+				runTriangleVarexC();
+				break;
+			case MONOPOLY:
+				runMonopolyVarexC();
+				break;
+			case CLI:
+				runCLIVarexC();
+				break;
+			case VALIDATOR:
+				runValidatorVarexC();
+				break;
+		}
 
 		Benchmarker.instance.timestamp("create features");
 		
