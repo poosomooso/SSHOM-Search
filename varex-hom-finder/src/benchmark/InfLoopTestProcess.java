@@ -8,7 +8,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,7 +30,6 @@ import benchmark.heuristics.TestRunListener;
 import br.ufmg.labsoft.mutvariants.schematalib.ISchemataLibMethodsListener;
 import br.ufmg.labsoft.mutvariants.schematalib.SchemataLibMethods;
 import evaluation.analysis.Mutation;
-import evaluation.io.MutationParser;
 import testRunner.RunTests;
 import util.ConditionalMutationWrapper;
 import util.SSHOMListener;
@@ -216,20 +214,17 @@ public class InfLoopTestProcess {
 
 	private static RunListener timeRecorder(Map<Description, Long> times) {
 		return new RunListener() {
-			int testCount = 0;
 			long startTime = 0;
 
 			@Override
 			public void testFinished(Description description) throws Exception {
 				long runtime = System.currentTimeMillis() - startTime;
-				System.out.println(" " + runtime + "ms");
 				times.put(description, runtime);
 			}
 
 			@Override
 			public void testStarted(Description description) throws Exception {
 				startTime = System.currentTimeMillis();
-				System.out.print(testCount++ + " " + description.getClassName() + " " + description.getMethodName());
 			}
 			
 		};
@@ -362,7 +357,7 @@ public class InfLoopTestProcess {
 		    
 		    
 		    if (!testCases.isEmpty()) {
-			    System.out.println(ignoredTests + " ignored " + testCases.size() + " run");
+//			    System.out.println(ignoredTests + " ignored " + testCases.size() + " run");
 			    process.runTests(mutants, testCases);
 		    }
 		}
@@ -376,8 +371,8 @@ public class InfLoopTestProcess {
 	private static void runJWithUnit(Class<?>[] testClasses, String[] mutants, final Set<String> testsClassesToRun,
 			final Set<String> testsToRun) {
 		if (!Flags.isCoverage() || !testsToRun.isEmpty()) {
-			System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
-			System.out.flush();
+//			System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
+//			System.out.flush();
 			ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(BenchmarkPrograms.getTargetClasses());
 			cmw.resetMutants();
 			for (int i = 0; i < mutants.length; i++) {
@@ -418,7 +413,7 @@ public class InfLoopTestProcess {
 			}
 		    timeoutThread = null;
 		    long end = System.currentTimeMillis();
-		    System.out.println(end - start + "ms");
+//		    System.out.println(end - start + "ms");
 		}
 	}
 	
