@@ -1,10 +1,13 @@
 package benchmark;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import geneticAlgorithm.MutationContainer;
 import geneticAlgorithm.RandomUtils;
@@ -17,7 +20,6 @@ public class BenchmarkedEvolutionarySSHOMFinder {
     public static final boolean DEBUG_GA = false;
 
     private Set<MutationContainer> seenMutations = new HashSet<>();
-    private Set<MutationContainer> recordedSSHOMs = new HashSet<>();
     private String[]                       allFOMs;
     private SSHOMRunner                    testRunner;
     @SuppressWarnings("serial")
@@ -35,14 +37,14 @@ public class BenchmarkedEvolutionarySSHOMFinder {
     		MutationContainer fomEntry = super.get(m);
     		if (fomEntry == null) {
     			try {
-    				fomEntry = new MutationContainer(new String[] { m }, testRunner, null, testClasses);
+    				fomEntry = MutationContainer.create(new String[] { m }, testRunner, null, testClasses);
 					put((String) m, fomEntry);
 				} catch (NoSuchFieldException | IllegalAccessException e) {
 					e.printStackTrace();
 				}
     		}
     		return fomEntry;
-    	};
+    	}
     	
     };
     private Class<?>[] testClasses;
@@ -57,23 +59,24 @@ public class BenchmarkedEvolutionarySSHOMFinder {
 
 		this.testClasses = testClasses;
         this.testRunner = new SSHOMRunner(targetClasses, testClasses);
-        this.allFOMs = BenchmarkPrograms.getMutantNames();
         InfLoopTestProcess.createTestCovereage(testClasses);
         InfLoopTestProcess.setTimeOutListener();
-
-        Benchmarker.instance.timestamp("Generated FOMs");
 
         // actual algorithm
         int populationSize = 5000;
         double percentDiscarded = 1.0 / 3.0; // TODO: properties file
-
         int numIters = 100;
-
-        geneticAlgorithm(populationSize, percentDiscarded, numIters);
+        
+        Map<String, Set<String>> groupMutants = BenchmarkPrograms.createMutationGroups();
+        for (Entry<String, Set<String>> groupEntry : groupMutants.entrySet()) {
+			long startTime = System.currentTimeMillis();
+			this.allFOMs = groupEntry.getValue().toArray(new String[0]);
+	        geneticAlgorithm(populationSize, percentDiscarded, numIters, startTime);
+        }
     }
 
     private int geneticAlgorithm(int populationSize, double percentDiscarded,
-        int numIters) throws NoSuchFieldException, IllegalAccessException {
+        int numIters, long startTime) throws NoSuchFieldException, IllegalAccessException {
         int sshomsFound = 0;
         //generate some homs based on foms
         MutationContainer[] homPopulation = genHOMs(3, populationSize);
@@ -83,21 +86,6 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         for (int i = 0; i < numIters; i++) {
             Benchmarker.instance.timestamp("GENERATION " + i);
             Arrays.sort(homPopulation);
-
-            int j = homPopulation.length-1;
-            while (j >= 0 && homPopulation[j].getFitness() <= 1.0) {
-                if (!recordedSSHOMs.contains(homPopulation[j])) {
-                    assert BenchmarkPrograms
-                        .homIsValid(homPopulation[j].getMutation()) :
-                        "Invalid HOM: " + Arrays
-                            .toString(homPopulation[j].getMutation());
-                    Benchmarker.instance.timestamp(
-                        String.join(",", homPopulation[j].getMutation())
-                            + " fitness: " + homPopulation[j].getFitness());
-                    recordedSSHOMs.add(homPopulation[j]);
-                }
-                j--;
-            }
 
             double epsilon = (populationSize * percentDiscarded);
             if (Math.abs(seenMutations.size() - (100 * 100)) < epsilon)
@@ -134,19 +122,15 @@ public class BenchmarkedEvolutionarySSHOMFinder {
             MutationContainer parent1 = sortedHOMS[parentIndex1];
             MutationContainer parent2 = sortedHOMS[parentIndex2];
 
-            MutationContainer[] children = crossoverParents(parent1, parent2);
-            if (!seenMutations.contains(children[0]) && BenchmarkPrograms.homIsValid(children[0].getMutation())) {
-                sortedHOMS[i++] = children[0];
-                seenMutations.add(children[0]);
-            } else if (DEBUG_GA) {
-                System.out.println("x-over: (1) Generated duplicate or invalid mutant");
-            }
-            if (!seenMutations.contains(children[1]) && BenchmarkPrograms.homIsValid(children[1].getMutation())) {
-                sortedHOMS[i++] = children[1];
-                seenMutations.add(children[1]);
-            } else if (DEBUG_GA) {
-                System.out.println("x-over: (2) Generated duplicate or invalid mutant");
-            }
+            List<MutationContainer> children = crossoverParents(parent1, parent2);
+            for (MutationContainer child : children) {
+            	 if (!seenMutations.contains(child)) {
+                     sortedHOMS[i++] = child;
+                     seenMutations.add(child);
+                 } else if (DEBUG_GA) {
+                     System.out.println("x-over: Generated duplicate or invalid mutant");
+                 }
+			}
         }
         return i;
     }
@@ -168,34 +152,39 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         }
     }
 
-
     public MutationContainer randomlyMutate(MutationContainer hom)
         throws NoSuchFieldException, IllegalAccessException {
-        String[] newMutation;
-        String[] oldMutation = hom.getMutation();
-        if ((oldMutation.length >= MAX_ORDER) ||
-            (oldMutation.length > MIN_ORDER && Math.random() < 0.5)) { //delete fom
-            int deletedIndex = RandomUtils.randRange(0, oldMutation.length);
-            newMutation = deleteFOM(hom, deletedIndex);
-
-        } else { //add fom
-            newMutation = addFOM(hom,
-                generateRandomUnusedFOM(hom.getMutation(), this.allFOMs));
-        }
-
-        return new MutationContainer(newMutation, this.testRunner, this.fomFitness, this.testClasses);
+    	while (true) {
+	        String[] newMutation;
+	        String[] oldMutation = hom.getMutation();
+	        if ((oldMutation.length >= MAX_ORDER) ||
+	            (oldMutation.length > MIN_ORDER && Math.random() < 0.5)) { //delete fom
+	            int deletedIndex = RandomUtils.randRange(0, oldMutation.length);
+	            newMutation = deleteFOM(hom, deletedIndex);
+	
+	        } else { //add fom
+	            newMutation = addFOM(hom,
+	                generateRandomUnusedFOM(hom.getMutation(), this.allFOMs));
+	        }
+	        if (BenchmarkPrograms.homIsValid(newMutation)) {
+	        	return MutationContainer.create(newMutation, this.testRunner, this.fomFitness, this.testClasses);
+	        }
+    	}
     }
+    	
 
-    public MutationContainer[] crossoverParents(MutationContainer a, MutationContainer b)
+    public List<MutationContainer> crossoverParents(MutationContainer a, MutationContainer b)
         throws NoSuchFieldException, IllegalAccessException {
+    	List<MutationContainer> children = new ArrayList<>(2);
         int randIndex1;
         int randIndex2;
         try {
             randIndex1 = generateRandomUnusedFOM(b.getMutation(), a.getMutation());
             randIndex2 = generateRandomUnusedFOM(a.getMutation(), b.getMutation());
         } catch(RuntimeException e) {
-            return new MutationContainer[] { randomlyMutate(a),
-                randomlyMutate(b) };
+        	children.add(randomlyMutate(a));
+        	children.add(randomlyMutate(b));
+        	return children;
         }
 
         String[] child1 = a.getMutation().clone();
@@ -204,9 +193,14 @@ public class BenchmarkedEvolutionarySSHOMFinder {
         child1[randIndex1] = b.getMutation()[randIndex2];
         child2[randIndex2] = a.getMutation()[randIndex1];
 
-        return new MutationContainer[] {
-            new MutationContainer(child1, this.testRunner, this.fomFitness, this.testClasses),
-            new MutationContainer(child2, this.testRunner, this.fomFitness, this.testClasses) };
+        
+        if (BenchmarkPrograms.homIsValid(child1)) {
+        	children.add(MutationContainer.create(child1, this.testRunner, this.fomFitness, this.testClasses));
+        }
+        if (BenchmarkPrograms.homIsValid(child2)) {
+        	children.add(MutationContainer.create(child2, this.testRunner, this.fomFitness, this.testClasses));
+        }
+        return children;
     }
 
     protected String[] deleteFOM(MutationContainer hom, int deletedIndex) {
@@ -267,7 +261,7 @@ public class BenchmarkedEvolutionarySSHOMFinder {
             }
 
             if (BenchmarkPrograms.homIsValid(newHOM)) {
-                MutationContainer container = new MutationContainer(newHOM,
+                MutationContainer container = MutationContainer.create(newHOM,
                     this.testRunner, this.fomFitness, this.testClasses);
 
                 if (homsSet.add(container)) {

@@ -1,6 +1,7 @@
 package geneticAlgorithm;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -8,6 +9,7 @@ import java.util.Set;
 import org.junit.runner.Description;
 
 import benchmark.BenchmarkPrograms;
+import benchmark.Benchmarker;
 import benchmark.InfLoopTestProcess;
 import util.SSHOMListener;
 import util.SSHOMRunner;
@@ -20,10 +22,30 @@ public class MutationContainer implements Comparable<MutationContainer>{
     private final double           fitness;
     private final Set<Description> killedTests;
     private int hashCode = Integer.MAX_VALUE;
+    
+    private static final Map<String, MutationContainer> mutationCache = new HashMap<>();
+    
+    public static MutationContainer create(String[] hom, SSHOMRunner runner,
+            Map<String, MutationContainer> foms, Class<?>[] testClasses) throws NoSuchFieldException, IllegalAccessException {
+    	Arrays.sort(hom);
+    	
+    	final String key = Arrays.toString(hom);
+    	MutationContainer mutationContainter = mutationCache.get(key);
+    	if (mutationContainter == null) {
+    		mutationContainter =  new MutationContainer(hom, runner, foms, testClasses);
+    		mutationCache.put(key, mutationContainter);
+    	}
+    	return mutationContainter;
+    }
+    
+    private static int sshomsFound = 0;
 
-    public MutationContainer(String[] hom, SSHOMRunner runner,
+    private MutationContainer(String[] hom, SSHOMRunner runner,
         Map<String, MutationContainer> foms, Class<?>[] testClasses)
         throws NoSuchFieldException, IllegalAccessException {
+    	if (!BenchmarkPrograms.homIsValid(hom)) {
+    		throw new RuntimeException("invlid");
+    	}
         this.mutation = hom;
         Arrays.sort(this.mutation);
         if (runner != null) {
@@ -38,6 +60,10 @@ public class MutationContainer implements Comparable<MutationContainer>{
             }
             this.killedTests = sshomListener.getHomTests();
             this.fitness = mutationFitness(foms);
+            
+            if (this.fitness <= 1 && this.fitness > 0 && BenchmarkPrograms.homIsValid(hom)) {
+	            Benchmarker.instance.timestamp(++sshomsFound + " " + String.join(",", getMutation()) + " fitness: " + this.fitness);
+            }
         } else {
             this.fitness = 0.0;
             this.killedTests = null;
