@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import benchmark.BenchmarkPrograms.Program;
+import benchmark.heuristics.Configuration;
 
 public class RunBenchmarks {
 
@@ -13,7 +14,8 @@ public class RunBenchmarks {
       errAndExit();
     }
     
-    Flags.initialize();
+    ConfigLoader.initialize(Flags.class);
+    ConfigLoader.initialize(Configuration.class);
 
     String whichProgram = args[0];
     String whichMode = args[1];
