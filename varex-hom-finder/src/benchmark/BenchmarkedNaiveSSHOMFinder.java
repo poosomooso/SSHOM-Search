@@ -42,7 +42,9 @@ public class BenchmarkedNaiveSSHOMFinder {
 
   private void populateFoms(String[] mutants)
       throws NoSuchFieldException, IllegalAccessException {
+//    int i = 0;
     for (String m : mutants) {
+//      if (i++ < 440) continue;
 //      SSHOMListener sshomListener = runner.runJunitOnHOM(m);
       SSHOMListener listener;
       if (BenchmarkPrograms.programHasInfLoops()) {

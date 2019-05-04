@@ -19,7 +19,7 @@ public class BenchmarkPrograms {
   public enum Program {
     TRIANGLE, MONOPOLY, VALIDATOR, CLI, CHESS
   }
-  public static final Program PROGRAM = Program.VALIDATOR;
+  public static Program PROGRAM = Program.CHESS;
   private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
   private static Class<?>[] targetClasses;
   private static Class<?>[] testClasses;
@@ -52,7 +52,7 @@ public class BenchmarkPrograms {
 
   public static boolean programHasInfLoops() {
     switch (PROGRAM) {
-    case TRIANGLE: //return false;
+    case TRIANGLE: return false;
     case MONOPOLY:
     default: return true;
     }
@@ -274,8 +274,7 @@ public class BenchmarkPrograms {
   public static String getFeatureModelResource() {
     switch (PROGRAM) {
     case TRIANGLE:
-      return "mutantgroups/triangle-temp.txt"; // TODO: switch back once we get the mutant groups from Joao Paolo
-//      return "mutantgroups/triangle.txt";
+      return "mutantgroups/triangle.txt";
     case MONOPOLY:
       return "mutantgroups/monopoly.txt";
     case VALIDATOR:

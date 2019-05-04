@@ -1,24 +1,5 @@
 package benchmark;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.junit.Test;
-
 import cmu.conditional.Conditional;
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
@@ -28,11 +9,22 @@ import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDException;
 import net.sf.javabdd.BDDFactory;
+import org.junit.Test;
 import solver.bdd.BDDSolver;
 import solver.sat.SATSolver;
 import testRunner.RunTests;
 import varex.SATSSHOMExprFactory;
 import varex.SSHOMExprFactory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class BenchmarkedVarexSSHOMFinder {
 
@@ -98,7 +90,7 @@ public class BenchmarkedVarexSSHOMFinder {
 //        runCLIVarexC();
 //        runValidatorVarexC();
         runTriangleVarexC();
-		
+
 		Benchmarker.instance.timestamp("create features");
 		
 		mutantExprs = mutantNamesToFeatures(mutants);

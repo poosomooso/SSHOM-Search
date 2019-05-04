@@ -13,6 +13,8 @@ import util.SSHOMListener;
 import util.SSHOMRunner;
 import util.SetArithmetic;
 
+import static benchmark.BenchmarkedEvolutionarySSHOMFinder.DEBUG_GA;
+
 public class MutationContainer implements Comparable<MutationContainer>{
     private final String[] mutation;
     private final double           fitness;
@@ -26,6 +28,8 @@ public class MutationContainer implements Comparable<MutationContainer>{
         Arrays.sort(this.mutation);
         if (runner != null) {
             SSHOMListener sshomListener;
+            if (DEBUG_GA) System.out.println("Running tests on mutant " + Arrays.toString(hom));
+
             if (BenchmarkPrograms.programHasInfLoops()) {
                 sshomListener = InfLoopTestProcess
                     .getFailedTests(testClasses, hom);

@@ -14,6 +14,8 @@ public class BenchmarkedEvolutionarySSHOMFinder {
     private static final int MIN_ORDER = 2;
     private static final int MAX_ORDER = 40; //max mutations
 
+    public static final boolean DEBUG_GA = true;
+
     private Set<MutationContainer> seenMutations = new HashSet<>();
     private Set<MutationContainer> recordedSSHOMs = new HashSet<>();
     private String[]                       allFOMs;
@@ -118,10 +120,14 @@ public class BenchmarkedEvolutionarySSHOMFinder {
             if (!seenMutations.contains(children[0]) && BenchmarkPrograms.homIsValid(children[0].getMutation())) {
                 sortedHOMS[i++] = children[0];
                 seenMutations.add(children[0]);
+            } else if (DEBUG_GA) {
+                System.out.println("x-over: (1) Generated duplicate or invalid mutant");
             }
             if (!seenMutations.contains(children[1]) && BenchmarkPrograms.homIsValid(children[1].getMutation())) {
                 sortedHOMS[i++] = children[1];
                 seenMutations.add(children[1]);
+            } else if (DEBUG_GA) {
+                System.out.println("x-over: (2) Generated duplicate or invalid mutant");
             }
         }
         return i;
@@ -138,6 +144,8 @@ public class BenchmarkedEvolutionarySSHOMFinder {
             if (!seenMutations.contains(m) && BenchmarkPrograms.homIsValid(m.getMutation())) {
                 sortedHOMS[i++] = m;
                 seenMutations.add(m);
+            }  else if (DEBUG_GA) {
+                System.out.println("mutate: Generated duplicate or invalid mutant");
             }
         }
     }
@@ -247,7 +255,11 @@ public class BenchmarkedEvolutionarySSHOMFinder {
                 if (homsSet.add(container)) {
                     i++;
                     System.out.println(i);
+                } else if (DEBUG_GA) {
+                    System.out.println("init: Generated duplicate mutant");
                 }
+            } else if (DEBUG_GA) {
+                System.out.println("init: Generated invalid mutant");
             }
         }
         seenMutations.addAll(homsSet);

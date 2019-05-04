@@ -63,3 +63,5 @@ python/.ipynb_checkpoints
 /bin/
 output.txt
 data/benchmarks/from-aws
+data/benchmarks/cmu-machine
+*.pyc

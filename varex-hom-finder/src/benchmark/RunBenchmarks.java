@@ -6,23 +6,43 @@ public class RunBenchmarks {
 
   public static void main(String[] args)
       throws NoSuchFieldException, IOException, IllegalAccessException {
-    if (args.length < 1) {
-      System.err
-          .println("A mode must be specified. One of : naive, ga, or varex");
-      System.exit(0);
+    if (args.length < 2) {
+      errAndExit();
     }
+
     String whichProgram = args[0];
-    if (whichProgram.equalsIgnoreCase("naive")) {
+    String whichMode = args[1];
+
+    if (whichProgram.equalsIgnoreCase("triangle")) {
+      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.TRIANGLE;
+    } else if (whichProgram.equalsIgnoreCase("monopoly")) {
+      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.MONOPOLY;
+    } else if (whichProgram.equalsIgnoreCase("cli")) {
+      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.CLI;
+    } else if (whichProgram.equalsIgnoreCase("validator")) {
+      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.VALIDATOR;
+    } else if (whichProgram.equalsIgnoreCase("chess")) {
+      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.CHESS;
+    } else {
+      errAndExit();
+    }
+
+    if (whichMode.equalsIgnoreCase("naive")) {
       runNaive();
-    } else if (whichProgram.equalsIgnoreCase("ga")) {
+    } else if (whichMode.equalsIgnoreCase("ga")) {
       runEvolutionary();
-    } else if (whichProgram.equalsIgnoreCase("varex")) {
+    } else if (whichMode.equalsIgnoreCase("varex")) {
       runVarex();
     } else {
-      System.err
-          .println("A mode must be specified. One of : naive, ga, or varex");
-      System.exit(0);
+      errAndExit();
     }
+  }
+
+  private static void errAndExit() {
+    System.err.println("A program and a mode must be specified, in that order.");
+    System.err.println("Programs : triangle, monopoly, validator, cli, or chess");
+    System.err.println("Modes : naive, ga, or varex");
+    System.exit(0);
   }
 
   private static void runNaive()

@@ -1,0 +1,4 @@
+TIME     575785|Generated FOMs
+TIME    2017927|Generated HOMs
+TIME    2017927|GENERATION 0
+TIME    2017931|_mut1436,_mut1438,_mut1449 fitness: 1.0
