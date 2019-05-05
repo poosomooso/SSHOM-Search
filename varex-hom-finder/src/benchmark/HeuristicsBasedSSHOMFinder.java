@@ -30,7 +30,7 @@ import util.SSHOMRunner;
  */
 public class HeuristicsBasedSSHOMFinder {
 	
-	private final long TIME_FOMS = Flags.getMaxGroupTime() / 2;
+	private final long TIME_FOMS = Flags.getMaxGroupTime() / 3;
 	
 	private SSHOMRunner runner;
 	private final Map<String, Set<Description>> foms = new HashMap<>();
