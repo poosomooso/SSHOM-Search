@@ -29,7 +29,7 @@ import mutated.triangleAll.Triangle_ESTest_improved;
 
 public class BenchmarkPrograms {
   public enum Program {
-    TRIANGLE, MONOPOLY, VALIDATOR, CLI, CHESS, MATH, ANT
+    TRIANGLE, MONOPOLY, VALIDATOR, CLI, CHESS, MATH, ANT, JFREECHART
   }
   public static Program PROGRAM = Program.CHESS;
   private static final String PATH_TO_RESOURCE = "out/production/varex-hom-finder/";
@@ -308,6 +308,8 @@ public class BenchmarkPrograms {
 		return "classes/math-src.txt";
 	case ANT:
 		return "classes/ant-src.txt";
+	case JFREECHART:
+    	return "classes/jfreechart-src.txt";
 	default:
 		throw new RuntimeException("case missing for: " + PROGRAM);
     }
@@ -329,6 +331,8 @@ public class BenchmarkPrograms {
 		return "classes/math-test.txt";
 	case ANT:
 		return "classes/ant-test.txt";
+	case JFREECHART:
+    	return "classes/jfreechart-test.txt";
 	default:
 		throw new RuntimeException("case missing for: " + PROGRAM);
     }
@@ -350,6 +354,8 @@ public class BenchmarkPrograms {
 		return "mutantgroups/math.txt";
     case ANT:
 		return "mutantgroups/ant.txt";
+    case JFREECHART:
+    	return "mutantgroups/jfreechart.txt";
 	default:
 		throw new RuntimeException("case missing for: " + PROGRAM);
     }
