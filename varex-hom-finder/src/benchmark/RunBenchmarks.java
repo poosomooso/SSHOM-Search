@@ -16,7 +16,6 @@ public class RunBenchmarks {
     }
     
     ConfigLoader.initialize(Flags.class);
-    ConfigLoader.initialize(Configuration.class);
 
     String whichProgram = args[0];
     String whichMode = args[1];
@@ -68,6 +67,7 @@ public class RunBenchmarks {
   }
   
 	private static void runSmart() throws NoSuchFieldException, IllegalAccessException {
+    	ConfigLoader.initialize(Configuration.class);
 		HeuristicsBasedSSHOMFinder naiveSSHOMFinder = new HeuristicsBasedSSHOMFinder();
 		naiveSSHOMFinder.run();
 	}
