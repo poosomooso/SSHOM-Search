@@ -4,10 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Deque;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -86,7 +85,7 @@ public class ChessInfLoopTestProcess {
       try {
         listener.testFailure(new Failure(
             Description.createTestDescription(testClass, testMethod), null));
-        System.out.println(testClass+" "+testMethod);
+//        System.out.println(testClass+" "+testMethod);
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -132,7 +131,7 @@ public class ChessInfLoopTestProcess {
           String line;
           while (process.isAlive()) {
             if (((line = input.readLine()) != null)) {
-                            System.out.println(line);
+//                            System.out.println(line);
               if (line.startsWith("failtest ")) {
                 this.failedTests.add(line.substring("failtest ".length()));
               }
@@ -168,8 +167,7 @@ public class ChessInfLoopTestProcess {
     String[] mutants = args[0].length() == 0 ? new String[0] : args[0].split(",");
    	String[] classStr = args[1].split(",");    	
 
-    Deque<String[]> testCases = new ArrayDeque<>();
-
+    Collection<String[]> testCases = new ArrayList<>();
     for (String c : classStr) {
       Class<?> testClass = Class.forName(c);
       for (Method m : testClass.getMethods()) {

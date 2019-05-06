@@ -37,6 +37,11 @@ public final class Flags {
 	 */
 	private static int maxGroupTime = Integer.MAX_VALUE;
 	
+	/**
+	 * Defines the fixed timeout. Used if junit is not used. 
+	 */
+	private static int staticTimeout = 2 * 1000;
+	
 	public static GRANULARITY getGranularity() {
 		return granularity;
 	}
@@ -55,6 +60,10 @@ public final class Flags {
 	
 	public static int getMaxGroupTime() {
 		return maxGroupTime;
+	}
+	
+	public static int getStaticTimeout() {
+		return staticTimeout;
 	}
 	
 	private Flags() {}

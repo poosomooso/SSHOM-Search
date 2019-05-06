@@ -5,10 +5,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Deque;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +25,7 @@ import org.junit.runner.manipulation.Filter;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+import benchmark.BenchmarkPrograms.Program;
 import benchmark.heuristics.TestRunListener;
 import br.ufmg.labsoft.mutvariants.schematalib.ISchemataLibMethodsListener;
 import br.ufmg.labsoft.mutvariants.schematalib.SchemataLibMethods;
@@ -42,9 +42,8 @@ public class InfLoopTestProcess {
   private static final int TIME_OUT_MULTIPLIER = 2;
   private static final long MIN_TIMEOUT = 100;
   
-  private              long                startTime = Integer.MAX_VALUE;
   private final        List<SSHOMListener> listeners = new ArrayList<>();
-  private static final int                 TIMEOUT   = 5 * 60 * 1000;
+  
   private static final int WAIT_FOR_KILL = 500;
 
 
@@ -53,10 +52,12 @@ public class InfLoopTestProcess {
 
   }
 
-	public void runTests(final String[] mutants, Deque<String[]> testCases) {
+	public void runTests(final String[] mutants, Collection<String[]> testCases) {
 		List<String[]> failedTests = new ArrayList<>();
 
+		Set<String[]> testRun = new HashSet<>();
 		for (final String[] test : testCases) {
+			testRun.add(test);
 			Thread t = new Thread("Test: " + Arrays.toString(test)) {
 				public void run() {
 					try {
@@ -74,7 +75,7 @@ public class InfLoopTestProcess {
 			};
 			try {
 				t.start();
-				t.join(TIMEOUT);
+				t.join(Flags.getStaticTimeout());
 				if (t.isAlive()) {
 					failedTests.add(test);
 					InfLoopTestProcess.timedOut = true;
@@ -128,14 +129,16 @@ public class InfLoopTestProcess {
         e.printStackTrace();
       }
     }
-    System.out.println("failtest "+testClass+","+testMethod);
+    if (BenchmarkPrograms.PROGRAM == Program.CHESS) {
+    	System.out.println("failtest "+testClass+","+testMethod);
+    }
   }
 
 
   static SSHOMListener listener = new SSHOMListener();
 
   private static InfLoopTestProcess process  = new InfLoopTestProcess(listener);
-  private static final Deque<String[]> testCases = new ArrayDeque<>();
+//  private static final Collection<String[]> testCases = new ArrayList<>();
 
   private static final Map<Description, Long> testTimes = new HashMap<>();
   
@@ -166,6 +169,7 @@ public class InfLoopTestProcess {
 				SSHOMListener l = ChessInfLoopTestProcess.runTests(testClasses, new String[0]);
 				return l;
 			}
+			List<String[]> testCases = new ArrayList<>();
 			for (Class<?> c : testClasses) {
 				for (Method m : c.getMethods()) {
 					if (m.getAnnotation(Test.class) != null) {
@@ -325,6 +329,7 @@ public class InfLoopTestProcess {
 		if (Flags.isJunit()) {
 			runJWithUnit(testClasses, mutants, testsClassesToRun, testsToRun);
 		} else {
+			System.out.println(Arrays.toString(mutants));
 			// very jank check to use another class for chess
 			// since chess leaks memory
 			if (BenchmarkPrograms.PROGRAM == BenchmarkPrograms.PROGRAM.CHESS) {
@@ -333,6 +338,7 @@ public class InfLoopTestProcess {
 			}
 		    // testname, methodName
 			int ignoredTests = 0;
+			List<String[]> testCases = new ArrayList<>();
 			if (Flags.isCoverage()) {
 			    for (Class<?> c : testClasses) {
 			      for (Method m : c.getMethods()) {
@@ -371,8 +377,8 @@ public class InfLoopTestProcess {
 	private static void runJWithUnit(Class<?>[] testClasses, String[] mutants, final Set<String> testsClassesToRun,
 			final Set<String> testsToRun) {
 		if (!Flags.isCoverage() || !testsToRun.isEmpty()) {
-//			System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
-//			System.out.flush();
+			System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
+			System.out.flush();
 			ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(BenchmarkPrograms.getTargetClasses());
 			cmw.resetMutants();
 			for (int i = 0; i < mutants.length; i++) {
@@ -413,7 +419,7 @@ public class InfLoopTestProcess {
 			}
 		    timeoutThread = null;
 		    long end = System.currentTimeMillis();
-//		    System.out.println(end - start + "ms");
+		    System.out.println(end - start + "ms");
 		}
 	}
 	
@@ -459,7 +465,7 @@ public class InfLoopTestProcess {
 				if (testTimes.containsKey(description)) {
 					return testTimes.get(description) * TIME_OUT_MULTIPLIER + MIN_TIMEOUT;
 				} else {
-					return TIMEOUT;
+					return Flags.getStaticTimeout();
 				}
 			}
 	    }
