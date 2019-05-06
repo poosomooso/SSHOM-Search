@@ -329,7 +329,6 @@ public class InfLoopTestProcess {
 		if (Flags.isJunit()) {
 			runJWithUnit(testClasses, mutants, testsClassesToRun, testsToRun);
 		} else {
-			System.out.println(Arrays.toString(mutants));
 			// very jank check to use another class for chess
 			// since chess leaks memory
 			if (BenchmarkPrograms.PROGRAM == BenchmarkPrograms.PROGRAM.CHESS) {
