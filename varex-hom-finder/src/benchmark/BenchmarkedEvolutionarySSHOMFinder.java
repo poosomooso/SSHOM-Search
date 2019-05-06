@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import benchmark.Flags.GRANULARITY;
+
 import java.util.Map.Entry;
 
 import geneticAlgorithm.MutationContainer;
@@ -53,6 +56,9 @@ public class BenchmarkedEvolutionarySSHOMFinder {
     public void evolutionarySSHOMFinder()
         throws NoSuchFieldException, IllegalAccessException {
     	Benchmarker.instance.start();
+    	if (Flags.getGranularity() != GRANULARITY.ALL) {
+    		throw new RuntimeException("granularity not implemented for GA: " + Flags.getGranularity());
+    	}
 
         Class<?>[] targetClasses = BenchmarkPrograms.getTargetClasses();
         Class<?>[] testClasses = BenchmarkPrograms.getTestClasses();
