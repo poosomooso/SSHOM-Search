@@ -41,6 +41,11 @@ public final class Flags {
 	 * Defines the fixed timeout. Used if junit is not used. 
 	 */
 	private static int staticTimeout = 2 * 1000;
+
+	/**
+	 * Shows a progress bar for debugging purposes. 
+	 */
+	private static boolean showProgressBar = false;
 	
 	public static GRANULARITY getGranularity() {
 		return granularity;
@@ -66,6 +71,10 @@ public final class Flags {
 		return staticTimeout;
 	}
 	
+	public static boolean showProgressBar() {
+		return showProgressBar;
+	}
+
 	private Flags() {}
 	
 }

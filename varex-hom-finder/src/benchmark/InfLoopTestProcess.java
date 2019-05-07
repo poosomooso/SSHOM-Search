@@ -2,6 +2,7 @@ package benchmark;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -52,7 +53,26 @@ public class InfLoopTestProcess {
 
   }
 
+	private static final PrintStream systemOut = System.out;
+	private static final PrintStream systemErr = System.err;
+
+	private static final PrintStream nullOutputStream = new PrintStream(System.out) {
+		@Override
+		public void write(byte[] buf, int off, int len) {
+
+		}
+
+		@Override
+		public void write(int b) {
+
+		}
+
+	};
+	
 	public void runTests(final String[] mutants, Collection<String[]> testCases) {
+		System.setOut(nullOutputStream);
+		System.setErr(nullOutputStream);
+		
 		List<String[]> failedTests = new ArrayList<>();
 
 		Set<String[]> testRun = new HashSet<>();
@@ -88,6 +108,9 @@ public class InfLoopTestProcess {
 			}
 		}
 
+		System.setOut(systemOut);
+		System.setErr(systemErr);
+		
 		for (String[] test : new ArrayList<>(failedTests)) {
 			registerFailure(test[0], test[1]);
 		}
@@ -375,9 +398,9 @@ public class InfLoopTestProcess {
 	
 	private static void runJWithUnit(Class<?>[] testClasses, String[] mutants, final Set<String> testsClassesToRun,
 			final Set<String> testsToRun) {
+//		System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
+//		System.out.flush();
 		if (!Flags.isCoverage() || !testsToRun.isEmpty()) {
-			System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
-			System.out.flush();
 			ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(BenchmarkPrograms.getTargetClasses());
 			cmw.resetMutants();
 			for (int i = 0; i < mutants.length; i++) {
@@ -418,8 +441,9 @@ public class InfLoopTestProcess {
 			}
 		    timeoutThread = null;
 		    long end = System.currentTimeMillis();
-		    System.out.println(end - start + "ms");
+//		    System.out.print(end - start + "ms");
 		}
+//		System.out.println();
 	}
 	
 	 private static class TimeOutListener extends RunListener {

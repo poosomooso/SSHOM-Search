@@ -1,5 +1,6 @@
 package benchmark.heuristics;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +16,8 @@ import org.junit.runner.Description;
 import benchmark.BenchmarkPrograms;
 import benchmark.Flags;
 import evaluation.analysis.Mutation;
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
 
 /**
  * TODO description 
@@ -62,7 +65,18 @@ public final class HeuristicsPathGenerator implements IPathGenerator {
 		}
 
 		final Set<HigherOrderMutant> paths = new HashSet<>();
-		for (Entry<FirstOrderMutant, Set<FirstOrderMutant>> entry : connections.entrySet()) {
+		
+		ProgressBarBuilder builder = new ProgressBarBuilder();
+		builder.setTaskName("generate hom candidates");
+		if (!Flags.showProgressBar()) {
+			builder.setPrintStream(new PrintStream(System.out) {
+				@Override
+				public void write(byte[] buf, int off, int len) {
+				}
+			});
+		}
+		
+		for (Entry<FirstOrderMutant, Set<FirstOrderMutant>> entry : ProgressBar.wrap(connections.entrySet(), builder)) {
 			Set<FirstOrderMutant> conndectedNodes = new HashSet<>(entry.getValue());
 			conndectedNodes.removeAll(coveredStartingNodes);
 			getHOMCandidates(paths, entry.getKey(), conndectedNodes, Configuration.getInitialDegree());

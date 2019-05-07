@@ -1,5 +1,6 @@
 package benchmark;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,6 +20,8 @@ import benchmark.heuristics.ISSHOMChecker;
 import benchmark.heuristics.ISSHOMChecker.HOM_TYPE;
 import benchmark.heuristics.MutationGraph;
 import benchmark.heuristics.SSHOMJUnitChecker;
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
 import util.SSHOMListener;
 import util.SSHOMRunner;
 
@@ -134,7 +137,18 @@ public class HeuristicsBasedSSHOMFinder {
 
 	private void populateFoms(Collection<String> mutants, long start) throws NoSuchFieldException, IllegalAccessException {
 		Benchmarker.instance.timestamp("populateFoms");
-		for (String m : mutants) {
+		
+		ProgressBarBuilder builder = new ProgressBarBuilder();
+		builder.setTaskName("populate foms");
+		if (!Flags.showProgressBar()) {
+			builder.setPrintStream(new PrintStream(System.out) {
+				@Override
+				public void write(byte[] buf, int off, int len) {
+				}
+			});
+		}
+		
+		for (String m : ProgressBar.wrap(mutants, builder)) {
 			SSHOMListener listener;
 			if (BenchmarkPrograms.programHasInfLoops()) {
 				listener = InfLoopTestProcess.getFailedTests(testClasses, new String[] { m });

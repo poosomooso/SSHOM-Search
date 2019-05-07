@@ -26,7 +26,7 @@ public final class Configuration {
 	 * Weights for prioritization.
 	 */
 	private static int K_TEST_OVERLAP = 1;
-	private static int K_DEGREE = 3;
+	private static int K_DEGREE = 5;
 	private static int K_N_PLUS_ONE = 15;
 	// TODO prioritize based on nr methods
 	// TODO prioritize based on nr classes
