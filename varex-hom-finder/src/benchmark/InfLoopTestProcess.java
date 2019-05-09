@@ -411,7 +411,7 @@ public class InfLoopTestProcess {
 	
 	private static void runJWithUnit(Class<?>[] testClasses, String[] mutants, final Set<String> testsClassesToRun,
 			final Set<String> testsToRun) {
-		System.out.println("\n" + Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
+//		System.out.println("\n" + Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
 
 		disableConsolePrint();
 		

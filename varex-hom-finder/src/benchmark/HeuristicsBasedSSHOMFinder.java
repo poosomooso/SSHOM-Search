@@ -151,7 +151,8 @@ public class HeuristicsBasedSSHOMFinder {
 		
 		try (ProgressBar pb = builder.build()) {
 			for (String m : mutants) {
-				long time = System.currentTimeMillis();
+				pb.step();
+				pb.setExtraMessage(m);
 				SSHOMListener listener;
 				if (BenchmarkPrograms.programHasInfLoops()) {
 					listener = InfLoopTestProcess.getFailedTests(testClasses, new String[] { m });
@@ -159,6 +160,8 @@ public class HeuristicsBasedSSHOMFinder {
 					listener = runner.runJunitOnHOM(m);
 				}
 				foms.put(m, listener.getHomTests());
+
+				long time = System.currentTimeMillis();
 				if (time - start > TIME_FOMS) {
 					break;
 				}
