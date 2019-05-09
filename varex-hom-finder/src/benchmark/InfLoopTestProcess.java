@@ -70,8 +70,7 @@ public class InfLoopTestProcess {
 	};
 	
 	public void runTests(final String[] mutants, Collection<String[]> testCases) {
-		System.setOut(nullOutputStream);
-		System.setErr(nullOutputStream);
+		disableConsolePrint();
 		
 		List<String[]> failedTests = new ArrayList<>();
 
@@ -108,12 +107,21 @@ public class InfLoopTestProcess {
 			}
 		}
 
-		System.setOut(systemOut);
-		System.setErr(systemErr);
+		enableSystemPrint();
 		
 		for (String[] test : new ArrayList<>(failedTests)) {
 			registerFailure(test[0], test[1]);
 		}
+	}
+
+	private static void enableSystemPrint() {
+		System.setOut(systemOut);
+		System.setErr(systemErr);
+	}
+
+	private static void disableConsolePrint() {
+		System.setOut(nullOutputStream);
+		System.setErr(nullOutputStream);
 	}
 
 	public boolean runSingleTest(String testClass, String testMethod, String... mutants) {
@@ -184,7 +192,12 @@ public class InfLoopTestProcess {
 			JUnitCore junitCore = new JUnitCore();
 			junitCore.addListener(listener);
 			junitCore.addListener(timeRecorder(testTimes));
+			
+			disableConsolePrint();
+			
 			junitCore.run(Request.classes(Computer.serial(), testClasses));
+			
+			enableSystemPrint();
 		} else {
 			// very jank check to use another class for chess
 			// since chess leaks memory
@@ -398,8 +411,10 @@ public class InfLoopTestProcess {
 	
 	private static void runJWithUnit(Class<?>[] testClasses, String[] mutants, final Set<String> testsClassesToRun,
 			final Set<String> testsToRun) {
-//		System.out.print(Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
-//		System.out.flush();
+		System.out.println("\n" + Arrays.toString(mutants) + " " + testsToRun.size() + " tests ");
+
+		disableConsolePrint();
+		
 		if (!Flags.isCoverage() || !testsToRun.isEmpty()) {
 			ConditionalMutationWrapper cmw = new ConditionalMutationWrapper(BenchmarkPrograms.getTargetClasses());
 			cmw.resetMutants();
@@ -431,7 +446,6 @@ public class InfLoopTestProcess {
 				
 			});
 		    
-		    long start = System.currentTimeMillis();
 		    junitCore.run(request);
 		    timeoutThread.interrupt();
 		    try {
@@ -440,10 +454,9 @@ public class InfLoopTestProcess {
 				Thread.currentThread().interrupt();
 			}
 		    timeoutThread = null;
-		    long end = System.currentTimeMillis();
-//		    System.out.print(end - start + "ms");
 		}
-//		System.out.println();
+		
+		enableSystemPrint();
 	}
 	
 	 private static class TimeOutListener extends RunListener {
