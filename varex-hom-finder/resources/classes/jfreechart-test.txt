@@ -131,7 +131,6 @@ org.jfree.chart.plot.dial.MyDialLayerChangeListener
 org.jfree.chart.plot.dial.StandardDialFrameTest
 org.jfree.chart.plot.dial.StandardDialRangeTest
 org.jfree.chart.plot.dial.StandardDialScaleTest
-org.jfree.chart.plot.FastScatterPlotTest
 org.jfree.chart.plot.IntervalMarkerTest
 org.jfree.chart.plot.MarkerTest
 org.jfree.chart.plot.MeterIntervalTest
