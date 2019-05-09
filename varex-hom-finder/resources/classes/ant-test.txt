@@ -83,7 +83,6 @@ org.apache.tools.ant.taskdefs.TouchTest
 org.apache.tools.ant.taskdefs.TypeAdapterTest
 org.apache.tools.ant.taskdefs.TypedefTest
 org.apache.tools.ant.taskdefs.UntarTest
-org.apache.tools.ant.taskdefs.UnzipTest
 org.apache.tools.ant.taskdefs.UpToDateTest
 org.apache.tools.ant.taskdefs.WarTest
 org.apache.tools.ant.taskdefs.WhichResourceTest
