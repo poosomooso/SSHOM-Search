@@ -147,18 +147,21 @@ public class HeuristicsBasedSSHOMFinder {
 				}
 			});
 		}
+		builder.setInitialMax(mutants.size());
 		
-		for (String m : ProgressBar.wrap(mutants, builder)) {
-			SSHOMListener listener;
-			if (BenchmarkPrograms.programHasInfLoops()) {
-				listener = InfLoopTestProcess.getFailedTests(testClasses, new String[] { m });
-			} else {
-				listener = runner.runJunitOnHOM(m);
-			}
-			foms.put(m, listener.getHomTests());
-			long time = System.currentTimeMillis();
-			if (time - start > TIME_FOMS) {
-				break;
+		try (ProgressBar pb = builder.build()) {
+			for (String m : mutants) {
+				long time = System.currentTimeMillis();
+				SSHOMListener listener;
+				if (BenchmarkPrograms.programHasInfLoops()) {
+					listener = InfLoopTestProcess.getFailedTests(testClasses, new String[] { m });
+				} else {
+					listener = runner.runJunitOnHOM(m);
+				}
+				foms.put(m, listener.getHomTests());
+				if (time - start > TIME_FOMS) {
+					break;
+				}
 			}
 		}
 	}
