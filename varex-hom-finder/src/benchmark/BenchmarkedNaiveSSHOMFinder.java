@@ -18,7 +18,6 @@ import util.SSHOMRunner;
 public class BenchmarkedNaiveSSHOMFinder {
 	private SSHOMRunner runner;
 	private Map<String, Set<Description>> foms = new HashMap<>();
-	static long x = 0;
 	private Class<?>[] testClasses;
 
 	public void naiveSSHOMFinder() throws NoSuchFieldException, IllegalAccessException {
@@ -36,7 +35,6 @@ public class BenchmarkedNaiveSSHOMFinder {
 		for (Entry<String, Set<String>> groupEntry : groupMutants.entrySet()) {
 			long startTime = System.currentTimeMillis();
 			String[] mutants = groupEntry.getValue().toArray(new String[0]);
-
 			int maxOrder = 100;
 			Benchmarker.instance.timestamp("start homs");
 			for (int i = 2; i < maxOrder; i++) {

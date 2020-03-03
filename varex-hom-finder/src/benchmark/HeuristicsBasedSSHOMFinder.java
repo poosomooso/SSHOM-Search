@@ -47,7 +47,6 @@ public class HeuristicsBasedSSHOMFinder {
 	private final ISSHOMChecker checker;
 	
 	public HeuristicsBasedSSHOMFinder() {
-		System.setProperty("line.separator", "\n");
 		Benchmarker.instance.start();
 		Class<?>[] targetClasses = BenchmarkPrograms.getTargetClasses();
 		this.testClasses = BenchmarkPrograms.getTestClasses();

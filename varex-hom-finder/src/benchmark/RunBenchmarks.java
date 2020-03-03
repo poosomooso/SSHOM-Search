@@ -14,6 +14,7 @@ public class RunBenchmarks {
     if (args.length < 2) {
       errAndExit();
     }
+    System.setProperty("line.separator", "\n");
     
     ConfigLoader.initialize(Flags.class);
 
@@ -68,8 +69,8 @@ public class RunBenchmarks {
   
 	private static void runSmart() throws NoSuchFieldException, IllegalAccessException {
     	ConfigLoader.initialize(Configuration.class);
-		HeuristicsBasedSSHOMFinder naiveSSHOMFinder = new HeuristicsBasedSSHOMFinder();
-		naiveSSHOMFinder.run();
+		HeuristicsBasedSSHOMFinder heuristicsSSHOMFinder = new HeuristicsBasedSSHOMFinder();
+		heuristicsSSHOMFinder.run();
 	}
 
   private static void runEvolutionary()
