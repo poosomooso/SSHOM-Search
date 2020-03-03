@@ -26,7 +26,7 @@ import util.SSHOMListener;
 import util.SSHOMRunner;
 
 /**
- * TODO description
+ * Heuristics based search for finding SSHOMs. 
  * 
  * @author Jens Meinicke
  *
