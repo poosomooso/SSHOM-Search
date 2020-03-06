@@ -1,6 +1,11 @@
 package benchmark;
 
 import java.io.IOException;
+import java.util.Arrays;
+
+import benchmark.BenchmarkPrograms.Program;
+import benchmark.heuristics.Configuration;
+import util.ConfigLoader;
 
 public class RunBenchmarks {
 
@@ -9,23 +14,14 @@ public class RunBenchmarks {
     if (args.length < 2) {
       errAndExit();
     }
+    System.setProperty("line.separator", "\n");
+    
+    ConfigLoader.initialize(Flags.class);
 
     String whichProgram = args[0];
     String whichMode = args[1];
 
-    if (whichProgram.equalsIgnoreCase("triangle")) {
-      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.TRIANGLE;
-    } else if (whichProgram.equalsIgnoreCase("monopoly")) {
-      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.MONOPOLY;
-    } else if (whichProgram.equalsIgnoreCase("cli")) {
-      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.CLI;
-    } else if (whichProgram.equalsIgnoreCase("validator")) {
-      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.VALIDATOR;
-    } else if (whichProgram.equalsIgnoreCase("chess")) {
-      BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.CHESS;
-    } else {
-      errAndExit();
-    }
+    setProgram(whichProgram);
 
     if (whichMode.equalsIgnoreCase("naive")) {
       runNaive();
@@ -33,15 +29,35 @@ public class RunBenchmarks {
       runEvolutionary();
     } else if (whichMode.equalsIgnoreCase("varex")) {
       runVarex();
+    } else if (whichMode.equalsIgnoreCase("smart")) {
+        runSmart();
     } else {
       errAndExit();
     }
   }
 
+	private static void setProgram(String whichProgram) {
+		Program selectedProgram = null;
+		for (Program program : BenchmarkPrograms.Program.values()) {
+			if (whichProgram.equalsIgnoreCase(program.name())) {
+				selectedProgram = program;
+				break;
+			}
+		}
+		if (selectedProgram == null) {
+			System.err.println("Program not supported: " + whichProgram);
+			System.err.println("Use one of: " + Arrays.toString(BenchmarkPrograms.Program.values()));
+			
+			System.exit(-1);
+		} else {
+			BenchmarkPrograms.PROGRAM = selectedProgram;
+		}
+	}
+
   private static void errAndExit() {
     System.err.println("A program and a mode must be specified, in that order.");
     System.err.println("Programs : triangle, monopoly, validator, cli, or chess");
-    System.err.println("Modes : naive, ga, or varex");
+    System.err.println("Modes : naive, ga, smart, or varex");
     System.exit(0);
   }
 
@@ -50,6 +66,12 @@ public class RunBenchmarks {
     BenchmarkedNaiveSSHOMFinder naiveSSHOMFinder = new BenchmarkedNaiveSSHOMFinder();
     naiveSSHOMFinder.naiveSSHOMFinder();
   }
+  
+	private static void runSmart() throws NoSuchFieldException, IllegalAccessException {
+    	ConfigLoader.initialize(Configuration.class);
+		HeuristicsBasedSSHOMFinder heuristicsSSHOMFinder = new HeuristicsBasedSSHOMFinder();
+		heuristicsSSHOMFinder.run();
+	}
 
   private static void runEvolutionary()
       throws NoSuchFieldException, IllegalAccessException {

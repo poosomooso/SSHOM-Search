@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="lib" path="lib/progressbar-0.7.3.jar"/>
+	<classpathentry kind="lib" path="code-ut/jars/mutated-cli.jar"/>
+	<classpathentry kind="lib" path="lib/jline-terminal-3.11.0.jar"/>
+	<classpathentry kind="lib" path="code-ut/jars/monopoli100.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="src" path="varex-hom-finder/src"/>
 	<classpathentry kind="src" path="varex-hom-finder/resources"/>
@@ -19,10 +23,7 @@
 	<classpathentry kind="lib" path="lib/scala/scala-library-2.12.6.jar"/>
 	<classpathentry kind="lib" path="lib/scala/scala-parser-combinators_2.12-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/scala/scalacheck_2.12-1.14.0.jar"/>
-	<classpathentry kind="lib" path="code-ut/jars/commons-validator.jar"/>
-	<classpathentry kind="lib" path="code-ut/jars/monopoli100.jar"/>
-	<classpathentry kind="lib" path="code-ut/jars/mutated-cli.jar"/>
-	<classpathentry kind="lib" path="lib/sat4j-1.5.jar"/>
+	<classpathentry kind="lib" path="lib/sqljdbc4.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/VarexJ"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

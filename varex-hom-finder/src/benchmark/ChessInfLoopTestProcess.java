@@ -4,13 +4,22 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 
+import br.ufmg.labsoft.mutvariants.schematalib.ISchemataLibMethodsListener;
+import br.ufmg.labsoft.mutvariants.schematalib.SchemataLibMethods;
 import util.SSHOMListener;
 
 public class ChessInfLoopTestProcess {
@@ -21,16 +30,15 @@ public class ChessInfLoopTestProcess {
 
   public ChessInfLoopTestProcess(SSHOMListener... listeners) {
     this.listeners.addAll(Arrays.asList(listeners));
-
   }
 
-  public void process(Class[] tests, String... mutants) {
+  public void process(Class<?>[] tests, String... mutants) {
     String mutantStr =
         String.join(",", mutants);
     String testClassStr = String.join(",",
-        Arrays.asList(tests).stream().map(c -> c.getName())
+        Arrays.asList(tests).stream().map(Class::getName)
             .collect(Collectors.toList()));
-    String[] commands = { "java", "-cp",
+    String[] commands = { "java", "-noverify", "-cp",
         System.getProperty("java.class.path"), this.getClass().getName(),
         mutantStr, testClassStr };
 
@@ -39,7 +47,6 @@ public class ChessInfLoopTestProcess {
     t.start();
     testMap.put(mutantStr, tr);
     threadStart.put(t, System.currentTimeMillis());
-    System.out.println(mutantStr);
 
     while (threadStart.size() > 0) {
       try {
@@ -48,6 +55,11 @@ public class ChessInfLoopTestProcess {
         e.printStackTrace();
       }
     }
+    try {
+		t.join();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
   }
 
   private void removeFinishedThreads() throws InterruptedException {
@@ -73,7 +85,7 @@ public class ChessInfLoopTestProcess {
       try {
         listener.testFailure(new Failure(
             Description.createTestDescription(testClass, testMethod), null));
-        System.out.println(testClass+" "+testMethod);
+//        System.out.println(testClass+" "+testMethod);
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -119,7 +131,7 @@ public class ChessInfLoopTestProcess {
           String line;
           while (process.isAlive()) {
             if (((line = input.readLine()) != null)) {
-                            System.out.println(line);
+//                            System.out.println(line);
               if (line.startsWith("failtest ")) {
                 this.failedTests.add(line.substring("failtest ".length()));
               }
@@ -135,11 +147,27 @@ public class ChessInfLoopTestProcess {
 
   public static void main(String[] args) throws ClassNotFoundException {
     BenchmarkPrograms.PROGRAM = BenchmarkPrograms.Program.CHESS;
-    String[] mutants = args[0].split(",");
-    String[] classStr = args[1].split(",");
+    SchemataLibMethods.listener = new ISchemataLibMethodsListener() {
 
-    Deque<String[]> testCases = new ArrayDeque<>();
+		@Override
+		public void listen() {
+			if (InfLoopTestProcess.timedOut) {
+				throw new Error("TIMEOUT");
+			}
+		}
 
+		@Override
+		public void listen(String methodName) {
+			if (InfLoopTestProcess.timedOut) {
+				throw new Error("TIMEOUT");
+			}
+		}
+		
+	};    
+    String[] mutants = args[0].length() == 0 ? new String[0] : args[0].split(",");
+   	String[] classStr = args[1].split(",");    	
+
+    Collection<String[]> testCases = new ArrayList<>();
     for (String c : classStr) {
       Class<?> testClass = Class.forName(c);
       for (Method m : testClass.getMethods()) {

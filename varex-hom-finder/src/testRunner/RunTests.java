@@ -12,11 +12,12 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class RunTests {
 
-	public static boolean print = true;
+	public static boolean print = false;
 	public static void runTests(Class<?> testClass) {
 		runTests(new Class[] { testClass });
 	}
@@ -74,18 +75,33 @@ public class RunTests {
 
 		Method[] methods = c.getMethods();
 		for (Method method : methods) {
-			if (method.getName().equals(testName)) {// TODO needs to handle duplicate test names
+			if (method.getName().equals(testName)) {
+				if (method.getAnnotation(Ignore.class) != null) {
+					break;
+				}
 				if (method.getAnnotation(Test.class) != null) {
+					Test annotation = method.getAnnotation(org.junit.Test.class);
+					Class<? extends Throwable> expected = annotation.expected();
 					try {
 						invokeIfNonempty(beforeMethod, instance);
 						if (print) System.out.println("METHOD: " + method);
 						method.invoke(instance);
 						invokeIfNonempty(afterMethod, instance);
+						if (!expected.equals(Test.None.class)) {
+							passed = false;
+							break;
+						}
 					} catch (IllegalAccessException e) {
 						e.printStackTrace();
 					} catch (Throwable e) {
-//						e.printStackTrace(System.out);
-						if (print) System.out.println(getTestDesc(method));
+						if (e instanceof InvocationTargetException) {
+							InvocationTargetException invokedException = (InvocationTargetException) e;
+							Class<? extends Throwable> actual = invokedException.getTargetException().getClass();
+							if (expected.isAssignableFrom(actual)) {
+								break;
+							}
+							if (print) System.out.println(getTestDesc(method));
+						}
 						passed = false;
 					}
 					break;
@@ -102,13 +118,19 @@ public class RunTests {
 
 		return passed;
 	}
-
+	
 	private static Optional<Method> findOfAnnotation(Class<?> c, Class<? extends Annotation> annotation) {
 		for (Method method : c.getMethods()) {
 			if (method.getAnnotation(annotation) != null) {
 				return Optional.of(method);
 			}
 		}
+		for (Method method : c.getSuperclass().getMethods()) {
+			if (method.getAnnotation(annotation) != null) {
+				return Optional.of(method);
+			}
+		}
+		
 		return Optional.empty();
 	}
 

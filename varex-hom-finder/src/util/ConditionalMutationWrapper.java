@@ -14,12 +14,12 @@ public class ConditionalMutationWrapper {
 
   public ConditionalMutationWrapper(Class<?>... targetClasses) {
     for (Class<?> c : targetClasses) {
-      for (Field f : c.getFields()) {
-        if (f.getAnnotation(Conditional.class) != null) {
-          f.setAccessible(true);
-          conditionalFields.put(f.getName(), f);
-        }
-      }
+	      for (Field f : c.getDeclaredFields()) {
+	        if (f.getAnnotation(Conditional.class) != null || f.getName().contains("_mut")) {
+	          f.setAccessible(true);
+	          conditionalFields.put(f.getName(), f);
+	        }
+	    }
     }
     testClasses = Arrays.copyOf(targetClasses, targetClasses.length);
   }
