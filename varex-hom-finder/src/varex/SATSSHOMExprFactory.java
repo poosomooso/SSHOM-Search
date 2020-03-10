@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import benchmark.BenchmarkPrograms;
-import cmu.conditional.Conditional;
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
@@ -122,7 +121,7 @@ public class SATSSHOMExprFactory {
 		// create features
 
 		for (SingleFeatureExpr feature : mutants) {
-			variableNames.put(Conditional.getCTXString(feature), variableId);
+			variableNames.put(feature.feature(), variableId);
 			variableId++;
 		}
 
@@ -375,7 +374,7 @@ public class SATSSHOMExprFactory {
 		Map<String, Integer> variables = new LinkedHashMap<>(); 
 		int id = 1;
 		for (SingleFeatureExpr singleFeatureExpr : mutantExprs) {
-			variables.put(Conditional.getCTXString(singleFeatureExpr), id++);
+			variables.put(singleFeatureExpr.feature(), id++);
 		}
 		
 		List<String> clauses = new ArrayList<>();
@@ -391,9 +390,9 @@ public class SATSSHOMExprFactory {
 	private static List<String> createEntries(List<String> features, Map<String, Integer> variables) {
 		List<String> clauses = new ArrayList<>();
 		for (int i = 0; i < features.size() - 1; i++) {
-			int var1 = variables.get(features.get(i));
+			int var1 = variables.get("CONFIG_" + features.get(i));
 			for (int j = i + 1; j < features.size(); j++) {
-				int var2 = variables.get(features.get(j));
+				int var2 = variables.get("CONFIG_" + features.get(j));
 				StringBuilder clause = new StringBuilder();
 				clause.append(-var1);
 				clause.append(' ');

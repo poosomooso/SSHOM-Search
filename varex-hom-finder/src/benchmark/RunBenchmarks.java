@@ -8,7 +8,13 @@ import benchmark.heuristics.Configuration;
 import util.ConfigLoader;
 
 public class RunBenchmarks {
+	
+  private static String mode = "";
 
+  public static String getMode() {
+	return mode;
+  }
+  
   public static void main(String[] args)
       throws NoSuchFieldException, IOException, IllegalAccessException {
     if (args.length < 2) {
@@ -20,6 +26,7 @@ public class RunBenchmarks {
 
     String whichProgram = args[0];
     String whichMode = args[1];
+    mode = whichMode;
 
     setProgram(whichProgram);
 

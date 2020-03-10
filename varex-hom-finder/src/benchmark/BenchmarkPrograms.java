@@ -343,13 +343,13 @@ public class BenchmarkPrograms {
     case TRIANGLE:
       return "mutantgroups/triangle.txt";
     case MONOPOLY:
-      return "mutantgroups/monopoly.txt";
+      return RunBenchmarks.getMode().equalsIgnoreCase("varex") ? "mutantgroups/monopoly-full.txt" : "mutantgroups/monopoly.txt";
     case VALIDATOR:
-      return "mutantgroups/validator.txt";
+      return RunBenchmarks.getMode().equalsIgnoreCase("varex") ? "mutantgroups/validator-full.txt" : "mutantgroups/validator.txt";
     case CLI:
-      return "mutantgroups/cli.txt";
+      return RunBenchmarks.getMode().equalsIgnoreCase("varex") ? "mutantgroups/cli-full.txt" : "mutantgroups/cli.txt";
     case CHESS:
-      return "mutantgroups/chess.txt";
+      return RunBenchmarks.getMode().equalsIgnoreCase("varex") ? "mutantgroups/chess-full.txt" :"mutantgroups/chess.txt";
     case MATH:
 		return "mutantgroups/math.txt";
     case ANT:

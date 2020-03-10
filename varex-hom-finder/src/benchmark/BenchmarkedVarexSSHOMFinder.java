@@ -6,10 +6,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigInteger;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import benchmark.VarexOptions.SOLVER;
 import cmu.conditional.Conditional;
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
@@ -31,39 +34,26 @@ import net.sf.javabdd.BDDFactory;
 import solver.bdd.BDDSolver;
 import solver.sat.SATSolver;
 import testRunner.RunTests;
+import util.ConfigLoader;
 import varex.SATSSHOMExprFactory;
 import varex.SSHOMExprFactory;
 
 public class BenchmarkedVarexSSHOMFinder {
+	
+	static {
+		ConfigLoader.initialize(VarexOptions.class);
+	}
 
 	public static SingleFeatureExpr[] mutantExprs = null;
 
-	private enum Machine {
-		JENS("C:\\Users\\Jens Meinicke\\git\\mutationtest-varex\\"),
-		SERENA("/home/serena/reuse/hom-generator/"),
-//		FEATURE_SERVER("/home/feature/serena/"),
-		FEATURE_SERVER("/home/ubuntu/");
-
-		private final String path;
-		private Machine(String path) {
-			this.path = path;
-		}
-		String getBaseDir() {
-			return path;
-		}
-	}
-	private static final Machine machine = Machine.FEATURE_SERVER;
-	private static final String  baseDir = machine.getBaseDir();
-
-	
 	public void varexSSHOMFinder() throws IOException {
 		Benchmarker.instance.start();
 
 		Class<?>[] testClasses = BenchmarkPrograms.getTestClasses();
 		String[] mutants = BenchmarkPrograms.getMutantNames();
 
-		System.setProperty("bddCacheSize", Integer.toString(100000));
-		System.setProperty("bddValNum", Integer.toString(6_000_000));
+		System.setProperty("bddCacheSize", Integer.toString(Math.max(Integer.parseInt(System.getProperty("bddCacheSize", "0")), 100000)));
+		System.setProperty("bddValNum", Integer.toString(Math.max(Integer.parseInt(System.getProperty("bddValNum", "0")), 6_000_000)));
 
 		FeatureExprFactory.setDefault(FeatureExprFactory.bdd());
 
@@ -71,27 +61,6 @@ public class BenchmarkedVarexSSHOMFinder {
 		getTestNames(testClasses, tests);
 		filterTests(tests);
 
-		// TODO ignore varex for now
-//		final String paths = getVarexClasspaths();
-//		final String mutantFile = getMutantFile();
-//		final String jpfPath = getJpfPath();
-//		final String jvmClasspath = getJvmClasspath();
-//		int numberOfTests = tests.size();
-//		int i = 1;
-//		for (Entry<Method, FeatureExpr> test : tests.entrySet()) {
-//			System.out.println(i++ + "/" + numberOfTests + " tests");
-//
-//			if (jvmClasspath == null) {
-//				CommandLineRunner.process("java", "-jar", jpfPath, "+search.class=.search.RandomSearch", "+bddCacheSize=100000",
-//						"+bddValNum=1500000", paths, "+choice=MapChoice", "+mutants=" + mutantFile, VarexTestRunner.class
-//								.getName(), test.getKey().getDeclaringClass().getName(), test.getKey().getName());
-//			} else {
-//				CommandLineRunner.process("java", "-classpath", jvmClasspath, "-jar", jpfPath,
-//						"+search.class=.search.RandomSearch", "+bddCacheSize=100000", "+bddValNum=1500000", paths,
-//						"+choice=MapChoice", "+mutants=" + mutantFile, VarexTestRunner.class.getName(), test.getKey()
-//								.getDeclaringClass().getName(), test.getKey().getName());
-//			}
-//		}
 		Benchmarker.instance.timestamp("create features");
 		
 		mutantExprs = mutantNamesToFeatures(mutants);
@@ -106,12 +75,16 @@ public class BenchmarkedVarexSSHOMFinder {
 			}
 		}
 		
-		final boolean strict = false;
+		final boolean strict = VarexOptions.isComputeStrict();
 		// BDD solutions
-		Set<Set<String>> solutionsBDD = getBDDSolutions(mutants, stringTests, strict);
 		
-		// SAT solutions
-//		Set<Set<String>> solutionsSAT = getSATSolutions(mutants, stringTests, strict); 
+		SOLVER solver = VarexOptions.getSolver();
+		if (solver == SOLVER.BDD) {
+			Set<Set<String>> solutionsBDD = getBDDSolutions(mutants, stringTests, strict);
+		} else {
+			// SAT solutions
+			Set<Set<String>> solutionsSAT = getSATSolutions(mutants, stringTests, strict); 
+		}
 		
 //		checkSolutions(solutionsBDD, solutionsSAT);
 	}
@@ -156,51 +129,18 @@ public class BenchmarkedVarexSSHOMFinder {
 		for (FeatureExpr m : fomExprs) {
 			finalExpr = finalExpr.andNot(m);
 		}
+		BigInteger count = new BDDSolver(2).getSolutionsCount((BDDFeatureExpr)finalExpr, mutants);
+		System.out.println("Number of solutions:" + count);
+		
 		return new BDDSolver(2).getSolutions((BDDFeatureExpr)finalExpr, mutants, BenchmarkPrograms::homIsValid);
 	}
 	
-		private String getVarexClasspaths() {
-		switch (machine) {
-		case FEATURE_SERVER: return "+classpath=" + baseDir + "hom-generator.jar," + baseDir + "junit-4.12.jar," + baseDir + "lib/bcel-6.0.jar";
-		case JENS: return  "+classpath=" + baseDir + "bin," + baseDir + "code-ut/jars/monopoli100.jar," + baseDir + "lib/bcel-6.0.jar,"
-				+ baseDir + "lib/junit.jar";
-		case SERENA: return "+classpath="
-				+ baseDir + "out/production/code-ut,"
-				+ baseDir + "code-ut/jars/monopoli100.jar,"
-				+ baseDir + "code-ut/jars/commons-validator.jar,"
-				+ baseDir + "code-ut/jars/mutated-cli.jar,"
-				+ baseDir + "lib/bcel-6.0.jar,"
-				+ baseDir + "out/test/code-ut,"
-				+ baseDir + "out/production/varex-hom-finder,"
-				+ baseDir + "lib/junit.jar";
-		default: throw new IllegalStateException("Machine " + machine.toString() + " is not supported");
-		}
-	}
-
-	private String getMutantFile() {
-		switch (machine) {
-		case FEATURE_SERVER: return baseDir + BenchmarkPrograms.getFeatureModelResource();
-		default: return baseDir + "varex-hom-finder/resources/" + BenchmarkPrograms.getFeatureModelResource();
-		}
-	}
-
-	private String getJpfPath() {
-		return baseDir + "lib/RunJPF.jar";
-	}
-
-	private String getJvmClasspath() {
-		switch (machine) {
-		case FEATURE_SERVER: return "\""+baseDir+"hom-generator.jar;"+baseDir+"lib/scala/scala-library-2.12.6.jar;"+baseDir+"lib/\"";
-		default: return null;
-		}
-	}
-
 	private Set<Set<String>> getSATSolutions(String[] mutants, Map<String, FeatureExpr> stringTests, boolean strict) {
 		Benchmarker.instance.timestamp("create SAT formula");
 		
-		final boolean splitExpr1 = true;
-		final boolean splitExpr2 = true;
-		final boolean splitExpr3 = true;
+		final boolean splitExpr1 = VarexOptions.splitExpr1();
+		final boolean splitExpr2 = VarexOptions.splitExpr2();
+		final boolean splitExpr3 = VarexOptions.splitExpr3();
 		
 		Collection<File> dimcsFiles;
 		if (strict) {
@@ -211,7 +151,9 @@ public class BenchmarkedVarexSSHOMFinder {
 		SATSSHOMExprFactory.andDimacsFiles(dimcsFiles, mutantExprs, "fullmodel");
 		
 		Benchmarker.instance.timestamp("get SAT solutions");
-		return new SATSolver(2).getSolutions("fullmodel.dimacs", mutants);
+		Set<Set<String>> solutions = new SATSolver(2).getSolutions("fullmodel.dimacs", mutants);
+		System.out.println("Number of solutions:" + solutions.size());
+		return solutions;
 	}
 
 	private void checkSolutions(Set<Set<String>> solutionsBDD, Set<Set<String>> solutionsSAT) {
@@ -254,19 +196,18 @@ public class BenchmarkedVarexSSHOMFinder {
 	}
 	
 	private void loadTestExpressions(Map<Class<?>, Map<Method, FeatureExpr>> tests) throws IOException {
-		File folder = new File("BDDS/" + BenchmarkPrograms.PROGRAM.name());
-		
-		String[] files = folder.list();
-		Set<String> set = new HashSet<>();
-		for (String f : files) {
-			set.add(f);
+		URL res = getClass().getResource("/BDDs/" + BenchmarkPrograms.PROGRAM.name());
+		File folder;
+		try {
+			folder = new File(res.toURI());
+		} catch (URISyntaxException e) {
+			throw new RuntimeException("Did not find BDDs for BenchmarkPrograms.PROGRAM.name()", e);
 		}
 		
 		final BDDFactory bddFactory = FExprBuilder.bddFactory();
 		for (Entry<Class<?>, Map<Method, FeatureExpr>> t1 : tests.entrySet()) {
 			for (Entry<Method, FeatureExpr> t2 : t1.getValue().entrySet()) {
 				String fname = RunTests.getTestDesc(t1.getKey(), t2.getKey()) + ".txt";
-				set.remove(fname);
 				final File file = new File(folder, fname);
 				if (file.exists()) {
 					try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -278,14 +219,15 @@ public class BenchmarkedVarexSSHOMFinder {
 						e.printStackTrace();
 					}
 				} else {
-					System.err.println("file not found: " + fname);
+//					System.err.println("file not found: " + fname);
 				}
 			}
 		}
-		for (String string : set) {
-			System.err.println("test missing for: " + string);
-		}
+//		for (String string : set) {
+//			System.err.println("test missing for: " + string);
+//		}
 	}
+
 
 	private SingleFeatureExpr[] mutantNamesToFeatures(String[] mutants) {
 		SingleFeatureExpr[] mutantExprs = new SingleFeatureExpr[mutants.length];
