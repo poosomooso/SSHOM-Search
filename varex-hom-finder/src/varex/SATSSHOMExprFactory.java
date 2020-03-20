@@ -16,13 +16,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import benchmark.BenchmarkPrograms;
+import benchmark.Benchmarker;
+import benchmark.VarexOptions;
 import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
+import me.tongfei.progressbar.ProgressBar;
 import scala.collection.mutable.HashSet;
 import scala.collection.mutable.Set;
 import solver.sat.DimacsWriter;
+import util.ProgressBarFactory;
 
 /**
  * This class creates and modifies dimacs files to create a cnf expression for finding higher order mutants.
@@ -235,17 +239,17 @@ public class SATSSHOMExprFactory {
 	}
 
 	public static Collection<File> getStrictSSHOMExpr(Map<String, FeatureExpr> tests,
-			SingleFeatureExpr[] mutants, int numMutants, boolean splitExpression1, boolean splitExpression2, boolean splitExpression3) {
-		Collection<File> files = getSSHOMExpr(tests, mutants, numMutants, splitExpression1, splitExpression2);
-		createExpression3(tests, mutants, numMutants, files, splitExpression3);
+			SingleFeatureExpr[] mutants, int numMutants) {
+		Collection<File> files = getSSHOMExpr(tests, mutants, numMutants);
+		createExpression3(tests, mutants, numMutants, files);
 		return files;
 	}
 
 	public static Collection<File> getSSHOMExpr(Map<String, FeatureExpr> tests, SingleFeatureExpr[] mutants,
-			int numMutants, boolean splitExpression1, boolean splitExpression2) {
+			int numMutants) {
 		List<File> files = new ArrayList<>();
-		createExpression1(tests, files, mutants, splitExpression1);
-		createExpression2(tests, mutants, numMutants, files, splitExpression2);
+		createExpression1(tests, files, mutants);
+		createExpression2(tests, mutants, numMutants, files);
 		createFeatureModel(mutants, files);
 		return files;
 	}
@@ -255,27 +259,38 @@ public class SATSSHOMExprFactory {
 	 * 
 	 * Creates a disjunction of all test expressions.
 	 */
-	private static void createExpression1(Map<String, FeatureExpr> tests, List<File> files, SingleFeatureExpr[] mutants, boolean splitExpression_1) {
+	private static void createExpression1(Map<String, FeatureExpr> tests, List<File> files, SingleFeatureExpr[] mutants) {
 		final String expression1 = "expression1";
-		if (splitExpression_1) {
-			List<File> expression1Files = new ArrayList<>(tests.size());
-			for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
-				if (!testEntry.getValue().isContradiction()) {
-					String testName = testEntry.getKey();
-					File file = new File("or_" + testName + ".dimacs");
-					DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) testEntry.getValue(), "or_" + testName);
-					expression1Files.add(file);
-				}
-			}
-			files.add(orDimacsFiles(expression1Files, mutants, expression1));
-		} else {
-			File file = new File(expression1+ ".dimacs");
-			FeatureExpr gt0 = FeatureExprFactory.False();
-			for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
-				gt0 = gt0.or(testEntry.getValue());
-			}
-			DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) gt0, expression1);
+		File file = new File(expression1+ ".dimacs"); 
+		if (file.exists()) {
+			Benchmarker.instance.timestamp("Reuse existing expression from: " + file.getName());
 			files.add(file);
+			return;
+		}
+		try (ProgressBar pb = ProgressBarFactory.create("create expression 1", tests.size())) {
+			if (VarexOptions.splitExpr1()) {
+				List<File> expression1Files = new ArrayList<>(tests.size());
+				for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
+					pb.step();
+					if (!testEntry.getValue().isContradiction()) {
+						String testName = testEntry.getKey();
+						File fileOr = new File("or_" + testName + ".dimacs");
+						if (!fileOr.exists()) {
+							DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) testEntry.getValue(), "or_" + testName);
+						}
+						expression1Files.add(fileOr);
+					}
+				}
+				files.add(orDimacsFiles(expression1Files, mutants, expression1));
+			} else {
+				FeatureExpr gt0 = FeatureExprFactory.False();
+				for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
+					pb.step();
+					gt0 = gt0.or(testEntry.getValue());
+				}
+				DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) gt0, expression1);
+				files.add(file);
+			}
 		}
 	}
 	
@@ -286,36 +301,47 @@ public class SATSSHOMExprFactory {
 	 * 
 	 */
 	private static void createExpression2(Map<String, FeatureExpr> tests, SingleFeatureExpr[] mutants, int numMutants,
-			List<File> files, boolean splitExpression2) {
-
+			List<File> files) {
 		final String expression2 = "expression2";
-		if (splitExpression2) {
-			List<File> expression2Files = new ArrayList<>(tests.size());
-			for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
-				String testName = testEntry.getKey();
-				FeatureExpr expr = testEntry.getValue();
-				if (!expr.isContradiction()) {
-					FeatureExpr subexpression2 = createSubexpression2(mutants, numMutants, expr);
-					File file = new File(testName + ".dimacs");
-					DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) subexpression2, testName);
-					expression2Files.add(file);
-				}
-			}
-			files.add(andDimacsFiles(expression2Files, mutants, expression2));
-		} else {
-			File file = new File(expression2+ ".dimacs");
-			FeatureExpr expression = FeatureExprFactory.True();
-			for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
-				FeatureExpr testExpr = testEntry.getValue();
-				if (!testExpr.isContradiction()) {
-					FeatureExpr subexpression2 = createSubexpression2(mutants, numMutants, testExpr);
-					expression = expression.and(subexpression2);
-				}
-			}
-			DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) expression, "expression2");
+		File file = new File(expression2 + ".dimacs"); 
+		if (file.exists()) {
+			Benchmarker.instance.timestamp("Reuse existing expression from: " + file.getName());
 			files.add(file);
+			return;
+		}
+		try (ProgressBar pb = ProgressBarFactory.create("create expression 2", tests.size())) {
+			if (VarexOptions.splitExpr2()) {
+				List<File> expression2Files = new ArrayList<>(tests.size());
+				for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
+					pb.step();
+					String testName = testEntry.getKey();
+					FeatureExpr expr = testEntry.getValue();
+					if (!expr.isContradiction()) {
+						File andFile = new File(testName + ".dimacs");
+						if (!andFile.exists()) {
+							FeatureExpr subexpression2 = createSubexpression2(mutants, numMutants, expr);
+							DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) subexpression2, testName);
+						}
+						expression2Files.add(andFile);
+					}
+				}
+				files.add(andDimacsFiles(expression2Files, mutants, expression2));
+			} else {
+				FeatureExpr expression = FeatureExprFactory.True();
+				for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
+					pb.step();
+					FeatureExpr testExpr = testEntry.getValue();
+					if (!testExpr.isContradiction()) {
+						FeatureExpr subexpression2 = createSubexpression2(mutants, numMutants, testExpr);
+						expression = expression.and(subexpression2);
+					}
+				}
+				DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) expression, "expression2");
+				files.add(file);
+			}
 		}
 	}
+	
 	
 	private static FeatureExpr createSubexpression2(SingleFeatureExpr[] mutants, int numMutants, FeatureExpr testExpr) {
 		FeatureExpr subexpression2 = FeatureExprFactory.True();
@@ -329,34 +355,57 @@ public class SATSSHOMExprFactory {
 	}
 
 	private static void createExpression3(Map<String, FeatureExpr> tests, SingleFeatureExpr[] mutants, int numMutants,
-			Collection<File> files, boolean splitExpression3) {
-		FeatureExpr lt1 = FeatureExprFactory.False();
-		List<File> dimacsFiles = new ArrayList<>();
-		for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
-			FeatureExpr testExpr = testEntry.getValue();
-			FeatureExpr killsMutant = FeatureExprFactory.True();
-
-			for (int i = 0; i < numMutants; i++) {
-				boolean fomKillsTest = fomKillsTest(mutants[i].feature(), testExpr);
-				if (!fomKillsTest) {
-					killsMutant = killsMutant.and(mutants[i].not());
+			Collection<File> files) {
+		final String expression3 = "expression3";
+		File file = new File(expression3 + ".dimacs"); 
+		if (file.exists()) {
+			Benchmarker.instance.timestamp("Reuse existing expression from: " + file.getName());
+			files.add(file);
+			return;
+		}
+		try (ProgressBar pb = ProgressBarFactory.create("create expression 3", tests.size())) {
+			FeatureExpr lt1 = FeatureExprFactory.False();
+			List<File> dimacsFiles = new ArrayList<>();
+			for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
+				pb.step();
+				if (VarexOptions.splitExpr3()) {
+					String subExpressionFileName = "strict_" + testEntry.getKey();
+					File orFile = new File(subExpressionFileName + ".dimacs");
+					if (orFile.exists()) {
+						dimacsFiles.add(orFile);
+						continue;
+					}
+				}
+				
+				FeatureExpr testExpr = testEntry.getValue();
+				FeatureExpr killsMutant = FeatureExprFactory.True();
+	
+				for (int i = 0; i < numMutants; i++) {
+					boolean fomKillsTest = fomKillsTest(mutants[i].feature(), testExpr);
+					if (!fomKillsTest) {
+						killsMutant = killsMutant.and(mutants[i].not());
+					}
+				}
+				FeatureExpr expr = killsMutant.andNot(testExpr);
+				if (VarexOptions.splitExpr3()) {
+					String subExpressionFileName = "strict_" + testEntry.getKey();
+					File orFile = new File(subExpressionFileName + ".dimacs");
+					if (!orFile.exists()) {
+						DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) expr, subExpressionFileName);
+					}
+					dimacsFiles.add(orFile);
+				} else {
+					lt1 = lt1.or(expr);
 				}
 			}
-			FeatureExpr expr = killsMutant.andNot(testExpr);
-			if (splitExpression3) {
-				dimacsFiles.add(DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) expr, "strict_" + testEntry.getKey()));
+	
+			if (VarexOptions.splitExpr3()) {
+				file = orDimacsFiles(dimacsFiles, mutants, expression3);
 			} else {
-				lt1 = lt1.or(expr);
+				file = DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) lt1, expression3);
 			}
+			files.add(file);
 		}
-
-		File file;
-		if (splitExpression3) {
-			file = orDimacsFiles(dimacsFiles, mutants, "strict");
-		} else {
-			file = DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) lt1, "strict");
-		}
-		files.add(file);
 	}
 
 	public static void createFeatureModel(SingleFeatureExpr[] mutantExprs, List<File> files) {

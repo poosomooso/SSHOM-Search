@@ -2,13 +2,11 @@ package benchmark;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigInteger;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jline.utils.InputStreamReader;
 import org.junit.Test;
 
 import benchmark.VarexOptions.SOLVER;
@@ -28,6 +27,7 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.BDDFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.FExprBuilder;
+import me.tongfei.progressbar.ProgressBar;
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDException;
 import net.sf.javabdd.BDDFactory;
@@ -35,6 +35,7 @@ import solver.bdd.BDDSolver;
 import solver.sat.SATSolver;
 import testRunner.RunTests;
 import util.ConfigLoader;
+import util.ProgressBarFactory;
 import varex.SATSSHOMExprFactory;
 import varex.SSHOMExprFactory;
 
@@ -80,9 +81,11 @@ public class BenchmarkedVarexSSHOMFinder {
 		
 		SOLVER solver = VarexOptions.getSolver();
 		if (solver == SOLVER.BDD) {
+			@SuppressWarnings("unused")
 			Set<Set<String>> solutionsBDD = getBDDSolutions(mutants, stringTests, strict);
 		} else {
 			// SAT solutions
+			@SuppressWarnings("unused")
 			Set<Set<String>> solutionsSAT = getSATSolutions(mutants, stringTests, strict); 
 		}
 		
@@ -114,9 +117,6 @@ public class BenchmarkedVarexSSHOMFinder {
 	}
 
 	private Set<Set<String>> getBDDSolutions(String[] mutants, Map<String, FeatureExpr> stringTests, boolean strict) {
-		Benchmarker.instance.timestamp("generate FOMs");
-		FeatureExpr[] fomExprs = SSHOMExprFactory.genFOMs(mutantExprs, mutants.length);
-		
 		Benchmarker.instance.timestamp("create SSHOM expression");
 		
 		FeatureExpr finalExpr;
@@ -125,30 +125,37 @@ public class BenchmarkedVarexSSHOMFinder {
 		} else {
 			finalExpr = SSHOMExprFactory.getSSHOMExpr(stringTests, mutantExprs, mutantExprs.length);
 		}
-		// exclude foms
-		for (FeatureExpr m : fomExprs) {
-			finalExpr = finalExpr.andNot(m);
-		}
+
 		BigInteger count = new BDDSolver(2).getSolutionsCount((BDDFeatureExpr)finalExpr, mutants);
-		System.out.println("Number of solutions:" + count);
-		
+		Benchmarker.instance.timestamp("Number of solutions:" + count);
 		return new BDDSolver(2).getSolutions((BDDFeatureExpr)finalExpr, mutants, BenchmarkPrograms::homIsValid);
 	}
 	
 	private Set<Set<String>> getSATSolutions(String[] mutants, Map<String, FeatureExpr> stringTests, boolean strict) {
 		Benchmarker.instance.timestamp("create SAT formula");
 		
-		final boolean splitExpr1 = VarexOptions.splitExpr1();
-		final boolean splitExpr2 = VarexOptions.splitExpr2();
-		final boolean splitExpr3 = VarexOptions.splitExpr3();
-		
-		Collection<File> dimcsFiles;
-		if (strict) {
-			dimcsFiles = SATSSHOMExprFactory.getStrictSSHOMExpr(stringTests, mutantExprs, mutantExprs.length, splitExpr1, splitExpr2, splitExpr3);
-		} else {
-			dimcsFiles = SATSSHOMExprFactory.getSSHOMExpr(stringTests, mutantExprs, mutantExprs.length, splitExpr1, splitExpr2);
+		boolean reuseExisting = false;
+		if (new File("fullmodel.dimacs").exists()) {
+			System.out.println("fullmodel.dimacs already exists! Do you want to reuse the model? Y/N:");
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); ) {
+		        String line = reader.readLine();
+		        if (line.trim().equalsIgnoreCase("Y")) {
+		        	Benchmarker.instance.timestamp("Reusing existing model.");
+		        	reuseExisting = true;
+		        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
 		}
-		SATSSHOMExprFactory.andDimacsFiles(dimcsFiles, mutantExprs, "fullmodel");
+		if (!reuseExisting) {
+			Collection<File> dimcsFiles;
+			if (strict) {
+				dimcsFiles = SATSSHOMExprFactory.getStrictSSHOMExpr(stringTests, mutantExprs, mutantExprs.length);
+			} else {
+				dimcsFiles = SATSSHOMExprFactory.getSSHOMExpr(stringTests, mutantExprs, mutantExprs.length);
+			}
+			SATSSHOMExprFactory.andDimacsFiles(dimcsFiles, mutantExprs, "fullmodel");
+		}
 		
 		Benchmarker.instance.timestamp("get SAT solutions");
 		Set<Set<String>> solutions = new SATSolver(2).getSolutions("fullmodel.dimacs", mutants);
@@ -156,6 +163,12 @@ public class BenchmarkedVarexSSHOMFinder {
 		return solutions;
 	}
 
+	/**
+	 * Debugging purpose only: Compares solutions generated using BDD with solutions from SAT.
+	 * @param solutionsBDD
+	 * @param solutionsSAT
+	 */
+	@SuppressWarnings("unused")
 	private void checkSolutions(Set<Set<String>> solutionsBDD, Set<Set<String>> solutionsSAT) {
 		boolean success = true;
 		System.out.flush();
@@ -196,36 +209,32 @@ public class BenchmarkedVarexSSHOMFinder {
 	}
 	
 	private void loadTestExpressions(Map<Class<?>, Map<Method, FeatureExpr>> tests) throws IOException {
-		URL res = getClass().getResource("/BDDs/" + BenchmarkPrograms.PROGRAM.name());
-		File folder;
-		try {
-			folder = new File(res.toURI());
-		} catch (URISyntaxException e) {
-			throw new RuntimeException("Did not find BDDs for BenchmarkPrograms.PROGRAM.name()", e);
-		}
-		
 		final BDDFactory bddFactory = FExprBuilder.bddFactory();
+		
+		int size = 0;
 		for (Entry<Class<?>, Map<Method, FeatureExpr>> t1 : tests.entrySet()) {
-			for (Entry<Method, FeatureExpr> t2 : t1.getValue().entrySet()) {
-				String fname = RunTests.getTestDesc(t1.getKey(), t2.getKey()) + ".txt";
-				final File file = new File(folder, fname);
-				if (file.exists()) {
-					try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-						BDD bdd2 = bddFactory.load(br);
-						FeatureExpr expr = new BDDFeatureExpr(bdd2);
-						t2.setValue(expr);
-					} catch (BDDException e) {
-						System.err.println(fname);
-						e.printStackTrace();
+			size += t1.getValue().size();
+		}
+				
+		try (ProgressBar pb = ProgressBarFactory.create("load test expressions", size)) {
+			for (Entry<Class<?>, Map<Method, FeatureExpr>> t1 : tests.entrySet()) {
+				for (Entry<Method, FeatureExpr> t2 : t1.getValue().entrySet()) {
+					pb.step();
+					String fname = RunTests.getTestDesc(t1.getKey(), t2.getKey()) + ".txt";
+					InputStream res = getClass().getResourceAsStream("/BDDS/" + BenchmarkPrograms.PROGRAM.name() + '/' + fname);
+					if (res != null) {
+						try (BufferedReader br = new BufferedReader(new InputStreamReader(res))) {
+							BDD bdd2 = bddFactory.load(br);
+							FeatureExpr expr = new BDDFeatureExpr(bdd2);
+							t2.setValue(expr);
+						} catch (BDDException e) {
+							System.err.println(fname);
+							e.printStackTrace();
+						}
 					}
-				} else {
-//					System.err.println("file not found: " + fname);
 				}
 			}
 		}
-//		for (String string : set) {
-//			System.err.println("test missing for: " + string);
-//		}
 	}
 
 

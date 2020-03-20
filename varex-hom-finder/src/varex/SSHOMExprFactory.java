@@ -9,11 +9,13 @@ import de.fosd.typechef.featureexpr.FeatureExpr;
 import de.fosd.typechef.featureexpr.FeatureExprFactory;
 import de.fosd.typechef.featureexpr.SingleFeatureExpr;
 import de.fosd.typechef.featureexpr.bdd.BDDFeatureModel;
+import me.tongfei.progressbar.ProgressBar;
 import scala.Tuple2;
 import scala.collection.JavaConversions;
 import scala.collection.immutable.List;
 import scala.collection.mutable.HashSet;
 import scala.collection.mutable.Set;
+import util.ProgressBarFactory;
 
 public class SSHOMExprFactory {
   private static Map<FomTestKey, Boolean> lambda = new HashMap<>();
@@ -49,83 +51,89 @@ public class SSHOMExprFactory {
     }
 
   }
-  /**
-   *
-   * @param tests Map of {"testName" : /expression for when test is killed/}
-   * @param mutants Array of [m1, m2, ... ]
-   * @param numMutants
-   * @return
-   */
-  public static FeatureExpr getSSHOMExpr(Map<String, FeatureExpr> tests,
-      SingleFeatureExpr[] mutants, int numMutants) {
 
-    // check that at least one test fails
-    FeatureExpr gt0 = FeatureExprFactory.False();
-    for (FeatureExpr t : tests.values()) {
-      gt0 = gt0.or(t);
-    }
+	/**
+	 *
+	 * @param tests      Map of {"testName" : /expression for when test is killed/}
+	 * @param mutants    Array of [m1, m2, ... ]
+	 * @param numMutants
+	 * @return
+	 */
+	public static FeatureExpr getSSHOMExpr(Map<String, FeatureExpr> tests, SingleFeatureExpr[] mutants,
+			int numMutants) {
 
-    // for each test, if it fails for the hom, then it must fail for each fom
-    FeatureExpr lte1 = FeatureExprFactory.True();
-    for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
-      String testName = testEntry.getKey();
-      FeatureExpr testExpr = testEntry.getValue();
-      FeatureExpr implication = FeatureExprFactory.True();
-      for (int i = 0; i < numMutants; i++) {
+		// check that at least one test fails
+		FeatureExpr gt0 = FeatureExprFactory.False();
+		try (ProgressBar pb = ProgressBarFactory.create("create expression 1", tests.size())) {
+			for (FeatureExpr t : tests.values()) {
+				pb.step();
+				gt0 = gt0.or(t);
+			}
+		}
+		// for each test, if it fails for the hom, then it must fail for each fom
+		FeatureExpr lte1 = FeatureExprFactory.True();
+		try (ProgressBar pb = ProgressBarFactory.create("create expression 2", tests.size())) {
+			for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
+				pb.step();
+				String testName = testEntry.getKey();
+				FeatureExpr testExpr = testEntry.getValue();
+				FeatureExpr implication = FeatureExprFactory.True();
+				for (int i = 0; i < numMutants; i++) {
 
-        FomTestKey currKey = new FomTestKey(mutants[i].feature(), testName);
+					FomTestKey currKey = new FomTestKey(mutants[i].feature(), testName);
 
-        boolean fomKillsTest;
-        if (lambda.containsKey(currKey)) {
-          fomKillsTest = lambda.get(currKey);
-        } else {
-          fomKillsTest = fomKillsTest(mutants[i].feature(), testExpr);
-          lambda.put(currKey, fomKillsTest);
-        }
+					boolean fomKillsTest;
+					if (lambda.containsKey(currKey)) {
+						fomKillsTest = lambda.get(currKey);
+					} else {
+						fomKillsTest = fomKillsTest(mutants[i].feature(), testExpr);
+						lambda.put(currKey, fomKillsTest);
+					}
 
-        if (!fomKillsTest) {
-          implication = implication.and(mutants[i].not());
-        }
+					if (!fomKillsTest) {
+						implication = implication.and(mutants[i].not());
+					}
 
-      }
-      lte1 = lte1.and(testExpr.implies(implication));
-    }
+				}
+				lte1 = lte1.and(testExpr.implies(implication));
+			}
+		}
+		return gt0.and(lte1);
+	}
 
-    return gt0.and(lte1);
-  }
+	public static FeatureExpr getStrictSSHOMExpr(Map<String, FeatureExpr> tests, SingleFeatureExpr[] mutants,
+			int numMutants) {
 
-  public static FeatureExpr getStrictSSHOMExpr(Map<String, FeatureExpr> tests,
-      SingleFeatureExpr[] mutants, int numMutants) {
+		FeatureExpr finalExpr = getSSHOMExpr(tests, mutants, numMutants);
+		FeatureExpr lt1 = FeatureExprFactory.False();
+		try (ProgressBar pb = ProgressBarFactory.create("create expression 3", tests.size())) {
+			// exists a test that fails all foms but does not fail corresponding hom
+			for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
+				pb.step();
+				String testName = testEntry.getKey();
+				FeatureExpr testExpr = testEntry.getValue();
+				FeatureExpr killsMutant = FeatureExprFactory.True();
 
-    FeatureExpr finalExpr = getSSHOMExpr(tests, mutants, numMutants);
-    FeatureExpr lt1 = FeatureExprFactory.False();
+				for (int i = 0; i < numMutants; i++) {
+					FomTestKey currKey = new FomTestKey(mutants[i].feature(), testName);
 
-    // exists a test that fails all foms but does not fail corresponding hom
-    for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
-      String testName = testEntry.getKey();
-      FeatureExpr testExpr = testEntry.getValue();
-      FeatureExpr killsMutant = FeatureExprFactory.True();
-
-      for (int i = 0; i < numMutants; i++) {
-        FomTestKey currKey = new FomTestKey(mutants[i].feature(), testName);
-
-        boolean fomKillsTest;
-        if (lambda.containsKey(currKey)) {
-          fomKillsTest = lambda.get(currKey);
-        } else {
-          fomKillsTest = fomKillsTest(mutants[i].feature(), testExpr);
-          lambda.put(currKey, fomKillsTest);
-        }
-        if (!fomKillsTest) {
-          killsMutant = killsMutant.and(mutants[i].not());
-        }
-      }
-      lt1 = lt1.or(killsMutant.andNot(testExpr));
-    }
-
-    finalExpr = finalExpr.and(lt1);
-    return finalExpr;
-  }
+					boolean fomKillsTest;
+					if (lambda.containsKey(currKey)) {
+						fomKillsTest = lambda.get(currKey);
+					} else {
+						fomKillsTest = fomKillsTest(mutants[i].feature(), testExpr);
+						lambda.put(currKey, fomKillsTest);
+					}
+					if (!fomKillsTest) {
+						killsMutant = killsMutant.and(mutants[i].not());
+					}
+				}
+				lt1 = lt1.or(killsMutant.andNot(testExpr));
+			}
+		}
+		finalExpr = finalExpr.and(lt1);
+		return finalExpr;
+	}
 
   public static void printAssignments(FeatureExpr[] mutants,
       FeatureExpr finalExpr) {
