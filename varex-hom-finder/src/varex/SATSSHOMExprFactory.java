@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -270,19 +271,38 @@ public class SATSSHOMExprFactory {
 		try (ProgressBar pb = ProgressBarFactory.create("create expression 1", tests.size())) {
 			if (VarexOptions.splitExpr1()) {
 				List<File> expression1Files = new ArrayList<>(tests.size());
-				for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
+				
+				List<String> orderedTests = new ArrayList<>();
+				orderedTests.addAll(tests.keySet());
+				Collections.sort(orderedTests, (o1, o2) -> Integer.compare(tests.get(o1).size(), tests.get(o2).size()));
+								
+				int fileNumber = 1;
+				FeatureExpr orExpr = FeatureExprFactory.False();
+				for (String test : orderedTests) {
+					FeatureExpr testBDD = tests.get(test);
 					pb.step();
-					if (!testEntry.getValue().isContradiction()) {
-						String testName = testEntry.getKey();
-						File fileOr = new File("or_" + testName + ".dimacs");
-						if (!fileOr.exists()) {
-							DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) testEntry.getValue(), "or_" + testName);
-						}
+					long start = System.currentTimeMillis();
+					orExpr = orExpr.or(testBDD);
+					long end = System.currentTimeMillis();
+					long duration = end - start;
+					if (duration >= VarexOptions.getSatSplitDuration() && !orExpr.isContradiction()) {
+						File fileOr = DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) orExpr, "expr_1_" + fileNumber + ".dimacs");
 						expression1Files.add(fileOr);
+						fileNumber++;
+						orExpr = FeatureExprFactory.False();
 					}
 				}
+				
+				if (!orExpr.isContradiction()) {
+					// create the final or file
+					System.out.println("create final file: " + "expr_1_" + fileNumber + ".dimacs");
+					File fileOr = DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) orExpr, "expr_1_" + fileNumber + ".dimacs");
+					expression1Files.add(fileOr);
+				}
+				
 				files.add(orDimacsFiles(expression1Files, mutants, expression1));
 			} else {
+				
 				FeatureExpr gt0 = FeatureExprFactory.False();
 				for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
 					pb.step();
@@ -312,19 +332,38 @@ public class SATSSHOMExprFactory {
 		try (ProgressBar pb = ProgressBarFactory.create("create expression 2", tests.size())) {
 			if (VarexOptions.splitExpr2()) {
 				List<File> expression2Files = new ArrayList<>(tests.size());
-				for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
+				
+				List<String> orderedTests = new ArrayList<>();
+				orderedTests.addAll(tests.keySet());
+				Collections.sort(orderedTests, (o1, o2) -> Integer.compare(tests.get(o1).size(), tests.get(o2).size()));
+								
+				int fileNumber = 1;
+				FeatureExpr andExpr = FeatureExprFactory.True();
+				for (String test : orderedTests) {
 					pb.step();
-					String testName = testEntry.getKey();
-					FeatureExpr expr = testEntry.getValue();
+					FeatureExpr expr = tests.get(test);
 					if (!expr.isContradiction()) {
-						File andFile = new File(testName + ".dimacs");
-						if (!andFile.exists()) {
-							FeatureExpr subexpression2 = createSubexpression2(mutants, numMutants, expr);
-							DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) subexpression2, testName);
+						FeatureExpr subexpression2 = createSubexpression2(mutants, numMutants, expr);
+						long start = System.currentTimeMillis();
+						andExpr = andExpr.and(subexpression2);
+						long end = System.currentTimeMillis();
+						long duration = end - start;
+						if (duration >= VarexOptions.getSatSplitDuration()) {
+							File andFile = DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) andExpr, "expr_2_" + fileNumber + ".dimacs");
+							expression2Files.add(andFile);
+							andExpr = FeatureExprFactory.True();
+							fileNumber++;
 						}
-						expression2Files.add(andFile);
 					}
 				}
+				
+				if (!andExpr.isTautology()) {
+					// create the final and file
+					File andFile = DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) andExpr, "expr_2_" + fileNumber + ".dimacs");
+					expression2Files.add(andFile);
+				}
+				
+				
 				files.add(andDimacsFiles(expression2Files, mutants, expression2));
 			} else {
 				FeatureExpr expression = FeatureExprFactory.True();
@@ -364,20 +403,18 @@ public class SATSSHOMExprFactory {
 			return;
 		}
 		try (ProgressBar pb = ProgressBarFactory.create("create expression 3", tests.size())) {
-			FeatureExpr lt1 = FeatureExprFactory.False();
+			FeatureExpr strictExpr = FeatureExprFactory.False();
 			List<File> dimacsFiles = new ArrayList<>();
-			for (Map.Entry<String, FeatureExpr> testEntry : tests.entrySet()) {
+			
+			List<String> orderedTests = new ArrayList<>();
+			orderedTests.addAll(tests.keySet());
+			Collections.sort(orderedTests, (o1, o2) -> Integer.compare(tests.get(o1).size(), tests.get(o2).size()));
+			
+			int fileNumber = 0;
+			for (String test : tests.keySet()) {
 				pb.step();
-				if (VarexOptions.splitExpr3()) {
-					String subExpressionFileName = "strict_" + testEntry.getKey();
-					File orFile = new File(subExpressionFileName + ".dimacs");
-					if (orFile.exists()) {
-						dimacsFiles.add(orFile);
-						continue;
-					}
-				}
 				
-				FeatureExpr testExpr = testEntry.getValue();
+				FeatureExpr testExpr = tests.get(test);
 				FeatureExpr killsMutant = FeatureExprFactory.True();
 	
 				for (int i = 0; i < numMutants; i++) {
@@ -386,23 +423,28 @@ public class SATSSHOMExprFactory {
 						killsMutant = killsMutant.and(mutants[i].not());
 					}
 				}
+				
 				FeatureExpr expr = killsMutant.andNot(testExpr);
-				if (VarexOptions.splitExpr3()) {
-					String subExpressionFileName = "strict_" + testEntry.getKey();
-					File orFile = new File(subExpressionFileName + ".dimacs");
-					if (!orFile.exists()) {
-						DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) expr, subExpressionFileName);
-					}
-					dimacsFiles.add(orFile);
-				} else {
-					lt1 = lt1.or(expr);
+				long start = System.currentTimeMillis();
+				strictExpr = strictExpr.or(expr);
+				long end = System.currentTimeMillis();
+				long duration = end - start;
+				if (VarexOptions.splitExpr3() && duration >= VarexOptions.getSatSplitDuration()) {
+					File strictFile = DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) strictExpr,  "strict_" + fileNumber);
+					dimacsFiles.add(strictFile);
+					fileNumber++;
+					strictExpr = FeatureExprFactory.False();
 				}
 			}
 	
 			if (VarexOptions.splitExpr3()) {
+				if (!strictExpr.isContradiction()) {
+					File strictFile = DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) strictExpr,  "strict_" + fileNumber);
+					dimacsFiles.add(strictFile);
+				}
 				file = orDimacsFiles(dimacsFiles, mutants, expression3);
 			} else {
-				file = DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) lt1, expression3);
+				file = DimacsWriter.instance.bddToDimacsTseytinTransformation((BDDFeatureExpr) strictExpr, expression3);
 			}
 			files.add(file);
 		}

@@ -27,6 +27,9 @@ public final class ConfigLoader {
 				} else if (flag.getType() == int.class) {
 					String valueString = System.getProperty(flag.getName(), Integer.toString(flag.getInt(null)));
 					value = Integer.parseInt(valueString);
+				} else if (flag.getType() == long.class) {
+					String valueString = System.getProperty(flag.getName(), Long.toString(flag.getLong(null)));
+					value = Long.parseLong(valueString);
 				} else if (flag.getType().isEnum()) {
 					String valueString = System.getProperty(flag.getName(), flag.get(null).toString());
 					value = Enum.valueOf((Class<Enum>) flag.getType(), valueString);

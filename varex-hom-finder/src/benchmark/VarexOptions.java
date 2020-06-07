@@ -21,6 +21,9 @@ public class VarexOptions {
 	private static boolean SATsplitExpr2 = false;
 	private static boolean SATsplitExpr3 = false;
 	
+	// split duration in ms
+	private static long SatSplitDuration = 0;
+	
 	public static boolean splitExpr1() {
 		return SATsplitExpr1;
 	}
@@ -31,5 +34,10 @@ public class VarexOptions {
 	
 	public static boolean splitExpr3() {
 		return SATsplitExpr3;
+	}
+	
+	// the duration at which the bdd expressions gets split
+	public static long getSatSplitDuration() {
+		return SatSplitDuration;
 	}
 }
